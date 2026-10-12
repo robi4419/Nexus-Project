@@ -4,5 +4,6 @@ __pycache__/
 *.pyc
 .DS_Store
 airflow/logs/
+airflow/config/airflow.cfg
 target/
 dbt_packages/
