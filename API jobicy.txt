@@ -1,0 +1,9 @@
+API: jobicy
+Stack tehnologi:
+- Apache Airflow - orchestrator
+- Databricks - curatare date, normalizare, deduplicare
+- DBT Analytics - modele analitice
+- Dashboards
+- GitHub
+- Docker - distributie linux pt Airflow
+- DrawDB
