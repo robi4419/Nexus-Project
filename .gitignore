@@ -7,3 +7,5 @@ airflow/logs/
 airflow/config/airflow.cfg
 target/
 dbt_packages/
+logs/
+.user.yml
