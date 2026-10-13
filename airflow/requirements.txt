@@ -1,0 +1,6 @@
+# Installed into Airflow's Python environment in the custom image (see Dockerfile).
+# apache-airflow is pinned so pip can't change the Airflow version while resolving.
+apache-airflow==3.3.2
+apache-airflow-providers-databricks==7.22.0
+databricks-sdk==0.152.0
+requests==2.34.2

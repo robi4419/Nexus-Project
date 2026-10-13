@@ -1,0 +1,4 @@
+# Installed into the separate dbt virtualenv (/opt/dbt-venv) in the Airflow image.
+# Keep in sync with the versions in the root requirements.txt.
+dbt-core==1.12.5
+dbt-databricks==1.12.7

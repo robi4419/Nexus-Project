@@ -1,5 +1,5 @@
 API: jobicy
-Stack tehnologi:
+Stack technologies:
 - Apache Airflow - orchestrator
 - Databricks - curatare date, normalizare, deduplicare
 - DBT Analytics - modele analitice
