@@ -38,11 +38,11 @@ Things to handle:
 
 Design principles:
 1. **Keep the raw data untouched.** Skill extraction will be improved many times; the original API responses let you reprocess all history without calling the API again.
-2. **Load incrementally.** Store the newest `pubDate`/`id` seen, page with `nextCursor` until a known posting appears, then stop. The Silver `MERGE` on `id` removes duplicates.
+2. **Fetch the whole feed window each run.** The feed only covers the last 7 days (~800 jobs, 4 pages of 200), so every run takes all of it. The Silver `MERGE` on `id` removes duplicates.
 3. **Do skill extraction in Databricks (PySpark).** Keep a version-controlled taxonomy (`skill, category, aliases/regex`, e.g. `k8s|kubernetes → Kubernetes`). Strip HTML, match with word boundaries, and treat ambiguous names ("Go", "R", "C", "C#", ".NET", "Node.js", "Excel") with case-sensitive patterns or context rules.
 4. **Use dbt for business logic only.** It reads Silver as sources, builds a star schema and aggregates, and runs tests.
 5. **Build dashboards in Databricks AI/BI** and export them as `.lvdash.json` into `dashboards/` so they're versioned.
-6. **Airflow runs the chain** on a schedule (e.g. every 6 hours).
+6. **Airflow runs the chain** on a schedule (daily; Jobicy asks for no more than one sync per hour).
 
 Dashboard ideas: top skills by country, industry and seniority; skill demand over time and rising skills (week-over-week); skill co-occurrence heatmap; median salary by skill; remote-geo coverage map; share of postings listing salary; top hiring companies per skill.
 
@@ -50,6 +50,7 @@ Dashboard ideas: top skills by country, industry and seniority; skill demand ove
 
 Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it starts:
 - [Phase 0: Fix the scaffolding](phases/phase-0-scaffolding.md)
+- [Phase 1: Ingestion](phases/phase-1-ingestion.md)
 
 ### Phase 0: Fix the scaffolding
 - [x] `airflow/Dockerfile` extending `apache/airflow:3.3.2` with `apache-airflow-providers-databricks`; install dbt in a separate virtualenv inside the image (dbt and Airflow pin conflicting dependencies).
@@ -59,9 +60,9 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Verify the stack builds, starts, and reaches Databricks from the worker.
 
 ### Phase 1: Ingestion
-- [ ] `ingestion/jobicy_client.py`: requests with retries/backoff, cursor paging, stop at the watermark.
-- [ ] Write raw JSON to a UC Volume with `databricks-sdk`, one file per run per date.
-- [ ] Airflow DAG `jobicy_pipeline`: `extract` → `upload`; store the watermark in an Airflow Variable or a small Delta table.
+- [ ] `ingestion/jobicy_client.py`: requests with retries/backoff, cursor paging over the full 7-day window.
+- [ ] Write raw JSON to a UC Volume with `databricks-sdk`, one file per page, one folder per run.
+- [ ] Airflow DAG `jobicy_pipeline`: `ensure_landing_volume` → `fetch_and_land` → `check_run`, daily.
 - [ ] Unit tests against a saved sample response.
 - [ ] Put it on a schedule early so history starts accumulating.
 

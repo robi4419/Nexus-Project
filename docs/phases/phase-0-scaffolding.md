@@ -18,7 +18,7 @@
 - [x] 0.6 Split requirements
 - [x] 0.7 Env templates and README (old `airflow/.env` can now be deleted by hand)
 - [x] 0.8 Verify: image builds (Airflow 3.3.2, Databricks provider 7.22.0, dbt 1.12.5 on Python 3.13), all services healthy, worker imports `ingestion`, `dbt debug` passes against Databricks. `dbt parse` only warns that the layer folders have no models yet, which clears in Phase 3.
-- [ ] 0.9 Commit and merge
+- [x] 0.9 Commit and merge (PR #1)
 
 ---
 
