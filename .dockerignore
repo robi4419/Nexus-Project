@@ -1,0 +1,5 @@
+# The Airflow image is built with the repo root as context.
+# Exclude everything (including .env secrets) and allow only the files the Dockerfile copies.
+*
+!airflow/requirements.txt
+!dbt/requirements.txt
