@@ -56,7 +56,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Move `docker-compose.yaml` to the repo root, build the custom image, mount `dbt/` and `ingestion/`, use one root `.env` for Databricks and Airflow settings.
 - [x] Replace the `example:` block in `dbt/job_listings/dbt_project.yml` with `staging/intermediate/marts` configs.
 - [x] Move `test.py` into `ingestion/`; split requirements into local dev, Airflow and dbt.
-- [ ] Verify the stack builds, starts, and reaches Databricks from the worker.
+- [x] Verify the stack builds, starts, and reaches Databricks from the worker.
 
 ### Phase 1: Ingestion
 - [ ] `ingestion/jobicy_client.py`: requests with retries/backoff, cursor paging, stop at the watermark.

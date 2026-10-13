@@ -16,8 +16,8 @@
 - [x] 0.4 dbt project config
 - [x] 0.5 Ingestion package
 - [x] 0.6 Split requirements
-- [ ] 0.7 Env templates and README (README and template done; moving your Airflow values into the root `.env` is a manual step)
-- [ ] 0.8 Verify
+- [x] 0.7 Env templates and README (old `airflow/.env` can now be deleted by hand)
+- [x] 0.8 Verify: image builds (Airflow 3.3.2, Databricks provider 7.22.0, dbt 1.12.5 on Python 3.13), all services healthy, worker imports `ingestion`, `dbt debug` passes against Databricks. `dbt parse` only warns that the layer folders have no models yet, which clears in Phase 3.
 - [ ] 0.9 Commit and merge
 
 ---
