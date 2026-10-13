@@ -3,20 +3,20 @@
 **Goal:** a local environment where Airflow runs in Docker, can reach Databricks, can import our Python code and can run dbt. No pipeline logic yet; this phase only prepares the ground so Phases 1–4 can plug straight in.
 
 **Done when:**
-- `docker compose up -d` (from `airflow/`) starts Airflow with our custom image and the UI loads at http://localhost:8080.
+- `docker compose up -d` (from the repo root) starts Airflow with our custom image and the UI loads at http://localhost:8080.
 - Inside the worker container, `dbt debug` connects to Databricks successfully.
 - Inside the worker container, `python -c "import ingestion"` works.
 - `dbt parse` runs on the host without the `example` config warning.
 - Everything is committed on a branch and merged into `main`.
 
 ## Progress
-- [ ] 0.1 Working branch
-- [ ] 0.2 Custom Airflow image
-- [ ] 0.3 Compose updates
-- [ ] 0.4 dbt project config
-- [ ] 0.5 Ingestion package
-- [ ] 0.6 Split requirements
-- [ ] 0.7 Env templates and README
+- [x] 0.1 Working branch
+- [x] 0.2 Custom Airflow image
+- [x] 0.3 Move and update the compose file
+- [x] 0.4 dbt project config
+- [x] 0.5 Ingestion package
+- [x] 0.6 Split requirements
+- [ ] 0.7 Env templates and README (README and template done; moving your Airflow values into the root `.env` is a manual step)
 - [ ] 0.8 Verify
 - [ ] 0.9 Commit and merge
 
@@ -28,6 +28,7 @@
 |---|---|
 | Compose uses the stock `apache/airflow:3.3.2` image | It has no Databricks provider and no dbt, so Airflow can't trigger Databricks jobs or run dbt. |
 | `airflow/.env` has no `DATABRICKS_*` values; they live in the root `.env` | Containers can't authenticate to Databricks. |
+| Compose file lives in `airflow/` but needs files from the whole repo | Paths fill up with `../`, and settings are split across two `.env` files. |
 | Only `dags/`, `logs/`, `config/`, `plugins/` are mounted | Containers can't see `ingestion/` or `dbt/`. |
 | `dbt_project.yml` configures a `models/example/` folder that doesn't exist | dbt prints a warning; the config doesn't describe our real layers. |
 | `test.py` sits at the repo root | Scratch code; it should live in the ingestion package. |
@@ -79,14 +80,19 @@ What the Dockerfile does:
 
 After the first successful build, pin the resolved versions of the provider and SDK in `airflow/requirements.txt` so rebuilds are reproducible.
 
-### 0.3 Update `airflow/docker-compose.yaml`
+### 0.3 Move and update the compose file
+**Decision:** `docker-compose.yaml` moves from `airflow/` to the repo root; the `Dockerfile` stays in `airflow/`. The stack needs files from all over the repo (dbt, ingestion, the root `.env`), so running Compose from the root keeps paths simple (`./dbt` instead of `../dbt`) and lets one `.env` hold every setting. Side effect: the Compose project name changes from `airflow` to `nexus-project`, so Airflow's Postgres metadata database starts fresh (it held nothing yet).
+
 All changes go in the shared `x-airflow-common` block:
-- **Build our image:** replace `image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.3.2}` with `build: .` plus `image: nexus-airflow:latest` (Compose builds it once and tags it with that name; every service reuses it).
+- **Build our image:** replace `image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.3.2}` with `image: nexus-airflow:latest` plus `build: {context: ., dockerfile: airflow/Dockerfile}` (Compose builds it once and tags it with that name; every service reuses it). A root `.dockerignore` allows only the two requirements files into the build, so `.env` can never be copied into the image.
+- **Airflow folders:** default `AIRFLOW_PROJ_DIR` becomes `./airflow`, so `dags/`, `logs/`, `config/`, `plugins/` still come from `airflow/`.
 - **Mount the project code** (containers read the same files you edit on the host, no rebuild needed):
-  - `../ingestion:/opt/project/ingestion`
-  - `../dbt:/opt/project/dbt`
+  - `./ingestion:/opt/project/ingestion`
+  - `./dbt:/opt/project/dbt`
   - add `PYTHONPATH: /opt/project` so DAGs can `import ingestion`.
-- **Pass Databricks credentials:** add the root `.env` as a second `env_file` (`../.env`) so `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, etc. reach every container. `databricks-sdk` and our `profiles.yml` both read these variable names directly, so no extra config is needed. (An Airflow *connection* for the Databricks operators comes in Phase 2/4.)
+
+  `/opt/project` is a folder *inside* the containers, kept separate from `/opt/airflow` because `airflow-init` changes ownership of everything under `/opt/airflow`.
+- **One `.env`:** the root `.env` holds both the Databricks and the Airflow settings, and `airflow/.env.example` is merged into the root `.env.example`. `databricks-sdk` and our `profiles.yml` read the `DATABRICKS_*` names directly, so no extra config is needed. (An Airflow *connection* for the Databricks operators comes in Phase 2/4.)
 - **dbt location:** add `DBT_PROFILES_DIR` and `DBT_PROJECT_DIR` pointing at `/opt/project/dbt/job_listings`.
 
 ### 0.4 Clean up the dbt project config
@@ -123,10 +129,11 @@ Create `models/staging/`, `models/intermediate/` and `models/marts/` (each with 
 | `dbt/requirements.txt` (new) | dbt venv in the image | `dbt-core==1.12.5`, `dbt-databricks==1.12.7` |
 
 ### 0.7 Env templates and README
-- `airflow/.env.example`: add a comment explaining Databricks values come from the root `.env`.
+- Root `.env.example`: Databricks and Airflow sections, with commands to generate `FERNET_KEY` and the JWT secret.
+- Copy `AIRFLOW_UID`, `FERNET_KEY` and `AIRFLOW__API_AUTH__JWT_SECRET` from `airflow/.env` into the root `.env`, then delete `airflow/.env` (done by hand; secrets aren't edited by tooling).
 - `README.md`: short project description, prerequisites (Docker Desktop, Python, a Databricks workspace) and "how to start" steps:
-  1. copy `.env.example` → `.env` and `airflow/.env.example` → `airflow/.env`, fill in values
-  2. `cd airflow && docker compose build && docker compose up -d`
+  1. copy `.env.example` → `.env`, fill in values
+  2. from the repo root: `docker compose build && docker compose up -d`
   3. open http://localhost:8080 (user/password `airflow` / `airflow`)
   4. optional: `docker compose --profile flower up -d` for Flower at http://localhost:5555
 - Link this file from `docs/PLAN.md`.
