@@ -1,0 +1,49 @@
+{
+    "apiVersion": "2.2.19",
+    "documentationUrl": "https://jobi.cy/apidocs",
+    "jobCount": 2,
+    "lastUpdate": "2026-10-13T02:48:35+00:00",
+    "nextCursor": "CURSOR_PAGE_2",
+    "hasMore": true,
+    "appliedFilters": {
+        "count": 2
+    },
+    "statusCode": 200,
+    "success": true,
+    "jobs": [
+        {
+            "id": 153133,
+            "url": "https://jobicy.com/jobs/153133-account-executive-chicago-il",
+            "jobSlug": "153133-account-executive-chicago-il",
+            "jobTitle": "Account Executive - Chicago, IL",
+            "companyName": "PadSplit",
+            "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2021/06/da525286873130ed0b95212896ef55d4.jpg",
+            "jobIndustry": ["Sales"],
+            "jobType": ["Full-Time"],
+            "jobGeo": "USA",
+            "jobLevel": "Director",
+            "jobExcerpt": "The Role That We Need: PadSplit is hiring for an Account Executive to expand our marketplace by engaging traditional property owners to become PadSplit Hosts.",
+            "jobDescription": "<p><strong>The Role That We Need:</strong></p>\n<p>PadSplit is hiring for an Account Executive to expand our marketplace by engaging traditional property owners to become PadSplit Hosts. Experience with Salesforce and HubSpot is a plus.</p>",
+            "pubDate": "2026-10-13T02:48:35+00:00",
+            "salaryMin": 65000,
+            "salaryMax": 180000,
+            "salaryCurrency": "USD",
+            "salaryPeriod": "yearly"
+        },
+        {
+            "id": 900001,
+            "url": "https://jobicy.com/jobs/900001-senior-data-engineer",
+            "jobSlug": "900001-senior-data-engineer",
+            "jobTitle": "Senior Data Engineer",
+            "companyName": "Example Analytics Ltd",
+            "companyLogo": "https://jobicy.com/data/example-logo.png",
+            "jobIndustry": ["Data Science & Analytics"],
+            "jobType": ["Full-Time"],
+            "jobGeo": "Canada,  USA",
+            "jobLevel": "Senior",
+            "jobExcerpt": "Made-up test job: build batch pipelines with Python, SQL and Apache Airflow on Databricks.",
+            "jobDescription": "<p>Made-up test job.</p>\n<ul><li>Build batch pipelines with <strong>Python</strong> and SQL</li><li>Orchestrate with Apache Airflow; model data with dbt on Databricks</li><li>Nice to have: Go, Kubernetes (k8s)</li></ul>",
+            "pubDate": "2026-10-11T15:20:00+00:00"
+        }
+    ]
+}

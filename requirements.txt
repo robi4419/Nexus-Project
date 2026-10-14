@@ -24,6 +24,7 @@ et_xmlfile==2.0.0
 google-auth==2.61.0
 idna==3.20
 importlib_metadata==9.0.1
+iniconfig==2.3.1
 isodate==0.7.2
 Jinja2==3.1.6
 jsonschema==4.26.0
@@ -45,6 +46,7 @@ packaging==25.0
 pandas==3.0.6
 parsedatetime==2.6
 pathspec==1.0.4
+pluggy==1.6.0
 protobuf==6.33.6
 pyarrow==26.0.0
 pyasn1==0.6.4
@@ -53,7 +55,9 @@ pybreaker==1.4.1
 pycparser==3.11
 pydantic==2.12.5
 pydantic_core==2.41.5
+Pygments==2.21.0
 PyJWT==2.15.1
+pytest==9.1.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.4
 python-slugify==9.1.3
