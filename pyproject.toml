@@ -1,0 +1,4 @@
+[tool.pytest.ini_options]
+# Run tests from tests/ and let them `import ingestion` from the repo root.
+testpaths = ["tests"]
+pythonpath = ["."]
