@@ -60,11 +60,12 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Verify the stack builds, starts, and reaches Databricks from the worker.
 
 ### Phase 1: Ingestion
-- [ ] Multi-source layout: shared `ingestion/common/` (HTTP session, Volume writer) and `ingestion/sources/jobicy/` (cursor paging over the full 7-day window).
-- [ ] Write raw JSON to a UC Volume with `databricks-sdk`: `landing/<source>/`, one file per page, one folder per run.
-- [ ] Airflow DAG `ingest_jobicy`: `ensure_landing_volume` → `fetch_and_land` → `check_run`, daily; updates the Asset `landing/jobicy`.
-- [ ] Unit tests against a saved sample response.
-- [ ] Put it on a schedule early so history starts accumulating.
+- [x] Multi-source layout: shared `ingestion/common/` (HTTP session, Volume writer) and `ingestion/sources/jobicy/` (cursor paging over the full 7-day window).
+- [x] Write raw JSON to a UC Volume with `databricks-sdk`: `landing/<source>/`, one file per page, one folder per run.
+- [x] Airflow DAG `ingest_jobicy`: `ensure_landing_volume` → `fetch_and_land` → `check_run`, daily at 18:00 UTC; updates the Asset `landing/jobicy`.
+- [x] Unit tests against a saved sample response.
+- [x] Put it on a schedule early so history starts accumulating.
+- [ ] Optional: add more sources (Arbeitnow, Himalayas) using the same layout.
 
 ### Phase 2: Bronze and Silver in Databricks
 - [ ] Catalog and schemas: `bronze`, `silver`, `gold`.
