@@ -1,4 +1,7 @@
-API: jobicy
+APIs: 
+- jobicy: https://jobicy.com/api/v2/remote-jobs
+- arbeitnow: https://arbeitnow.com/api/job-board-api
+- himalayas: https://himalayas.app/jobs/api
 Stack technologies:
 - Apache Airflow - orchestrator
 - Databricks - curatare date, normalizare, deduplicare

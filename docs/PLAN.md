@@ -60,9 +60,9 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Verify the stack builds, starts, and reaches Databricks from the worker.
 
 ### Phase 1: Ingestion
-- [ ] `ingestion/jobicy_client.py`: requests with retries/backoff, cursor paging over the full 7-day window.
-- [ ] Write raw JSON to a UC Volume with `databricks-sdk`, one file per page, one folder per run.
-- [ ] Airflow DAG `jobicy_pipeline`: `ensure_landing_volume` → `fetch_and_land` → `check_run`, daily.
+- [ ] Multi-source layout: shared `ingestion/common/` (HTTP session, Volume writer) and `ingestion/sources/jobicy/` (cursor paging over the full 7-day window).
+- [ ] Write raw JSON to a UC Volume with `databricks-sdk`: `landing/<source>/`, one file per page, one folder per run.
+- [ ] Airflow DAG `ingest_jobicy`: `ensure_landing_volume` → `fetch_and_land` → `check_run`, daily; updates the Asset `landing/jobicy`.
 - [ ] Unit tests against a saved sample response.
 - [ ] Put it on a schedule early so history starts accumulating.
 
