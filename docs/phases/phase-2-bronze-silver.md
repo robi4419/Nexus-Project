@@ -22,8 +22,8 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
 - [x] 2.1 Branch, docs and Databricks CLI (v1.21.0, `DEFAULT` profile with personal access token)
 - [x] 2.2 Exchange-rate source (Frankfurter): client, landing, tests, `ingest_fx_rates` DAG (10 tests; unpaused 2026-10-15, backfilled 10 weekdays 2026-10-01 → 10-14, each folder holds that day's ECB rates, 29 currencies)
 - [x] 2.3 Asset Bundle skeleton (`databricks.yml`, Job definition): validated and deployed 2026-10-15 as `[dev robix4000] transform_jobs`
-- [ ] 2.4 Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw` (first run 2026-10-15: 4 Jobicy files / 751 jobs, 11 rate files; idempotency re-runs pending)
-- [ ] 2.5 Reference data: `skills.csv`, `locations.csv`, and their tables
+- [x] 2.4 Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw` (2026-10-15: first run loaded 4 Jobicy files / 751 jobs and 11 rate files; an immediate re-run loaded 0; after the 18:00 Jobicy ingestion, a re-run loaded exactly its 4 new files and 0 rate files)
+- [x] 2.5 Reference data: `skills.csv`, `locations.csv`, and their tables
 - [ ] 2.6 `transform/` package: HTML to text, seniority, skill matcher, with unit tests
 - [ ] 2.7 Silver exchange rates: `silver.fx_rates`
 - [ ] 2.8 Silver jobs: `silver.jobs`, plus location, industry and type bridge tables
@@ -53,7 +53,7 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
 
 1. **Notebooks in a serverless Databricks Job**, not a Lakeflow pipeline. Steps are explicit and can be run cell by cell, Databricks does the cleaning and dbt does the modelling.
 2. **Databricks Asset Bundles**: the Job is defined in YAML in the repo and deployed with the Databricks CLI, installed once with `winget`.
-3. **Skills cover tech, business tools and certifications**, about 250 entries in roughly 18 categories. Soft skills are left out.
+3. **Skills cover tech, business tools and certifications**: 351 entries in 18 categories (more than the ~250 first estimated, to cover the business tools non-tech postings ask for). Soft skills are left out.
 4. **Locations are stored as listed, with regions.** A "Europe" job counts under region Europe, not under each European country. No expansion into countries.
 5. **Daily ECB exchange rates come from the Frankfurter API**, as a second ingestion source with its own DAG. Salaries use the rate on or before the job's publish date (an *as-of join*).
 6. **Silver is rebuilt from bronze on every run.** Bronze loads only new files (Auto Loader). This replaces the original plan's "MERGE on id".
@@ -188,11 +188,11 @@ Follow the Phase 1 checklist "Adding another API later":
 - Two Job tasks use this notebook: `bronze_jobicy` and `bronze_fx`.
 
 ### 2.5 Reference data
-- `skills.csv`: about 250 skills in roughly 18 categories:
+- `skills.csv`: 351 skills in 18 categories:
   - Programming Languages, Web & Mobile Frameworks, Data Engineering, Data Science & AI, Analytics & BI, Databases, Cloud, DevOps & Infrastructure, Security, Testing & QA
   - CRM & Sales Tools, Marketing & SEO Tools, Customer Support Tools, Finance & ERP, Productivity & Project Management, Design Tools, HR & Recruiting Tools, Certifications
 
-  Aliases are plain phrases, not regexes. Ambiguous names only match through safe aliases or case-sensitively:
+  Aliases are plain phrases, not regexes, and only the listed aliases are searched (the skill name isn't added automatically). An alias starting with `-` is an **exclusion**: a match inside that phrase doesn't count (React has `-React Native`, Looker has `-Looker Studio`, Excel has `-Excel at` and `-Excel in`, Greenhouse has `-Greenhouse Gas`). Ambiguous names only match through safe aliases or case-sensitively:
   - Go → `Golang`, `Go developer`...
   - R → `R programming`, `RStudio`...
   - C → `C/C++`, `Embedded C`
@@ -223,7 +223,7 @@ Follow the Phase 1 checklist "Adding another API later":
 - `skills.py`: `SkillMatcher` loads `skills.csv`.
   - Each alias is matched as a whole word. Boundaries treat `+ # .` as part of a word, so C++, C#, .NET and Node.js work, and Java doesn't match inside JavaScript.
   - Matching is case-insensitive unless the skill is flagged `case_sensitive`.
-  - **The longest match wins** where matches overlap ("React Native" isn't also React).
+  - **Different skills may overlap**: "C/C++" counts for C and C++, "Spark SQL" for Spark and SQL. (The plan first said "the longest match wins", but that would make "C/C++" lose C++.) Overlaps that are wrong are prevented with the skill's exclusion phrases, e.g. React's `-React Native`.
   - `match(title, text)` returns skill, category, mentions and in_title.
   - `taxonomy_version()` is a short hash of the CSV, stored with every result so you can tell which skill list produced it.
 
