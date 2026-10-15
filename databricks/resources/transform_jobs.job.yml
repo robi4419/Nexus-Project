@@ -31,3 +31,8 @@ resources:
             notebook_path: ../notebooks/01_bronze.py
             base_parameters:
               source: frankfurter
+
+        - task_key: reference
+          description: Load databricks/reference/*.csv into silver.ref_locations and silver.ref_skills
+          notebook_task:
+            notebook_path: ../notebooks/02_reference.py
