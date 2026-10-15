@@ -1,0 +1,33 @@
+# The transform Job: turns landed raw files into bronze and silver tables.
+# Runs on serverless compute (no cluster is defined). Airflow will trigger it in Phase 4.
+# More tasks (reference, silver, skills, checks) are added as Phase 2 progresses.
+
+resources:
+  jobs:
+    transform_jobs:
+      name: transform_jobs
+      description: Loads newly landed API files into bronze tables (later also builds silver and runs checks).
+      max_concurrent_runs: 1
+      tags:
+        project: nexus
+
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: bundle_root
+          default: ${workspace.file_path}
+
+      tasks:
+        - task_key: bronze_jobicy
+          description: Auto Loader from landing/jobicy/ into bronze.jobicy_raw
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze.py
+            base_parameters:
+              source: jobicy
+
+        - task_key: bronze_fx
+          description: Auto Loader from landing/frankfurter/ into bronze.frankfurter_raw
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze.py
+            base_parameters:
+              source: frankfurter
