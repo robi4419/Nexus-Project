@@ -21,8 +21,8 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
 ## Progress
 - [x] 2.1 Branch, docs and Databricks CLI (v1.21.0, `DEFAULT` profile with personal access token)
 - [x] 2.2 Exchange-rate source (Frankfurter): client, landing, tests, `ingest_fx_rates` DAG (10 tests; unpaused 2026-10-15, backfilled 10 weekdays 2026-10-01 → 10-14, each folder holds that day's ECB rates, 29 currencies)
-- [ ] 2.3 Asset Bundle skeleton (`databricks.yml`, Job definition)
-- [ ] 2.4 Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw`
+- [x] 2.3 Asset Bundle skeleton (`databricks.yml`, Job definition): validated and deployed 2026-10-15 as `[dev robix4000] transform_jobs`
+- [ ] 2.4 Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw` (first run 2026-10-15: 4 Jobicy files / 751 jobs, 11 rate files; idempotency re-runs pending)
 - [ ] 2.5 Reference data: `skills.csv`, `locations.csv`, and their tables
 - [ ] 2.6 `transform/` package: HTML to text, seniority, skill matcher, with unit tests
 - [ ] 2.7 Silver exchange rates: `silver.fx_rates`
