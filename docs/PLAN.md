@@ -16,16 +16,16 @@ Things to handle:
 ## Flow
 
 ```
- Jobicy API
-     │  (1) Airflow task: pull new postings (cursor paging), save the raw JSON untouched
+ Jobicy API (job postings)              Frankfurter API (daily ECB exchange rates)
+     │  (1) ingest_jobicy, daily             │  (1b) ingest_fx_rates, weekdays (backfills)
+     ▼                                       ▼
+ Unity Catalog Volume  /Volumes/<catalog>/bronze/landing/<source>/ingest_date=YYYY-MM-DD/run=<run id>/*.json
+     │  (2) Databricks Job "transform_jobs": Auto Loader loads each new file once
      ▼
- Databricks Unity Catalog Volume  /landing/jobicy/dt=YYYY-MM-DD/*.json
-     │  (2) Databricks job: bronze (raw Delta table, append-only, with ingest timestamp)
+ BRONZE  jobicy_raw · frankfurter_raw   (append-only, one row per landed file, JSON kept as VARIANT)
+     │  (3) same Job: rebuild silver (clean, normalise, dedup, skills, salaries in USD), then checks
      ▼
- BRONZE  jobicy_raw
-     │  (3) Databricks job (PySpark): clean, normalise, dedup, extract skills
-     ▼
- SILVER  jobs (one row per job id, MERGE on id) · job_skills (job_id, skill) · job_industries ...
+ SILVER  jobs · job_locations · job_industries · job_types · job_skills · fx_rates · ref_skills · ref_locations
      │  (4) Airflow runs dbt build: staging → intermediate → marts, plus tests
      ▼
  GOLD (dbt)  dim_skill · dim_geo · dim_industry · dim_company · dim_date
@@ -38,7 +38,7 @@ Things to handle:
 
 Design principles:
 1. **Keep the raw data untouched.** Skill extraction will be improved many times; the original API responses let you reprocess all history without calling the API again.
-2. **Fetch the whole feed window each run.** The feed only covers the last 7 days (~800 jobs, 4 pages of 200), so every run takes all of it. The Silver `MERGE` on `id` removes duplicates.
+2. **Fetch the whole feed window each run.** The feed only covers the last 7 days (~800 jobs, 4 pages of 200), so every run takes all of it. Silver is rebuilt from bronze on every run and keeps the latest version of each job, which removes the duplicates.
 3. **Do skill extraction in Databricks (PySpark).** Keep a version-controlled taxonomy (`skill, category, aliases/regex`, e.g. `k8s|kubernetes → Kubernetes`). Strip HTML, match with word boundaries, and treat ambiguous names ("Go", "R", "C", "C#", ".NET", "Node.js", "Excel") with case-sensitive patterns or context rules.
 4. **Use dbt for business logic only.** It reads Silver as sources, builds a star schema and aggregates, and runs tests.
 5. **Build dashboards in Databricks AI/BI** and export them as `.lvdash.json` into `dashboards/` so they're versioned.
@@ -51,6 +51,7 @@ Dashboard ideas: top skills by country, industry and seniority; skill demand ove
 Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it starts:
 - [Phase 0: Fix the scaffolding](phases/phase-0-scaffolding.md)
 - [Phase 1: Ingestion](phases/phase-1-ingestion.md)
+- [Phase 2: Bronze and Silver in Databricks](phases/phase-2-bronze-silver.md)
 
 ### Phase 0: Fix the scaffolding
 - [x] `airflow/Dockerfile` extending `apache/airflow:3.3.2` with `apache-airflow-providers-databricks`; install dbt in a separate virtualenv inside the image (dbt and Airflow pin conflicting dependencies).
@@ -68,11 +69,12 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [ ] Optional: add more sources (Arbeitnow, Himalayas) using the same layout.
 
 ### Phase 2: Bronze and Silver in Databricks
-- [ ] Catalog and schemas: `bronze`, `silver`, `gold`.
-- [ ] `01_bronze`: Auto Loader or `COPY INTO` from the Volume into `bronze.jobicy_raw`.
-- [ ] `02_silver`: strip HTML, flatten arrays into bridge tables, map `jobGeo` to country/region, convert salaries to yearly USD, `MERGE` on `id`.
-- [ ] `skills_taxonomy.csv` (~200 skills by category) and `03_skill_extraction` → `silver.job_skills`. Hand-check ~50 postings for accuracy.
-- [ ] Package jobs with Databricks Asset Bundles (`databricks.yml`).
+- [ ] Exchange-rate source (Frankfurter/ECB): client, landing, tests, `ingest_fx_rates` DAG with backfill.
+- [ ] Databricks Asset Bundle (`databricks.yml`) defining the `transform_jobs` Job, deployed with the Databricks CLI.
+- [ ] Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw` (one row per landed file, VARIANT).
+- [ ] Reference data (`skills.csv` with ~250 skills, `locations.csv`) and a tested `transform/` package (HTML to text, seniority, skill matcher).
+- [ ] Silver rebuilt each run: `jobs`, `job_locations`, `job_industries`, `job_types`, `job_skills`, `fx_rates`; salaries in yearly USD.
+- [ ] Data-quality checks; hand-check 50 postings (skill precision ≥ 90%).
 
 ### Phase 3: dbt models
 - [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).

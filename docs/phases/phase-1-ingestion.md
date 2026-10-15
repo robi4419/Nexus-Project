@@ -17,7 +17,7 @@
 - [x] 1.5 Unit tests (25 passing)
 - [x] 1.6 Airflow DAG
 - [x] 1.7 Verify end to end (2026-10-14: first run landed 741 jobs in 4 pages, 6.4 MB, ~17 s; clearing the task an hour later removed those 4 files and landed 751 jobs in the same folder; DAG unpaused, daily at 18:00 UTC)
-- [ ] 1.8 Commit, PR and merge
+- [x] 1.8 Commit, PR and merge (PR #2)
 
 ---
 
