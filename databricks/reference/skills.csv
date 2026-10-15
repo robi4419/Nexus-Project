@@ -1,0 +1,352 @@
+skill,category,aliases,case_sensitive
+Python,Programming Languages,Python,false
+Java,Programming Languages,Java,false
+JavaScript,Programming Languages,JavaScript|ECMAScript|JS,false
+TypeScript,Programming Languages,TypeScript,false
+Go,Programming Languages,Golang|Go language|Go programming|Go developer|Go developers|Go engineer|Go engineers,true
+Rust,Programming Languages,Rust,true
+C,Programming Languages,C programming|C language|ANSI C|Embedded C|C/C++|C and C++,true
+C++,Programming Languages,C++|CPP,false
+C#,Programming Languages,C#|C Sharp|CSharp,false
+Ruby,Programming Languages,Ruby,false
+PHP,Programming Languages,PHP,false
+Kotlin,Programming Languages,Kotlin,false
+Swift,Programming Languages,Swift,true
+Scala,Programming Languages,Scala,false
+Objective-C,Programming Languages,Objective-C|ObjC,false
+Dart,Programming Languages,Dart,true
+Elixir,Programming Languages,Elixir,true
+Haskell,Programming Languages,Haskell,false
+Perl,Programming Languages,Perl,false
+R,Programming Languages,R programming|R language|RStudio|R Shiny|R/Python|Python/R|R and Python|Python and R|R or Python|Python or R,true
+MATLAB,Programming Languages,MATLAB,false
+Julia,Programming Languages,Julia language|Julia programming,true
+Bash,Programming Languages,Bash|shell scripting|shell scripts,false
+PowerShell,Programming Languages,PowerShell,false
+SQL,Programming Languages,SQL,true
+T-SQL,Programming Languages,T-SQL|TSQL|Transact-SQL,false
+PL/SQL,Programming Languages,PL/SQL,false
+Solidity,Programming Languages,Solidity,true
+VBA,Programming Languages,VBA|Visual Basic for Applications,false
+HTML,Programming Languages,HTML|HTML5,false
+CSS,Programming Languages,CSS|CSS3|SCSS|Sass,false
+React,Web & Mobile Frameworks,React|ReactJS|React.js|-React Native,true
+React Native,Web & Mobile Frameworks,React Native,true
+Next.js,Web & Mobile Frameworks,Next.js|NextJS,false
+Angular,Web & Mobile Frameworks,Angular|AngularJS,true
+Vue.js,Web & Mobile Frameworks,Vue|Vue.js|VueJS|Nuxt|Nuxt.js,false
+Svelte,Web & Mobile Frameworks,Svelte|SvelteKit,false
+Node.js,Web & Mobile Frameworks,Node.js|NodeJS|Node JS,false
+Express.js,Web & Mobile Frameworks,Express.js|ExpressJS,false
+NestJS,Web & Mobile Frameworks,NestJS|Nest.js,false
+Django,Web & Mobile Frameworks,Django,false
+Flask,Web & Mobile Frameworks,Flask,true
+FastAPI,Web & Mobile Frameworks,FastAPI,false
+Spring Boot,Web & Mobile Frameworks,Spring Boot|Spring Framework|Spring MVC,false
+Ruby on Rails,Web & Mobile Frameworks,Ruby on Rails|Rails,true
+Laravel,Web & Mobile Frameworks,Laravel,false
+.NET,Web & Mobile Frameworks,.NET|.NET Core|ASP.NET|dotnet,false
+jQuery,Web & Mobile Frameworks,jQuery,false
+Tailwind CSS,Web & Mobile Frameworks,Tailwind|Tailwind CSS|TailwindCSS,true
+Bootstrap,Web & Mobile Frameworks,Bootstrap,true
+Redux,Web & Mobile Frameworks,Redux,false
+GraphQL,Web & Mobile Frameworks,GraphQL,false
+REST APIs,Web & Mobile Frameworks,REST API|REST APIs|RESTful|RESTful APIs,false
+gRPC,Web & Mobile Frameworks,gRPC,false
+Flutter,Web & Mobile Frameworks,Flutter,true
+iOS,Web & Mobile Frameworks,iOS,false
+Android,Web & Mobile Frameworks,Android,false
+SwiftUI,Web & Mobile Frameworks,SwiftUI,false
+WordPress,Web & Mobile Frameworks,WordPress,false
+Shopify,Web & Mobile Frameworks,Shopify,false
+Webflow,Web & Mobile Frameworks,Webflow,false
+Apache Spark,Data Engineering,Apache Spark|Spark|PySpark|Spark SQL|Spark Streaming,true
+Apache Airflow,Data Engineering,Airflow|Apache Airflow,false
+dbt,Data Engineering,dbt|dbt Labs|dbt Cloud|dbt Core,true
+Apache Kafka,Data Engineering,Kafka|Apache Kafka|Kafka Streams,false
+Databricks,Data Engineering,Databricks,false
+Snowflake,Data Engineering,Snowflake,true
+BigQuery,Data Engineering,BigQuery|Google BigQuery,false
+Amazon Redshift,Data Engineering,Redshift|Amazon Redshift,false
+Apache Flink,Data Engineering,Flink|Apache Flink,false
+Hadoop,Data Engineering,Hadoop|HDFS|MapReduce,false
+Delta Lake,Data Engineering,Delta Lake,false
+Apache Iceberg,Data Engineering,Apache Iceberg|Iceberg tables,false
+Fivetran,Data Engineering,Fivetran,false
+Airbyte,Data Engineering,Airbyte,false
+Informatica,Data Engineering,Informatica,false
+SSIS,Data Engineering,SSIS|SQL Server Integration Services,false
+Azure Data Factory,Data Engineering,Azure Data Factory,false
+AWS Glue,Data Engineering,AWS Glue,false
+Dagster,Data Engineering,Dagster,false
+ETL,Data Engineering,ETL|ELT|ETL/ELT,true
+Data Modeling,Data Engineering,data modeling|data modelling|dimensional modeling|dimensional modelling,false
+Data Warehousing,Data Engineering,data warehouse|data warehouses|data warehousing,false
+Machine Learning,Data Science & AI,machine learning|ML,false
+Deep Learning,Data Science & AI,deep learning,false
+NLP,Data Science & AI,NLP|natural language processing,false
+Computer Vision,Data Science & AI,computer vision,false
+LLMs,Data Science & AI,LLM|LLMs|large language model|large language models,false
+Generative AI,Data Science & AI,generative AI|GenAI|Gen AI,false
+Prompt Engineering,Data Science & AI,prompt engineering,false
+RAG,Data Science & AI,RAG|retrieval-augmented generation|retrieval augmented generation,false
+LangChain,Data Science & AI,LangChain|LangGraph,false
+Hugging Face,Data Science & AI,Hugging Face|HuggingFace,false
+OpenAI API,Data Science & AI,OpenAI API|OpenAI APIs,false
+TensorFlow,Data Science & AI,TensorFlow,false
+PyTorch,Data Science & AI,PyTorch,false
+scikit-learn,Data Science & AI,scikit-learn|sklearn|scikit learn,false
+Pandas,Data Science & AI,Pandas,false
+NumPy,Data Science & AI,NumPy,false
+Jupyter,Data Science & AI,Jupyter|Jupyter Notebook|Jupyter Notebooks,false
+MLflow,Data Science & AI,MLflow,false
+SageMaker,Data Science & AI,SageMaker|Amazon SageMaker,false
+Vertex AI,Data Science & AI,Vertex AI,false
+MLOps,Data Science & AI,MLOps,false
+Vector Databases,Data Science & AI,vector database|vector databases|vector DB|Pinecone|Weaviate|pgvector|Milvus|Qdrant,false
+Tableau,Analytics & BI,Tableau,false
+Power BI,Analytics & BI,Power BI|PowerBI,false
+Looker,Analytics & BI,Looker|-Looker Studio,false
+Looker Studio,Analytics & BI,Looker Studio|Google Data Studio|Data Studio,false
+Qlik,Analytics & BI,Qlik|QlikView|Qlik Sense,false
+Metabase,Analytics & BI,Metabase,false
+Amplitude,Analytics & BI,Amplitude,true
+Mixpanel,Analytics & BI,Mixpanel,false
+Twilio Segment,Analytics & BI,Segment.io|Twilio Segment,false
+SAS,Analytics & BI,SAS,true
+SPSS,Analytics & BI,SPSS,false
+Alteryx,Analytics & BI,Alteryx,false
+A/B Testing,Analytics & BI,A/B testing|A/B tests|A/B test|AB testing|split testing,false
+Data Visualization,Analytics & BI,data visualization|data visualisation|data viz,false
+PostgreSQL,Databases,PostgreSQL|Postgres,false
+MySQL,Databases,MySQL,false
+SQL Server,Databases,SQL Server|MSSQL|MS SQL|Microsoft SQL Server,false
+Oracle Database,Databases,Oracle Database|Oracle DB|Oracle SQL,false
+MongoDB,Databases,MongoDB|Mongo,false
+Redis,Databases,Redis,false
+Elasticsearch,Databases,Elasticsearch|Elastic Search|ELK Stack|ELK,false
+Cassandra,Databases,Cassandra|Apache Cassandra,true
+DynamoDB,Databases,DynamoDB,false
+SQLite,Databases,SQLite,false
+MariaDB,Databases,MariaDB,false
+Neo4j,Databases,Neo4j,false
+Firebase,Databases,Firebase|Firestore,false
+Supabase,Databases,Supabase,false
+NoSQL,Databases,NoSQL,false
+AWS,Cloud,AWS|Amazon Web Services,true
+Microsoft Azure,Cloud,Azure|Microsoft Azure,false
+Google Cloud,Cloud,GCP|Google Cloud|Google Cloud Platform,false
+AWS Lambda,Cloud,AWS Lambda|Lambda functions,false
+Amazon S3,Cloud,S3|Amazon S3|AWS S3,true
+Amazon EC2,Cloud,EC2|Amazon EC2,true
+Heroku,Cloud,Heroku,false
+Vercel,Cloud,Vercel,false
+Cloudflare,Cloud,Cloudflare,false
+DigitalOcean,Cloud,DigitalOcean|Digital Ocean,false
+Serverless,Cloud,serverless,false
+Docker,DevOps & Infrastructure,Docker,false
+Kubernetes,DevOps & Infrastructure,Kubernetes|K8s,false
+Terraform,DevOps & Infrastructure,Terraform,false
+Ansible,DevOps & Infrastructure,Ansible,false
+Helm,DevOps & Infrastructure,Helm|Helm charts,true
+Jenkins,DevOps & Infrastructure,Jenkins,true
+GitHub Actions,DevOps & Infrastructure,GitHub Actions,false
+GitLab,DevOps & Infrastructure,GitLab|GitLab CI|GitLab CI/CD,false
+Git,DevOps & Infrastructure,Git,true
+GitHub,DevOps & Infrastructure,GitHub,false
+CircleCI,DevOps & Infrastructure,CircleCI,false
+Argo CD,DevOps & Infrastructure,Argo CD|ArgoCD|Argo Workflows,false
+Linux,DevOps & Infrastructure,Linux|Ubuntu|RHEL|Red Hat Enterprise Linux|Debian|CentOS,false
+CI/CD,DevOps & Infrastructure,CI/CD|CICD|continuous integration|continuous delivery|continuous deployment,false
+Prometheus,DevOps & Infrastructure,Prometheus,true
+Grafana,DevOps & Infrastructure,Grafana,false
+Datadog,DevOps & Infrastructure,Datadog,false
+New Relic,DevOps & Infrastructure,New Relic,false
+NGINX,DevOps & Infrastructure,NGINX,false
+CloudFormation,DevOps & Infrastructure,CloudFormation,false
+Infrastructure as Code,DevOps & Infrastructure,infrastructure as code|infrastructure-as-code|IaC,false
+VMware,DevOps & Infrastructure,VMware|vSphere,false
+Active Directory,DevOps & Infrastructure,Active Directory|Azure AD|Entra ID|Microsoft Entra,false
+SIEM,Security,SIEM,false
+Splunk,Security,Splunk,false
+CrowdStrike,Security,CrowdStrike,false
+SentinelOne,Security,SentinelOne,false
+Palo Alto Networks,Security,Palo Alto Networks|PAN-OS|Prisma Cloud|Cortex XDR,false
+Fortinet,Security,Fortinet|FortiGate,false
+Okta,Security,Okta,false
+Burp Suite,Security,Burp Suite,false
+Wireshark,Security,Wireshark,false
+Nessus,Security,Nessus|Tenable,false
+Penetration Testing,Security,penetration testing|penetration test|penetration tests|pen testing|pentesting|pentest,false
+OWASP,Security,OWASP,false
+Zero Trust,Security,zero trust,false
+IAM,Security,IAM|identity and access management,false
+SOC 2,Security,SOC 2|SOC2|SOC II,false
+ISO 27001,Security,ISO 27001|ISO/IEC 27001|ISO27001,false
+NIST,Security,NIST|NIST CSF,true
+GDPR,Security,GDPR,false
+HIPAA,Security,HIPAA,false
+PCI DSS,Security,PCI DSS|PCI-DSS|PCI compliance,false
+Microsoft Sentinel,Security,Microsoft Sentinel|Azure Sentinel,false
+Vulnerability Management,Security,vulnerability management|vulnerability scanning|vulnerability assessment,false
+Incident Response,Security,incident response,false
+EDR,Security,EDR|XDR|endpoint detection and response,false
+Selenium,Testing & QA,Selenium,false
+Cypress,Testing & QA,Cypress,true
+Playwright,Testing & QA,Playwright,true
+Jest,Testing & QA,Jest,true
+Pytest,Testing & QA,pytest,false
+JUnit,Testing & QA,JUnit,false
+Appium,Testing & QA,Appium,false
+Postman,Testing & QA,Postman,true
+JMeter,Testing & QA,JMeter,false
+Cucumber,Testing & QA,Cucumber|Gherkin,true
+TestRail,Testing & QA,TestRail,false
+Test Automation,Testing & QA,test automation|automated testing|automation testing,false
+Unit Testing,Testing & QA,unit testing|unit tests|unit test,false
+TDD,Testing & QA,TDD|test-driven development|test driven development,false
+BDD,Testing & QA,BDD|behavior-driven development|behaviour-driven development,false
+Salesforce,CRM & Sales Tools,Salesforce|SFDC|Salesforce.com,false
+HubSpot,CRM & Sales Tools,HubSpot,false
+Outreach,CRM & Sales Tools,Outreach.io,false
+Salesloft,CRM & Sales Tools,Salesloft,false
+Gong,CRM & Sales Tools,Gong|Gong.io,true
+Apollo.io,CRM & Sales Tools,Apollo.io,false
+ZoomInfo,CRM & Sales Tools,ZoomInfo,false
+LinkedIn Sales Navigator,CRM & Sales Tools,Sales Navigator|LinkedIn Sales Navigator,false
+Pipedrive,CRM & Sales Tools,Pipedrive,false
+Zoho CRM,CRM & Sales Tools,Zoho|Zoho CRM,false
+Microsoft Dynamics 365,CRM & Sales Tools,Dynamics 365|Microsoft Dynamics|Dynamics CRM|D365,false
+DocuSign,CRM & Sales Tools,DocuSign,false
+CPQ,CRM & Sales Tools,CPQ,true
+MEDDIC,CRM & Sales Tools,MEDDIC|MEDDICC|MEDDPICC,true
+Clari,CRM & Sales Tools,Clari,true
+Google Analytics,Marketing & SEO Tools,Google Analytics|GA4|Universal Analytics,false
+Google Ads,Marketing & SEO Tools,Google Ads|AdWords|Google AdWords,false
+Meta Ads,Marketing & SEO Tools,Meta Ads|Facebook Ads|Instagram Ads|Meta Ads Manager|Facebook Ads Manager,false
+LinkedIn Ads,Marketing & SEO Tools,LinkedIn Ads|LinkedIn Campaign Manager,false
+Google Tag Manager,Marketing & SEO Tools,Google Tag Manager,false
+SEMrush,Marketing & SEO Tools,SEMrush,false
+Ahrefs,Marketing & SEO Tools,Ahrefs,false
+Google Search Console,Marketing & SEO Tools,Google Search Console|Search Console,false
+Marketo,Marketing & SEO Tools,Marketo,false
+Pardot,Marketing & SEO Tools,Pardot|Marketing Cloud Account Engagement,false
+Mailchimp,Marketing & SEO Tools,Mailchimp,false
+Klaviyo,Marketing & SEO Tools,Klaviyo,false
+Braze,Marketing & SEO Tools,Braze,true
+Salesforce Marketing Cloud,Marketing & SEO Tools,Salesforce Marketing Cloud|SFMC|ExactTarget,false
+Hootsuite,Marketing & SEO Tools,Hootsuite,false
+Sprout Social,Marketing & SEO Tools,Sprout Social,false
+Hotjar,Marketing & SEO Tools,Hotjar,false
+Optimizely,Marketing & SEO Tools,Optimizely,false
+Marketing Automation,Marketing & SEO Tools,marketing automation,false
+SEO,Marketing & SEO Tools,SEO|search engine optimization|search engine optimisation,false
+PPC,Marketing & SEO Tools,PPC|pay-per-click|pay per click|paid search,false
+Conversion Rate Optimization,Marketing & SEO Tools,conversion rate optimization|conversion rate optimisation,false
+Zendesk,Customer Support Tools,Zendesk,false
+Intercom,Customer Support Tools,Intercom,true
+Freshdesk,Customer Support Tools,Freshdesk|Freshworks,false
+Gorgias,Customer Support Tools,Gorgias,false
+Help Scout,Customer Support Tools,Help Scout|HelpScout,false
+Salesforce Service Cloud,Customer Support Tools,Service Cloud|Salesforce Service Cloud,false
+ServiceNow,Customer Support Tools,ServiceNow,false
+Jira Service Management,Customer Support Tools,Jira Service Management|Jira Service Desk,false
+Gainsight,Customer Support Tools,Gainsight,false
+Talkdesk,Customer Support Tools,Talkdesk,false
+Aircall,Customer Support Tools,Aircall,false
+Genesys,Customer Support Tools,Genesys,false
+Twilio,Customer Support Tools,Twilio,false
+NICE CXone,Customer Support Tools,NICE CXone|CXone|NICE inContact|inContact,false
+QuickBooks,Finance & ERP,QuickBooks|QuickBooks Online|QBO,false
+Xero,Finance & ERP,Xero,true
+NetSuite,Finance & ERP,NetSuite|Oracle NetSuite,false
+SAP,Finance & ERP,SAP|SAP S/4HANA|S/4HANA|SAP ERP|SAP FICO,true
+Oracle ERP,Finance & ERP,Oracle ERP|Oracle Fusion|Oracle EBS|Oracle E-Business Suite|Oracle Financials,false
+Sage,Finance & ERP,Sage Intacct|Intacct|Sage 50|Sage X3,false
+Bill.com,Finance & ERP,Bill.com,false
+Expensify,Finance & ERP,Expensify,false
+Coupa,Finance & ERP,Coupa,false
+Stripe,Finance & ERP,Stripe,true
+Anaplan,Finance & ERP,Anaplan,false
+Adaptive Planning,Finance & ERP,Adaptive Planning|Adaptive Insights,false
+BlackLine,Finance & ERP,BlackLine|Blackline,true
+GAAP,Finance & ERP,GAAP|US GAAP|U.S. GAAP,true
+IFRS,Finance & ERP,IFRS,true
+Bloomberg Terminal,Finance & ERP,Bloomberg Terminal,false
+Financial Modeling,Finance & ERP,financial modeling|financial modelling|financial models,false
+Excel,Productivity & Project Management,Excel|Microsoft Excel|MS Excel|-Excel at|-Excel in,true
+Google Sheets,Productivity & Project Management,Google Sheets,false
+Google Workspace,Productivity & Project Management,Google Workspace|G Suite|GSuite,false
+Microsoft Office,Productivity & Project Management,Microsoft Office|MS Office|Office 365|Microsoft 365|O365,false
+PowerPoint,Productivity & Project Management,PowerPoint,false
+Microsoft Word,Productivity & Project Management,Microsoft Word|MS Word,false
+Microsoft Teams,Productivity & Project Management,Microsoft Teams|MS Teams,false
+Slack,Productivity & Project Management,Slack,true
+Jira,Productivity & Project Management,Jira,false
+Confluence,Productivity & Project Management,Confluence,true
+Asana,Productivity & Project Management,Asana,false
+Trello,Productivity & Project Management,Trello,false
+Monday.com,Productivity & Project Management,Monday.com,false
+Notion,Productivity & Project Management,Notion,true
+ClickUp,Productivity & Project Management,ClickUp,false
+Smartsheet,Productivity & Project Management,Smartsheet,false
+Airtable,Productivity & Project Management,Airtable,false
+Miro,Productivity & Project Management,Miro,true
+Microsoft Project,Productivity & Project Management,Microsoft Project|MS Project,false
+Agile,Productivity & Project Management,Agile,true
+Scrum,Productivity & Project Management,Scrum,true
+Kanban,Productivity & Project Management,Kanban,false
+Zapier,Productivity & Project Management,Zapier,false
+Make,Productivity & Project Management,Make.com|Integromat,false
+Power Automate,Productivity & Project Management,Power Automate|Microsoft Flow,false
+Power Apps,Productivity & Project Management,Power Apps|PowerApps,false
+Figma,Design Tools,Figma,false
+Sketch,Design Tools,Sketch,true
+Adobe XD,Design Tools,Adobe XD,false
+Photoshop,Design Tools,Photoshop|Adobe Photoshop,false
+Illustrator,Design Tools,Illustrator|Adobe Illustrator,true
+InDesign,Design Tools,InDesign,false
+After Effects,Design Tools,After Effects,false
+Premiere Pro,Design Tools,Premiere Pro|Adobe Premiere,false
+Adobe Creative Cloud,Design Tools,Adobe Creative Cloud|Adobe Creative Suite|Creative Cloud,false
+Canva,Design Tools,Canva,false
+InVision,Design Tools,InVision,true
+Framer,Design Tools,Framer,true
+Blender,Design Tools,Blender,true
+Design Systems,Design Tools,design system|design systems,false
+Wireframing,Design Tools,wireframing|wireframes|wireframe,false
+Prototyping,Design Tools,prototyping,false
+Workday,HR & Recruiting Tools,Workday,true
+Greenhouse,HR & Recruiting Tools,Greenhouse|-Greenhouse Gas|-Greenhouse gas,true
+Lever,HR & Recruiting Tools,Lever,true
+BambooHR,HR & Recruiting Tools,BambooHR,false
+ADP,HR & Recruiting Tools,ADP,true
+Gusto,HR & Recruiting Tools,Gusto,true
+Rippling,HR & Recruiting Tools,Rippling,true
+SuccessFactors,HR & Recruiting Tools,SuccessFactors|SAP SuccessFactors,false
+iCIMS,HR & Recruiting Tools,iCIMS,false
+Taleo,HR & Recruiting Tools,Taleo,false
+LinkedIn Recruiter,HR & Recruiting Tools,LinkedIn Recruiter,false
+Deel,HR & Recruiting Tools,Deel,true
+UKG,HR & Recruiting Tools,UKG|Kronos|UltiPro,false
+Workable,HR & Recruiting Tools,Workable,true
+CPA,Certifications,CPA|Certified Public Accountant,true
+CFA,Certifications,CFA|Chartered Financial Analyst,true
+ACCA,Certifications,ACCA,true
+PMP,Certifications,PMP|Project Management Professional,true
+PRINCE2,Certifications,PRINCE2,false
+Certified ScrumMaster,Certifications,Certified ScrumMaster|Certified Scrum Master|Professional Scrum Master,false
+CISSP,Certifications,CISSP,false
+CISM,Certifications,CISM,false
+CISA,Certifications,CISA,true
+CompTIA Security+,Certifications,Security+|CompTIA Security+,false
+CEH,Certifications,CEH|Certified Ethical Hacker,true
+OSCP,Certifications,OSCP,false
+AWS Certified,Certifications,AWS Certified|AWS certification|AWS certifications,false
+Six Sigma,Certifications,Six Sigma|Lean Six Sigma,false
+ITIL,Certifications,ITIL,false
+CCNA,Certifications,CCNA,false
+SHRM,Certifications,SHRM|SHRM-CP|SHRM-SCP,true
+Registered Nurse,Certifications,Registered Nurse|RN,true
+Certified Professional Coder,Certifications,Certified Professional Coder|CPC certification,false
+FINRA Licenses,Certifications,Series 7|Series 63|Series 65|Series 66|FINRA license|FINRA licenses,false

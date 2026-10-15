@@ -1,0 +1,66 @@
+raw_value,location_name,location_type,country_code,region
+Anywhere,Anywhere,worldwide,,Worldwide
+APAC,APAC,region,,APAC
+EMEA,EMEA,region,,EMEA
+Europe,Europe,region,,Europe
+LATAM,Latin America,region,,LATAM
+Argentina,Argentina,country,AR,LATAM
+Australia,Australia,country,AU,APAC
+Austria,Austria,country,AT,Europe
+Belgium,Belgium,country,BE,Europe
+Brazil,Brazil,country,BR,LATAM
+Bulgaria,Bulgaria,country,BG,Europe
+Canada,Canada,country,CA,North America
+China,China,country,CN,APAC
+Costa Rica,Costa Rica,country,CR,LATAM
+Croatia,Croatia,country,HR,Europe
+Cyprus,Cyprus,country,CY,Europe
+Czechia,Czechia,country,CZ,Europe
+Denmark,Denmark,country,DK,Europe
+Estonia,Estonia,country,EE,Europe
+Finland,Finland,country,FI,Europe
+France,France,country,FR,Europe
+Germany,Germany,country,DE,Europe
+Greece,Greece,country,GR,Europe
+Hong Kong,Hong Kong,country,HK,APAC
+Hungary,Hungary,country,HU,Europe
+Ireland,Ireland,country,IE,Europe
+Israel,Israel,country,IL,Middle East & Africa
+Italy,Italy,country,IT,Europe
+Japan,Japan,country,JP,APAC
+Latvia,Latvia,country,LV,Europe
+Lithuania,Lithuania,country,LT,Europe
+Malaysia,Malaysia,country,MY,APAC
+Mexico,Mexico,country,MX,LATAM
+Netherlands,Netherlands,country,NL,Europe
+New Zealand,New Zealand,country,NZ,APAC
+Norway,Norway,country,NO,Europe
+Philippines,Philippines,country,PH,APAC
+Poland,Poland,country,PL,Europe
+Portugal,Portugal,country,PT,Europe
+Romania,Romania,country,RO,Europe
+Serbia,Serbia,country,RS,Europe
+Singapore,Singapore,country,SG,APAC
+Slovakia,Slovakia,country,SK,Europe
+Slovenia,Slovenia,country,SI,Europe
+South Korea,South Korea,country,KR,APAC
+Spain,Spain,country,ES,Europe
+Sweden,Sweden,country,SE,Europe
+Switzerland,Switzerland,country,CH,Europe
+Thailand,Thailand,country,TH,APAC
+Türkiye,Türkiye,country,TR,Europe
+UAE,United Arab Emirates,country,AE,Middle East & Africa
+UK,United Kingdom,country,GB,Europe
+Ukraine,Ukraine,country,UA,Europe
+USA,United States,country,US,North America
+Vietnam,Vietnam,country,VN,APAC
+United States,United States,country,US,North America
+US,United States,country,US,North America
+United Kingdom,United Kingdom,country,GB,Europe
+United Arab Emirates,United Arab Emirates,country,AE,Middle East & Africa
+Turkey,Türkiye,country,TR,Europe
+Czech Republic,Czechia,country,CZ,Europe
+Worldwide,Anywhere,worldwide,,Worldwide
+North America,North America,region,,North America
+Latin America,Latin America,region,,LATAM
+Asia Pacific,APAC,region,,APAC
