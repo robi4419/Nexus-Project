@@ -65,7 +65,7 @@ def ingest_fx_rates():
         )
         return summary
 
-    @task
+    @task(retries=0)  # re-checking the same summary can't change the result
     def check_run(summary: dict) -> None:
         """Fail the run if the rates look incomplete."""
         currencies = summary["currencies"]

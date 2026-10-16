@@ -164,7 +164,7 @@ DAG settings:
 - `schedule=CronTriggerTimetable("0 18 * * *", timezone="UTC", run_immediately=True)`: daily at 18:00 UTC (evening, when the PC is usually on). If Airflow wasn't running at 18:00, `run_immediately=True` makes it run the missed schedule as soon as it starts, instead of waiting for the next day.
 - `catchup=False`: the API can only return the current window, so there's no point "catching up" on past dates.
 - `max_active_runs=1`: no overlapping runs.
-- `retries=2`, 10 minutes apart.
+- `retries=2`, 10 minutes apart, except **`fetch_and_land`, which waits 65 minutes** between attempts (changed 2026-10-16): every attempt downloads the whole feed, and Jobicy allows at most one sync pass per hour. `ensure_landing_volume`'s retries don't contact Jobicy. **`check_run` has `retries=0`**: it only re-reads the same summary, so a retry could never pass, and a data problem should turn the run red straight away.
 - `tags=["jobicy", "ingestion"]`.
 
 **Why fetching and saving are one task:** tasks can only pass data to each other through **XCom**, which is stored in Airflow's Postgres database and meant for small values (IDs, paths, counts). Passing 6.6 MB of JSON through it is a known anti-pattern. With Celery, the next task might also run on a different worker, so saving to a local temp file isn't safe either. So `fetch_and_land` streams pages straight to the Volume and only passes a tiny summary on.
@@ -216,7 +216,7 @@ Small commits (config, shared helpers, Jobicy client, tests, DAG, docs), push th
 
 ## Pitfalls
 
-- **Polling limit:** don't schedule more often than hourly; daily is plenty with a 7-day window.
+- **Polling limit:** don't schedule more often than hourly; daily is plenty with a 7-day window. This also applies to retries and manual re-runs: an Airflow retry or a "Clear" of `fetch_and_land` is a new sync pass, so leave at least an hour since the previous one.
 - **Airflow 3 manual runs have no `logical_date`.** Folder names use the DAG run's ID and start time instead.
 - **Big data in XCom:** keep return values small (see 1.6).
 - **Top-level code in DAG files:** runs on every parse; keep it to imports and definitions.

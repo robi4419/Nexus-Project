@@ -160,7 +160,7 @@ Follow the Phase 1 checklist "Adding another API later":
 - `airflow/dags/ingest_fx_rates.py`: `ensure_landing_volume` → `fetch_and_land` → `check_run` (fails if there are fewer than 20 currencies or EUR is missing). Settings:
   - `CronTriggerTimetable("0 17 * * 1-5", timezone="UTC")`: weekdays, after the ECB publishes around 16:00 CET.
   - **`catchup=True`** with `start_date=2026-10-01`. Each run asks for **its own date**, so unpausing backfills about 11 weekdays, and days missed while the PC was off are filled in automatically.
-  - Asset `landing/frankfurter`, `max_active_runs=1`, retries as in Jobicy.
+  - Asset `landing/frankfurter`, `max_active_runs=1`, 2 retries 10 minutes apart (Frankfurter has no hourly limit), and `retries=0` on `check_run`, as in the Jobicy DAG.
 
 ### 2.3 Asset Bundle skeleton
 - `databricks.yml` at the repo root:
