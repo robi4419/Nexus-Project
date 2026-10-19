@@ -6,20 +6,28 @@
 # MAGIC `<catalog>.silver.ref_locations` and `<catalog>.silver.ref_skills`. Both tables are replaced on every run,
 # MAGIC so changing a mapping only takes editing the CSV and running `databricks bundle deploy`.
 # MAGIC
-# MAGIC Parameters: `catalog` and `bundle_root` (the bundle's files folder; when empty, the folder next to this notebook is used).
+# MAGIC `ref_skills` also gets the skill list's `taxonomy_version` (see `transform/skills.py`).
+# MAGIC
+# MAGIC Parameters: `catalog` and `bundle_root` (the bundle's files folder; when empty, the repo root two folders above
+# MAGIC this notebook is used).
 
 # COMMAND ----------
 
 import os
+import sys
 
 dbutils.widgets.text("catalog", "workspace")
 dbutils.widgets.text("bundle_root", "")
 
 catalog = dbutils.widgets.get("catalog")
-bundle_root = dbutils.widgets.get("bundle_root")
+bundle_root = dbutils.widgets.get("bundle_root") or os.path.abspath("../..")
 
-reference_dir = f"{bundle_root}/databricks/reference" if bundle_root else os.path.abspath("../reference")
+reference_dir = f"{bundle_root}/databricks/reference"
 print(f"Reading reference CSVs from {reference_dir}")
+
+# The bundle uploads the repo's transform/ package next to databricks/; make it importable.
+if bundle_root not in sys.path:
+    sys.path.insert(0, bundle_root)
 
 # COMMAND ----------
 
@@ -56,8 +64,12 @@ locations = read_reference_csv("locations.csv")
 locations["country_code"] = [code or None for code in locations["country_code"]]  # regions: "" -> NULL
 replace_table(locations, "ref_locations")
 
+from transform.skills import SkillMatcher
+
 skills = read_reference_csv("skills.csv")
 skills["case_sensitive"] = skills["case_sensitive"] == "true"
+# The same fingerprint silver_skills stores in job_skills, so a check can prove both came from the same list.
+skills["taxonomy_version"] = SkillMatcher.from_csv(f"{reference_dir}/skills.csv").taxonomy_version
 replace_table(skills, "ref_skills")
 
 # COMMAND ----------
