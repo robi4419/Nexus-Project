@@ -3,7 +3,7 @@ Python,Programming Languages,Python,false
 Java,Programming Languages,Java,false
 JavaScript,Programming Languages,JavaScript|ECMAScript|JS,false
 TypeScript,Programming Languages,TypeScript,false
-Go,Programming Languages,Golang|Go language|Go programming|Go developer|Go developers|Go engineer|Go engineers,true
+Go,Programming Languages,Go|Golang|golang|-Go-to|-Go to market|-Go-live|-Go live|-Go/No-Go|-Go deep|-Go get|-Go the extra mile|-Go Direct|-Fleetio Go,true
 Rust,Programming Languages,Rust,true
 C,Programming Languages,C programming|C language|ANSI C|Embedded C|C/C++|C and C++,true
 C++,Programming Languages,C++|CPP,false
@@ -317,7 +317,7 @@ Design Systems,Design Tools,design system|design systems,false
 Wireframing,Design Tools,wireframing|wireframes|wireframe,false
 Prototyping,Design Tools,prototyping,false
 Workday,HR & Recruiting Tools,Workday,true
-Greenhouse,HR & Recruiting Tools,Greenhouse|-Greenhouse Gas|-Greenhouse gas,true
+Greenhouse,HR & Recruiting Tools,Greenhouse|-Greenhouse Gas,true
 Lever,HR & Recruiting Tools,Lever,true
 BambooHR,HR & Recruiting Tools,BambooHR,false
 ADP,HR & Recruiting Tools,ADP,true
