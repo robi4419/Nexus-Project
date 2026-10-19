@@ -245,7 +245,9 @@ spark.sql(f"""
 # COMMAND ----------
 
 for table in ["jobs", "job_industries", "job_types", "job_locations"]:
-    print(f"{catalog}.silver.{table}: {spark.table(f'{catalog}.silver.{table}').count()} rows")
+    print(
+        f"{catalog}.silver.{table}: {spark.table(f'{catalog}.silver.{table}').count()} rows"
+    )
 
 display(spark.sql(f"""
     SELECT title, company_name, published_date, seniority, seniority_source,
