@@ -72,13 +72,14 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Exchange-rate source (Frankfurter/ECB): client, landing, tests, `ingest_fx_rates` DAG with backfill.
 - [x] Databricks Asset Bundle (`databricks.yml`) defining the `transform_jobs` Job, deployed with the Databricks CLI.
 - [x] Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw` (one row per landed file, VARIANT).
-- [ ] Reference data (`skills.csv` with 351 skills, `locations.csv`) and a tested `transform/` package (HTML to text, seniority, skill matcher).
+- [x] Reference data (`skills.csv` with 351 skills, `locations.csv`) and a tested `transform/` package (HTML to text, seniority, skill matcher).
 - [ ] Silver rebuilt each run: `jobs`, `job_locations`, `job_industries`, `job_types`, `job_skills`, `fx_rates`; salaries in yearly USD.
 - [ ] Data-quality checks; hand-check 50 postings (skill precision ≥ 90%).
 
 ### Phase 3: dbt models
 - [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).
 - [ ] Tests (unique, not_null, relationships, accepted_values) and `dbt docs generate`; `dbt_utils` where useful.
+- [ ] Salary plausibility flag (yearly USD 5k–1.5M, min ≤ max) with a test and a "> 5% implausible" warning; salary charts use only plausible salaries.
 - [ ] ER diagram in DrawDB, saved to `docs/`.
 
 ### Phase 4: Orchestration end to end

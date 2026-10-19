@@ -24,10 +24,10 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
 - [x] 2.3 Asset Bundle skeleton (`databricks.yml`, Job definition): validated and deployed 2026-10-15 as `[dev robix4000] transform_jobs`
 - [x] 2.4 Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw` (2026-10-15: first run loaded 4 Jobicy files / 751 jobs and 11 rate files; an immediate re-run loaded 0; after the 18:00 Jobicy ingestion, a re-run loaded exactly its 4 new files and 0 rate files)
 - [x] 2.5 Reference data: `skills.csv`, `locations.csv`, and their tables
-- [ ] 2.6 `transform/` package: HTML to text, seniority, skill matcher, with unit tests
-- [ ] 2.7 Silver exchange rates: `silver.fx_rates`
-- [ ] 2.8 Silver jobs: `silver.jobs`, plus location, industry and type bridge tables
-- [ ] 2.9 Silver skills: `silver.job_skills`
+- [x] 2.6 `transform/` package: HTML to text, seniority, skill matcher, with unit tests
+- [x] 2.7 Silver exchange rates: `silver.fx_rates`
+- [x] 2.8 Silver jobs: `silver.jobs`, plus location, industry and type bridge tables
+- [x] 2.9 Silver skills: `silver.job_skills`
 - [ ] 2.10 Data-quality checks
 - [ ] 2.11 Verify end to end, idempotency, and hand-check of 50 postings
 - [ ] 2.12 Commit, PR and merge
@@ -58,6 +58,13 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
 5. **Daily ECB exchange rates come from the Frankfurter API**, as a second ingestion source with its own DAG. Salaries use the rate on or before the job's publish date (an *as-of join*).
 6. **Silver is rebuilt from bronze on every run.** Bronze loads only new files (Auto Loader). This replaces the original plan's "MERGE on id".
 7. **Seniority comes from the job title first, then falls back to Jobicy's level.** Refinement based on the data: in the fallback, Jobicy's **"Director" and "Any" become "Unspecified"**, while Senior, Midweight and Entry-Level/Junior are kept. Jobicy's raw value is always stored too.
+8. **(2026-10-16) `skills.csv` stays hand-made, and is reviewed against official sources.** Four sources were checked:
+   - Lightcast Open Skills: the free tier is for nonprofits only, and its API has no aliases.
+   - ESCO (European Commission): has aliases, but the labels are formal, and it has no Salesforce or Kubernetes.
+   - O\*NET (US Department of Labor): updated quarterly, CC BY 4.0, no aliases.
+   - Stack Exchange tag synonyms: good tech aliases, plus some noise.
+
+   None of them gives aliases that are safe to search for in job ads (exclusion phrases such as Go's `-Go-to`, case rules). So a review script in 2.11 turns O\*NET and Stack Exchange into suggestions, and each one is approved by hand.
 
 ### Other changes from the original plan
 - Bronze has **one row per landed file** (the whole page as VARIANT) instead of one row per job. The `jobs` array is exploded in silver. This keeps the bronze notebook identical for every source.
@@ -95,7 +102,7 @@ For now the Job is run with `databricks bundle run`. Phase 4 makes Airflow trigg
 
 | Table | One row per | Main columns |
 |---|---|---|
-| `silver.jobs` | job (`source`, `source_job_id`) | `url`, `title`, `company_name`, `company_logo_url`, `published_at`, `published_date`, `seniority`, `seniority_source`, `source_level`, `geo_raw`, `excerpt`, `description_text`, `salary_min/max/currency/period` (as given), `salary_min_usd_yearly`, `salary_max_usd_yearly`, `salary_is_plausible`, `fx_rate_date`, `first_seen_at`, `last_seen_at`, `times_seen`, `is_listed_now`, `built_at` |
+| `silver.jobs` | job (`source`, `source_job_id`) | `url`, `title`, `company_name`, `company_logo_url`, `published_at`, `published_date`, `seniority`, `seniority_source`, `source_level`, `geo_raw`, `excerpt`, `description_text`, `salary_min/max/currency/period` (as given), `salary_min_usd_yearly`, `salary_max_usd_yearly`, `fx_rate_date`, `first_seen_at`, `last_seen_at`, `times_seen`, `is_listed_now`, `built_at` |
 | `silver.job_locations` | job × location | `location_raw`, `location_name`, `location_type` (country / region / worldwide / unknown), `country_code`, `region` |
 | `silver.job_industries` | job × industry | `industry` |
 | `silver.job_types` | job × type | `job_type` |
@@ -127,7 +134,8 @@ databricks/
 transform/                              ← pure Python (stdlib only), imported by notebooks, tested locally
     text.py                            ← html_to_text()
     seniority.py                       ← seniority rules + fallback
-    skills.py                          ← taxonomy loading, SkillMatcher, taxonomy_version()
+    skills.py                          ← SkillMatcher (loads skills.csv, has taxonomy_version)
+scripts/suggest_skills.py               ← local: skill and alias suggestions from O*NET and Stack Exchange (2.11)
 ingestion/sources/frankfurter/
     client.py, land.py                 ← same shape as ingestion/sources/jobicy/
 airflow/dags/ingest_fx_rates.py
@@ -193,7 +201,9 @@ Follow the Phase 1 checklist "Adding another API later":
   - CRM & Sales Tools, Marketing & SEO Tools, Customer Support Tools, Finance & ERP, Productivity & Project Management, Design Tools, HR & Recruiting Tools, Certifications
 
   Aliases are plain phrases, not regexes, and only the listed aliases are searched (the skill name isn't added automatically). An alias starting with `-` is an **exclusion**: a match inside that phrase doesn't count (React has `-React Native`, Looker has `-Looker Studio`, Excel has `-Excel at` and `-Excel in`, Greenhouse has `-Greenhouse Gas`). Ambiguous names only match through safe aliases or case-sensitively:
-  - Go → `Golang`, `Go developer`...
+  - Go → a bare, case-sensitive `Go`, plus `Golang` and `golang`, with exclusions for Go-to (which also covers Go-to-market and "a Go-To expert"), Go to market, Go-live, Go/No-Go, Go deep, Go get, Go the extra mile, Go Direct and Fleetio Go. "Go to" with a space isn't excluded, because "Go to write our application code" is the language. Checked on 2026-10-16:
+    - on a first, partial pass (about 806 jobs), context-only aliases (`Go developer`…) found 14 Go jobs, and bare `Go` without exclusions was wrong in 26 of 77 matches, mostly Go-to-market;
+    - with the final rule, all 878 jobs give 55 Go jobs, and all 72 counted matches are the language ("Go-Ethereum (Geth)" counts, since Geth is written in Go).
   - R → `R programming`, `RStudio`...
   - C → `C/C++`, `Embedded C`
   - case-sensitive `Excel`, `Slack`, `Notion`, `Spark`
@@ -208,24 +218,27 @@ Follow the Phase 1 checklist "Adding another API later":
 
 ### 2.6 `transform/` package (unit-tested locally)
 - `text.py`: `html_to_text(html)` turns block tags into line breaks, removes the other tags, converts `html.unescape` codes like `&amp;`, and collapses whitespace.
-- `seniority.py`: `seniority(title, source_level) -> (seniority, seniority_source)`. Rules are case-insensitive, and the first match wins:
-  - Executive (Chief, CEO/CTO/CFO/COO/CMO/CRO/CISO/CIO, VP, Vice President)
+- `seniority.py`: `seniority(title, source_level) -> (seniority, seniority_source)`, where `seniority_source` is `title`, `source_level` or `none`. Rules match whole words, ignore case, and the first match wins:
+  - Executive (Chief, CEO/CTO/CFO/COO/CIO/CISO, VP/SVP/EVP, President, which also covers Vice President)
   - Director (Director, Head of)
   - Lead (Lead, Principal, Staff)
-  - Senior (Senior, Sr)
-  - Mid (Mid-level, Intermediate)
-  - Junior (Junior, Jr, Entry level, Graduate, Associate)
+  - Senior (Senior, Sr, Snr)
+  - Mid (Mid-level, Mid level, Midlevel, Intermediate; never "Mid-Market")
+  - Junior (Junior, Jr, Entry level, Early career, Graduate, New grad, Associate)
   - Intern (Intern, Internship, Trainee, Apprentice)
 
-  Tests cover the known traps: "Account **Executive**", "**Lead** Generation", "**Staff** Accountant", "Product **Manager**".
+  Trap phrases are removed from the title first: Lead Gen(eration), Staff Accountant, Member of Technical Staff, Clinical Research Associate, "Office of the …" and "Assistant to the …". "Account Executive" needs no trap, because Executive alone isn't a keyword. CMO and CRO were dropped from the plan's list: in titles they often mean Contract Manufacturing Organization, Conversion Rate Optimization or Contract Research Organization, and "Chief …" still catches the spelled-out titles.
 
-  The fallback: Senior → Senior, Midweight → Mid, Entry-Level/Junior → Junior, Director/Any → Unspecified.
+  The rules were checked on 2026-10-16 against the 856 distinct Jobicy (title, level) pairs. "Associate Director" stays Director because of the rule order, and "Associate" counts anywhere in a title.
+
+  The fallback: Senior → Senior, Midweight → Mid, "Entry-Level, Junior" (Jobicy's exact value) → Junior, Director/Any → Unspecified.
 - `skills.py`: `SkillMatcher` loads `skills.csv`.
   - Each alias is matched as a whole word. Boundaries treat `+ # .` as part of a word, so C++, C#, .NET and Node.js work, and Java doesn't match inside JavaScript.
   - Matching is case-insensitive unless the skill is flagged `case_sensitive`.
   - **Different skills may overlap**: "C/C++" counts for C and C++, "Spark SQL" for Spark and SQL. (The plan first said "the longest match wins", but that would make "C/C++" lose C++.) Overlaps that are wrong are prevented with the skill's exclusion phrases, e.g. React's `-React Native`.
+  - **Exclusion phrases ignore case**, even for a case-sensitive skill: an excluded phrase never counts, however it's written ("Go-To-Market" is excluded by `-Go-to`).
   - `match(title, text)` returns skill, category, mentions and in_title.
-  - `taxonomy_version()` is a short hash of the CSV, stored with every result so you can tell which skill list produced it.
+  - `taxonomy_version` is a 12-character hash of the parsed CSV rows. It hashes the rows rather than the file's raw bytes, so Windows and Linux line endings don't change it. It's stored with every `job_skills` row so you can tell which skill list produced it.
 
 ### 2.7 Silver exchange rates
 `03_silver_fx.py` turns `bronze.frankfurter_raw` into `silver.fx_rates`:
@@ -239,9 +252,10 @@ Follow the Phase 1 checklist "Adding another API later":
 3. **Latest version per job:** `QUALIFY row_number() OVER (PARTITION BY source, source_job_id ORDER BY landed_at DESC) = 1`.
 4. **Cleaning:** UDFs for `html_to_text` and `seniority`; `to_timestamp(pubDate)`.
 5. **Salary:**
-   - yearly factor: yearly 1, monthly 12, weekly 52, daily 260, hourly 2080;
+   - yearly factor: yearly 1, monthly 12, weekly 52, daily 260, hourly 2080. A missing period counts as yearly (2026-10-18: 4 of 610 salaries had none, and 92% are yearly); an unknown period text gives NULL. A wrong guess is caught by the plausibility rule in dbt;
    - **as-of join** to `silver.fx_rates`: the latest `rate_date` on or before `published_date`;
-   - `salary_is_plausible` means yearly USD is between 5k and 1.5M, and min ≤ max.
+   - **Plausibility moved to dbt (2026-10-18):** silver keeps only the converted facts. "Plausible" (yearly USD between 5k and 1.5M, and min ≤ max) is a business rule, so a Phase 3 dbt model applies it as a flag, with a dbt test. Known bad values exist (an "hourly" 47,840 becomes about 99.5M USD a year), so salary charts must use that flag.
+   - **Unconvertible salaries stay NULL (2026-10-18):** 3 of 610 salaries have no USD value. One is in BGN: Bulgaria adopted the euro on 2026-01-01, so the ECB no longer publishes it (the fixed rate of 1.95583 per EUR was considered and not used). Two have no currency at all, and guessing one could put wrong numbers in charts.
 6. **Bridge tables:**
    - `job_industries` and `job_types` (explode the arrays);
    - `job_locations` (`split(geo_raw, ',')`, trim and collapse spaces, then join `ref_locations` case-insensitively; unmatched values become `unknown`).
@@ -261,11 +275,12 @@ Follow the Phase 1 checklist "Adding another API later":
   - title, url, published_at and company_name are not null;
   - silver job count equals the number of distinct jobs in bronze;
   - every job has at least 1 location, and no location is `unknown`;
-  - every salary currency has an exchange rate;
-  - every skill in `job_skills` exists in `ref_skills`.
+  - every skill in `job_skills` exists in `ref_skills`;
+  - `job_skills` and `ref_skills` have the same `taxonomy_version`, so both came from the same skill list (`02_reference.py` stores it too).
 - **Warnings:**
   - share of jobs with at least 1 skill: overall, and for Software Engineering (target ≥ 90%);
-  - more than 5% of salaries implausible;
+  - (the "more than 5% of salaries implausible" warning moved to dbt in Phase 3, with the plausibility rule);
+  - salaries without a USD value, by reason: currency not published by the ECB (e.g. BGN), or no currency given. This was an error in the original plan; it's a warning because these salaries are left unconverted on purpose;
   - newest `landed_at` is more than 2 days old (ingestion may have stopped);
   - share of seniority = Unspecified.
 
@@ -281,6 +296,10 @@ Follow the Phase 1 checklist "Adding another API later":
 6. **Idempotency:** run the Job again. Bronze row counts don't change (nothing new), and silver counts are identical.
 7. After the next daily Jobicy run: bronze gains about 4 rows, `silver.jobs` grows only by new jobs, and `times_seen` goes up for jobs seen again.
 8. **Hand-check:** `review_skills.py` samples 50 jobs across industries. Together we mark wrong and missing skills, and record precision (correct ÷ found, target ≥ 90%) and missed skills in this doc. Improve `skills.csv`, using the notebook's "candidate terms" list too, then re-run.
+9. **Review against official sources:** `scripts/suggest_skills.py` runs locally and isn't part of the Job.
+   - It downloads O\*NET's Hot Technologies CSV (US Department of Labor, CC BY 4.0) and lists the technologies `skills.csv` doesn't cover.
+   - It asks the Stack Exchange API for tag synonyms of our tech skills and lists the ones missing from our aliases.
+   - Everything it prints is only a suggestion and gets approved by hand. Re-run it every few months.
 
 ### 2.12 Commit, PR and merge
 Small commits per step (FX source, bundle, bronze, reference data, transform package, silver, skills, checks, docs), then push, PR, merge, and update local `main`.
@@ -316,3 +335,4 @@ Small commits per step (FX source, bundle, bronze, reference data, transform pac
 - **Ambiguous skills and titles:** Go, R, C, Excel, Slack, Spark, dbt/DBT, Swift, Lead Generation, Staff Accountant, Account Executive. Each needs a unit test.
 - **Exchange-rate dates:** weekends and holidays return the previous working day, so `rate_date` can differ from the requested date.
 - **Free Edition limits:** keep the Job small. The warehouse and serverless compute stop on their own when idle.
+- **Large SQL results arrive in chunks:** when a local script queries through the SDK (`statement_execution.execute_statement`), the first response holds only chunk 0. Read `result.manifest.total_chunk_count` and fetch the rest with `get_statement_result_chunk_n`. A query of all 878 descriptions came back in 2 chunks, and a script that read only the first one saw about 806 jobs. Notebooks read tables through Spark and aren't affected.
