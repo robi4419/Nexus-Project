@@ -80,6 +80,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).
 - [ ] Tests (unique, not_null, relationships, accepted_values) and `dbt docs generate`; `dbt_utils` where useful.
 - [ ] Salary plausibility flag (yearly USD 5k–1.5M, min ≤ max) with a test and a "> 5% implausible" warning; salary charts use only plausible salaries.
+- [ ] Model contracts on the marts: column types plus constraints. On Databricks, `NOT NULL` and `CHECK` are enforced, and primary and foreign keys are informational: they document relationships and feed the ER diagram. Silver stays without constraints: `CREATE OR REPLACE` would drop them on every rebuild, and the Phase 2 checks enforce its keys instead.
 - [ ] ER diagram in DrawDB, saved to `docs/`.
 
 ### Phase 4: Orchestration end to end

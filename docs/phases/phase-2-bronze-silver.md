@@ -28,7 +28,7 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
 - [x] 2.7 Silver exchange rates: `silver.fx_rates`
 - [x] 2.8 Silver jobs: `silver.jobs`, plus location, industry and type bridge tables
 - [x] 2.9 Silver skills: `silver.job_skills`
-- [ ] 2.10 Data-quality checks
+- [x] 2.10 Data-quality checks
 - [ ] 2.11 Verify end to end, idempotency, and hand-check of 50 postings
 - [ ] 2.12 Commit, PR and merge
 
@@ -276,13 +276,16 @@ Follow the Phase 1 checklist "Adding another API later":
   - silver job count equals the number of distinct jobs in bronze;
   - every job has at least 1 location, and no location is `unknown`;
   - every skill in `job_skills` exists in `ref_skills`;
-  - `job_skills` and `ref_skills` have the same `taxonomy_version`, so both came from the same skill list (`02_reference.py` stores it too).
+  - `job_skills` and `ref_skills` have the same `taxonomy_version`, so both came from the same skill list (`02_reference.py` stores it too);
+  - added 2026-10-19: `fx_rates` has one row per (`rate_date`, `currency`), and USD = 1 on every date. This protects the as-of join from duplicating jobs;
+  - added 2026-10-19: every row in `job_industries`, `job_types`, `job_locations` and `job_skills` belongs to a job in `silver.jobs` (no orphans).
 - **Warnings:**
-  - share of jobs with at least 1 skill: overall, and for Software Engineering (target ≥ 90%);
+  - share of jobs with at least 1 skill in Software Engineering (target ≥ 90%);
   - (the "more than 5% of salaries implausible" warning moved to dbt in Phase 3, with the plausibility rule);
   - salaries without a USD value, by reason: currency not published by the ECB (e.g. BGN), or no currency given. This was an error in the original plan; it's a warning because these salaries are left unconverted on purpose;
-  - newest `landed_at` is more than 2 days old (ingestion may have stopped);
-  - share of seniority = Unspecified.
+  - newest `landed_at` is more than 2 days old (ingestion may have stopped).
+- **Info** (2026-10-19; shown, never fails, because there's no agreed target yet and these are for watching trends): share of jobs with at least 1 skill overall, and share of seniority = Unspecified.
+- How it works: each check is one SQL query returning one row, `value` (what to show) and `passed` (true/false). A Python harness runs them all, displays one results table, and raises an exception if any error check failed. A check whose query itself fails counts as a failed check.
 
 ### 2.11 Verify
 1. `pytest` passes, both the old 25 tests and the new ones.
@@ -296,6 +299,14 @@ Follow the Phase 1 checklist "Adding another API later":
 6. **Idempotency:** run the Job again. Bronze row counts don't change (nothing new), and silver counts are identical.
 7. After the next daily Jobicy run: bronze gains about 4 rows, `silver.jobs` grows only by new jobs, and `times_seen` goes up for jobs seen again.
 8. **Hand-check:** `review_skills.py` samples 50 jobs across industries. Together we mark wrong and missing skills, and record precision (correct ÷ found, target ≥ 90%) and missed skills in this doc. Improve `skills.csv`, using the notebook's "candidate terms" list too, then re-run.
+
+   **Jobs without skills, reviewed 2026-10-19.** The first `silver.job_skills` run found skills in 1,030 of 1,313 jobs (78%). Software Engineering coverage was 99% (2 of 181 without skills), and DevOps, Data Science and Cybersecurity were above 95%. The highest no-skill shares were in Education (69%), Admin (64%), Legal (58%), QA & Testing (52%; mostly crowd-testing and ad-rating gigs, not software QA) and Healthcare (46%).
+
+   Of 39 sampled skill-less jobs (2 per industry), 29 named no tools, technologies or certifications at all. 6 named only professional practices outside decision 3's scope: UX writing, information architecture, video editing, statistics and survey design. **Scope stays tools-only for now**, to be revisited with the hand-check data. 4 showed real gaps, to fix here:
+   - AI engineering terms: AI agents / agentic AI, fine-tuning (foundation models), MCP, and "prompt/context engineering", where the slash breaks the current alias. Toptal's CTO posting matched nothing.
+   - A bare "Entra" for Active Directory ("Entra identity management"). Mind Spanish and Italian "entra".
+   - Compliance certifications CAMS, CFE, CRCM and CIA. Mind CIA, the agency.
+   - CMMS and CAD (facilities). Decide whether these are in scope.
 9. **Review against official sources:** `scripts/suggest_skills.py` runs locally and isn't part of the Job.
    - It downloads O\*NET's Hot Technologies CSV (US Department of Labor, CC BY 4.0) and lists the technologies `skills.csv` doesn't cover.
    - It asks the Stack Exchange API for tag synonyms of our tech skills and lists the ones missing from our aliases.
