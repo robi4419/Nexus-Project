@@ -73,8 +73,8 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Databricks Asset Bundle (`databricks.yml`) defining the `transform_jobs` Job, deployed with the Databricks CLI.
 - [x] Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw` (one row per landed file, VARIANT).
 - [x] Reference data (`skills.csv` with 351 skills, `locations.csv`) and a tested `transform/` package (HTML to text, seniority, skill matcher).
-- [ ] Silver rebuilt each run: `jobs`, `job_locations`, `job_industries`, `job_types`, `job_skills`, `fx_rates`; salaries in yearly USD.
-- [ ] Data-quality checks; hand-check 50 postings (skill precision ≥ 90%).
+- [x] Silver rebuilt each run: `jobs`, `job_locations`, `job_industries`, `job_types`, `job_skills`, `fx_rates`; salaries in yearly USD.
+- [x] Data-quality checks; hand-check 50 postings (skill precision ≥ 90%).
 
 ### Phase 3: dbt models
 - [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).

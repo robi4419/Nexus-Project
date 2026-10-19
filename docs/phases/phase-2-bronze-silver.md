@@ -307,6 +307,34 @@ Follow the Phase 1 checklist "Adding another API later":
    - A bare "Entra" for Active Directory ("Entra identity management"). Mind Spanish and Italian "entra".
    - Compliance certifications CAMS, CFE, CRCM and CIA. Mind CIA, the agency.
    - CMMS and CAD (facilities). Decide whether these are in scope.
+
+   **Hand-check result (2026-10-19):** seed `2026-10-19`, 51 jobs across all 22 industries, judged per job × skill pair. Claude did the first pass and the user reviewed it.
+
+   | | Pairs | Right | Wrong | Borderline | Precision (strict / lenient) |
+   |---|---|---|---|---|---|
+   | Before fixes | 256 | 227 | 28 | 1 | 88.7% / 89.1% |
+   | After fixes | 268 | 245 | 20 | 3 | **91.4% / 92.5%** |
+
+   The same change on all the data: two Job runs on the same 1,447 jobs, with the old and then the new list. `job_skills` went from 5,794 to **6,317 rows (+9%)**, and jobs with at least 1 skill from 1,139 to 1,142. Software Engineering coverage went from 98.5% to 99.0%. The new skills mostly enrich jobs that already had skills; the skill-less jobs mostly name no tools at all.
+
+   The wrong matches in the first pass fell into 5 patterns:
+   - A, the employer's own name (8);
+   - B, company descriptions, e.g. Fleetio's "Rails Foundation" in 3 jobs (9);
+   - C, customer lists and founder bios (7);
+   - D, negation ("isn't focused on … A/B tests") (2);
+   - E, a different meaning ("prototyping models", "Grafana K6") (2).
+
+   Fixes:
+   - **The employer-name rule:** `SkillMatcher` skips a skill whose aliases match the company name, and silver_skills passes `company_name`.
+   - Exclusions `-Rails Foundation` and `-Grafana K6`.
+   - 27 new skills found through the candidate-terms list and the no-skill review:
+     - AI tools: Claude, ChatGPT, Cursor, GitHub and Microsoft Copilot, Gemini, MCP, AI Agents, LLM Fine-tuning;
+     - identity and compliance: SSO, SAML, OAuth, OIDC, SCIM, FedRAMP, SOX, CCPA, SOAR, CAMS, CFE, CRCM, Certified Internal Auditor;
+     - tools: RabbitMQ, ClickHouse, Kibana, OpenTelemetry, Pulumi, Puppet, Chef, Zuora, Workato, Zoom, Microsoft Outlook.
+   - New aliases: LookML (Looker), foundation models (LLMs), prompt/context engineering, EKS/GKE/AKS (Kubernetes), a bare Entra and Azure Active Directory (Active Directory, now case-sensitive), and Sheets (Google Sheets, now case-sensitive).
+   - AI Agents is limited to work phrases ("agentic workflows", "building AI agents"), because the bare "AI agents" matched 4 company blurbs out of 5.
+
+   **Known limitations, accepted:** patterns B, C and D (company descriptions, customer lists, negation) are about 7% of matches. Other examples are AI-tool names in hiring-process boilerplate ("how to use ChatGPT during our hiring process") and tool perks ("access to Claude, Cursor"). Fixing them would need section or sentence understanding beyond phrase matching. Skipped on purpose: CAD (mostly the Canadian dollar), Clay, Apollo, Linear, Outreach and Spring (ordinary words), and Codex (not reviewed).
 9. **Review against official sources:** `scripts/suggest_skills.py` runs locally and isn't part of the Job.
    - It downloads O\*NET's Hot Technologies CSV (US Department of Labor, CC BY 4.0) and lists the technologies `skills.csv` doesn't cover.
    - It asks the Stack Exchange API for tag synonyms of our tech skills and lists the ones missing from our aliases.
