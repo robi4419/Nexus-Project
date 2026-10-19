@@ -24,13 +24,18 @@ def _phrase_pattern(phrases: list[str], case_sensitive: bool) -> re.Pattern | No
     return re.compile(_BEFORE + "(?:" + "|".join(alternatives) + ")" + _AFTER, flags)
 
 
+def _blank(exclusions: re.Pattern | None, text: str) -> str:
+    """The text with each exclusion phrase replaced by as many spaces, so every position still matches the original."""
+    if exclusions is None:
+        return text
+    return exclusions.sub(lambda found: " " * len(found.group()), text)
+
+
 def _count(pattern: re.Pattern, exclusions: re.Pattern | None, text: str | None) -> int:
     """How often the pattern occurs in the text after the exclusion phrases are blanked out."""
     if not text:
         return 0
-    if exclusions is not None:
-        text = exclusions.sub(" ", text)
-    return len(pattern.findall(text))
+    return len(pattern.findall(_blank(exclusions, text)))
 
 
 class SkillMatcher:
@@ -56,14 +61,35 @@ class SkillMatcher:
         with open(path, encoding="utf-8", newline="") as file:
             return cls(list(csv.DictReader(file)))
 
-    def match(self, title: str | None, text: str | None) -> list[dict]:
+    def _skills_for(self, company: str | None) -> list[tuple]:
+        """The skills to look for. A skill that is part of the employer's own name (Grafana at "Grafana Labs") is left
+        out: in that posting the word names the employer, not something the job asks for."""
+        return [entry for entry in self._skills if not (company and entry[2].search(company))]
+
+    def match(self, title: str | None, text: str | None, company: str | None = None) -> list[dict]:
         """Return one dict per skill mentioned: skill, category, mentions (title + text) and in_title."""
         found = []
-        for skill, category, pattern, exclusions in self._skills:
+        for skill, category, pattern, exclusions in self._skills_for(company):
             in_title = _count(pattern, exclusions, title)
             in_text = _count(pattern, exclusions, text)
             if in_title or in_text:
                 found.append(
                     {"skill": skill, "category": category, "mentions": in_title + in_text, "in_title": in_title > 0}
                 )
+        return found
+
+    def snippets(self, title: str | None, text: str | None, company: str | None = None, width: int = 40) -> list[dict]:
+        """For reviewing matches: one dict per counted match with skill, category, field ("title" or "text") and the
+        matched text in [brackets] with up to `width` characters on each side, on one line."""
+        found = []
+        for skill, category, pattern, exclusions in self._skills_for(company):
+            for field, value in (("title", title), ("text", text)):
+                if not value:
+                    continue
+                for hit in pattern.finditer(_blank(exclusions, value)):
+                    start, end = hit.span()
+                    snippet = f"{value[max(0, start - width):start]}[{value[start:end]}]{value[end:end + width]}"
+                    found.append(
+                        {"skill": skill, "category": category, "field": field, "snippet": " ".join(snippet.split())}
+                    )
         return found

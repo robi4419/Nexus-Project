@@ -1,3 +1,4 @@
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -37,9 +38,9 @@ def real_matcher() -> SkillMatcher:
     return SkillMatcher.from_csv(SKILLS_CSV)
 
 
-def mentions(matcher: SkillMatcher, title: str | None, text: str | None) -> dict[str, int]:
+def mentions(matcher: SkillMatcher, title: str | None, text: str | None, company: str | None = None) -> dict[str, int]:
     """The match result as {skill: mentions}, which keeps the assertions short."""
-    return {found["skill"]: found["mentions"] for found in matcher.match(title, text)}
+    return {found["skill"]: found["mentions"] for found in matcher.match(title, text, company)}
 
 
 @pytest.mark.parametrize(
@@ -99,6 +100,27 @@ def test_taxonomy_version_is_stable_and_follows_content():
     assert SkillMatcher(changed).taxonomy_version != version
 
 
+def test_snippets_show_each_counted_match_in_its_original_context(matcher):
+    # The excluded "React Native" is not a React match, but it stays visible around the real one.
+    assert matcher.snippets("Python Developer", "React Native and React.", width=10) == [
+        {"skill": "Python", "category": "Programming Languages", "field": "title", "snippet": "[Python] Developer"},
+        {"skill": "React", "category": "Web & Mobile Frameworks", "field": "text", "snippet": "ative and [React]."},
+        {
+            "skill": "React Native",
+            "category": "Web & Mobile Frameworks",
+            "field": "text",
+            "snippet": "[React Native] and React",
+        },
+    ]
+
+
+def test_snippets_put_each_match_on_one_line(matcher):
+    assert matcher.snippets(None, "Tools:\n- Python\n- SQL", width=9) == [
+        {"skill": "SQL", "category": "Programming Languages", "field": "text", "snippet": "Python - [SQL]"},
+        {"skill": "Python", "category": "Programming Languages", "field": "text", "snippet": "Tools: - [Python] - SQL"},
+    ]
+
+
 # --- the real skills.csv -------------------------------------------------------------------------------------
 
 
@@ -139,7 +161,62 @@ def test_real_skill_list_on_jobicy_jobs(real_matcher, jobicy_page, index, expect
         ("greenhouse gas reporting", "Greenhouse", 0),
         ("Recruiting in Greenhouse", "Greenhouse", 1),
         ("AWS and Amazon Web Services", "AWS", 2),
+        # added after the 2026-10-19 hand-check
+        ("Fleetio is a founding member of the Rails Foundation", "Ruby on Rails", 0),
+        ("Load testing with JMeter or Grafana K6", "Grafana", 0),
+        ("Advanced LookML Development", "Looker", 1),
+        ("Use Claude, ChatGPT and Cursor daily", "Claude", 1),
+        ("Jean-Claude leads the team", "Claude", 0),
+        ("Move the cursor to the button", "Cursor", 0),
+        ("AI tools such as Cursor and Copilot", "GitHub Copilot", 1),
+        ("Roll out Microsoft 365 Copilot", "GitHub Copilot", 0),
+        ("Roll out Microsoft 365 Copilot", "Microsoft Copilot", 1),
+        ("Build MCP servers", "MCP", 1),
+        ("Sierra is the leading platform for customer-facing AI agents", "AI Agents", 0),
+        ("You have built agentic workflows and enjoy building AI agents", "AI Agents", 2),
+        ("Build and fine-tune foundation models", "LLM Fine-tuning", 1),
+        ("Fine-tune our sales process", "LLM Fine-tuning", 0),
+        ("Prompt/context engineering skills", "Prompt Engineering", 1),
+        ("Experience with Entra identity management", "Active Directory", 1),
+        ("El candidato entra en el equipo", "Active Directory", 0),
+        ("Certifications such as CIA, CAMS or CFE", "Certified Internal Auditor", 1),
+        ("Protect the CIA triad", "Certified Internal Auditor", 0),
+        ("SSO, SAML and OAuth", "Single Sign-On", 1),
+        ("SOX compliance testing", "SOX", 1),
+        ("Red Sox fans welcome", "SOX", 0),
+        ("Configuration management with Puppet or Chef", "Chef", 1),
+        ("Executive Chef wanted", "Chef", 0),
+        ("Fluent in Excel/Sheets", "Google Sheets", 1),
+        ("Reconcile balance sheets", "Google Sheets", 0),
+        ("Zoom, ZoomInfo and Slack", "Zoom", 1),
+        ("A positive outlook on growth", "Microsoft Outlook", 0),
+        ("Kubernetes on EKS or GKE", "Kubernetes", 3),
     ],
 )
 def test_real_skill_list_traps(real_matcher, text, skill, expected):
     assert mentions(real_matcher, None, text).get(skill, 0) == expected
+
+
+def test_skill_in_the_employers_name_is_skipped(matcher):
+    text = "Python Software Foundation builds Python tools with SQL."
+
+    assert mentions(matcher, None, text) == {"Python": 2, "SQL": 1}
+    assert mentions(matcher, None, text, company="Python Software Foundation") == {"SQL": 1}
+    assert [found["skill"] for found in matcher.snippets(None, text, company="Python Software Foundation")] == ["SQL"]
+
+
+def test_real_skill_list_skips_the_employer(real_matcher):
+    text = "Supabase is the Postgres development platform. Proficient in SQL."
+
+    assert "Supabase" in mentions(real_matcher, "Support Engineer", text)
+    assert "Supabase" not in mentions(real_matcher, "Support Engineer", text, company="Supabase")
+    assert "Grafana" not in mentions(real_matcher, None, "Grafana Labs is behind Grafana Cloud.", company="Grafana Labs")
+
+
+def test_real_skill_list_snippets_agree_with_match(real_matcher, jobicy_page):
+    texts = [(job["jobTitle"], html_to_text(job["jobDescription"])) for job in jobicy_page["jobs"]]
+    texts.append((None, "Own the Go-to-market plan in Go; React Native and React.js; Looker Studio and Looker."))
+    for title, text in texts:
+        counted = mentions(real_matcher, title, text)
+        snipped = Counter(found["skill"] for found in real_matcher.snippets(title, text))
+        assert snipped == counted

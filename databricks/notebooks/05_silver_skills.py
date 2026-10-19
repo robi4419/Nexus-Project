@@ -32,8 +32,9 @@ print(f"Building {catalog}.silver.job_skills, using transform/ from {bundle_root
 # MAGIC %md
 # MAGIC ## Skill matcher as a SQL function
 # MAGIC
-# MAGIC `match_skills(title, text)` returns an **array of structs**, one per skill found, with the fields `skill`,
-# MAGIC `category`, `mentions` and `in_title`. The Python variable `taxonomy_version` holds the skill list's fingerprint.
+# MAGIC `match_skills(title, text, company)` returns an **array of structs**, one per skill found, with the fields `skill`,
+# MAGIC `category`, `mentions` and `in_title`. A skill that is part of the employer's own name (Grafana at Grafana Labs)
+# MAGIC is skipped. The Python variable `taxonomy_version` holds the skill list's fingerprint.
 
 # COMMAND ----------
 
@@ -71,8 +72,12 @@ SKILLS_TYPE = ArrayType(
 spark.udf.register("match_skills", matcher.match, SKILLS_TYPE)
 
 # A quick self-test on the workers: expect Python (2 mentions, in_title), SQL and Kubernetes (2); no Go.
+# The second column expects only Python: Grafana is the employer there.
 display(spark.sql("""
-    SELECT match_skills('Senior Python Engineer', 'Python and SQL. Own the Go-to-market plan. Kubernetes (k8s).') AS skills
+    SELECT
+        match_skills('Senior Python Engineer', 'Python and SQL. Own the Go-to-market plan. Kubernetes (k8s).', 'Acme')
+            AS skills,
+        match_skills('Data Engineer', 'Grafana Labs builds Grafana. You know Python.', 'Grafana Labs') AS employer_skipped
 """))
 
 # COMMAND ----------
@@ -88,7 +93,7 @@ spark.sql(f"""
     CREATE OR REPLACE TABLE {catalog}.silver.job_skills AS
     WITH job_skills_cte AS (
         SELECT source, source_job_id,
-            EXPLODE(match_skills(title, description_text)) AS m
+            EXPLODE(match_skills(title, description_text, company_name)) AS m
         FROM {catalog}.silver.jobs
     )
     SELECT source, source_job_id,
