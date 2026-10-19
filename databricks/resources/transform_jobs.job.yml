@@ -1,12 +1,11 @@
 # The transform Job: turns landed raw files into bronze and silver tables.
 # Runs on serverless compute (no cluster is defined). Airflow will trigger it in Phase 4.
-# More tasks (skills, checks) are added as Phase 2 progresses.
 
 resources:
   jobs:
     transform_jobs:
       name: transform_jobs
-      description: Loads newly landed API files into bronze tables and builds silver tables.
+      description: Loads newly landed API files into bronze tables, builds silver tables and runs data-quality checks.
       max_concurrent_runs: 1
       tags:
         project: nexus
@@ -59,3 +58,10 @@ resources:
             - task_key: silver_jobs
           notebook_task:
             notebook_path: ../notebooks/05_silver_skills.py
+
+        - task_key: checks
+          description: Run data-quality checks on bronze and silver; fails the run if any error check fails
+          depends_on:
+            - task_key: silver_skills
+          notebook_task:
+            notebook_path: ../notebooks/06_checks.py
