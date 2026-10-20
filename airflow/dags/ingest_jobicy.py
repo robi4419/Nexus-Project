@@ -13,6 +13,8 @@ from airflow.timetables.trigger import CronTriggerTimetable
 log = logging.getLogger(__name__)
 
 LANDING_ASSET = Asset("landing/jobicy")
+# Jobicy asks for at most one sync pass per hour, and every attempt of fetch_and_land is a full pass.
+FETCH_RETRY_DELAY = timedelta(minutes=65)
 
 
 @dag(
@@ -35,7 +37,7 @@ def ingest_jobicy():
 
         return ensure_volume(WorkspaceClient(), LandingVolume.from_env())
 
-    @task(outlets=[LANDING_ASSET])
+    @task(outlets=[LANDING_ASSET], retry_delay=FETCH_RETRY_DELAY)
     def fetch_and_land() -> dict:
         """Fetch every page of the feed and write it to this run's folder in the Volume."""
         from databricks.sdk import WorkspaceClient
@@ -55,7 +57,7 @@ def ingest_jobicy():
         log.info("Landed %s jobs in %s pages to %s", summary["jobs"], summary["pages"], summary["folder"])
         return summary
 
-    @task
+    @task(retries=0)  # re-checking the same summary can't change the result
     def check_run(summary: dict) -> None:
         """Fail the run if nothing was landed."""
         if summary["jobs"] == 0:

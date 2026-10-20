@@ -1,0 +1,35 @@
+# Databricks Asset Bundle: the project's Databricks Jobs, described as code.
+#   databricks bundle validate             check the YAML (changes nothing)
+#   databricks bundle deploy               upload files and create/update the Jobs
+#   databricks bundle run transform_jobs   start a run of the transform Job
+# Login comes from the DEFAULT profile in ~/.databrickscfg (see docs/phases/phase-2-bronze-silver.md, step 2.1).
+
+bundle:
+  name: nexus
+
+include:
+  - databricks/resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog catalog that holds the bronze, silver and gold schemas.
+    default: workspace
+
+# Only notebooks, reference data and the transform/ package are needed in Databricks.
+# Files listed in .gitignore (.env, .venv, ...) are never uploaded.
+sync:
+  exclude:
+    - airflow/**
+    - dbt/**
+    - docs/**
+    - tests/**
+    - ingestion/**
+    - dashboards/**
+    - docker-compose.yaml
+    - requirements.txt
+    - pyproject.toml
+
+targets:
+  dev:
+    mode: development
+    default: true

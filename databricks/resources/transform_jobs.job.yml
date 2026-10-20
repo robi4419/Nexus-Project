@@ -1,0 +1,67 @@
+# The transform Job: turns landed raw files into bronze and silver tables.
+# Runs on serverless compute (no cluster is defined). Airflow will trigger it in Phase 4.
+
+resources:
+  jobs:
+    transform_jobs:
+      name: transform_jobs
+      description: Loads newly landed API files into bronze tables, builds silver tables and runs data-quality checks.
+      max_concurrent_runs: 1
+      tags:
+        project: nexus
+
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: bundle_root
+          default: ${workspace.file_path}
+
+      tasks:
+        - task_key: bronze_jobicy
+          description: Auto Loader from landing/jobicy/ into bronze.jobicy_raw
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze.py
+            base_parameters:
+              source: jobicy
+
+        - task_key: bronze_fx
+          description: Auto Loader from landing/frankfurter/ into bronze.frankfurter_raw
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze.py
+            base_parameters:
+              source: frankfurter
+
+        - task_key: reference
+          description: Load databricks/reference/*.csv into silver.ref_locations and silver.ref_skills
+          notebook_task:
+            notebook_path: ../notebooks/02_reference.py
+
+        - task_key: silver_fx
+          description: Rebuild silver.fx_rates from bronze.frankfurter_raw
+          depends_on:
+            - task_key: bronze_fx
+          notebook_task:
+            notebook_path: ../notebooks/03_silver_fx.py
+
+        - task_key: silver_jobs
+          description: Rebuild silver.jobs and its industry, type and location tables from the bronze job tables
+          depends_on:
+            - task_key: bronze_jobicy
+            - task_key: silver_fx
+            - task_key: reference
+          notebook_task:
+            notebook_path: ../notebooks/04_silver_jobs.py
+
+        - task_key: silver_skills
+          description: Rebuild silver.job_skills from title and description_text columns of silver.jobs
+          depends_on:
+            - task_key: silver_jobs
+          notebook_task:
+            notebook_path: ../notebooks/05_silver_skills.py
+
+        - task_key: checks
+          description: Run data-quality checks on bronze and silver; fails the run if any error check fails
+          depends_on:
+            - task_key: silver_skills
+          notebook_task:
+            notebook_path: ../notebooks/06_checks.py

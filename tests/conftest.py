@@ -12,3 +12,9 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 def jobicy_page() -> dict:
     """A small Jobicy API response (one real job, trimmed, and one made-up job)."""
     return json.loads((FIXTURES_DIR / "jobicy_page.json").read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def frankfurter_rates() -> dict:
+    """A real Frankfurter API response: USD-based ECB rates for 2026-10-14."""
+    return json.loads((FIXTURES_DIR / "frankfurter_rates.json").read_text(encoding="utf-8"))
