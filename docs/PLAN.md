@@ -101,3 +101,10 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [ ] LLM-based skill extraction (`ai_query`) compared with the dictionary approach.
 - [ ] Data-quality checks (alert if a run returns 0 jobs).
 - [ ] Skill category groupings.
+
+### Backlog (not assigned to a phase)
+- [ ] `scripts/suggest_skills.py`, a local script that suggests skill-list updates from official sources:
+  - technologies on O\*NET's Hot Technologies list (US Department of Labor, CC BY 4.0) that `skills.csv` doesn't cover;
+  - Stack Exchange tag synonyms that are missing from our aliases.
+
+  Suggestions only, each approved by hand. Moved out of Phase 2 on 2026-10-20: the hand-checked list is good enough for now (91.4% precision).

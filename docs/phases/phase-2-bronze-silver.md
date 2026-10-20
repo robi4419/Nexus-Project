@@ -29,7 +29,7 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
 - [x] 2.8 Silver jobs: `silver.jobs`, plus location, industry and type bridge tables
 - [x] 2.9 Silver skills: `silver.job_skills`
 - [x] 2.10 Data-quality checks
-- [ ] 2.11 Verify end to end, idempotency, and hand-check of 50 postings
+- [x] 2.11 Verify end to end, idempotency, and hand-check of 50 postings
 - [ ] 2.12 Commit, PR and merge
 
 ---
@@ -64,7 +64,7 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
    - O\*NET (US Department of Labor): updated quarterly, CC BY 4.0, no aliases.
    - Stack Exchange tag synonyms: good tech aliases, plus some noise.
 
-   None of them gives aliases that are safe to search for in job ads (exclusion phrases such as Go's `-Go-to`, case rules). So a review script in 2.11 turns O\*NET and Stack Exchange into suggestions, and each one is approved by hand.
+   None of them gives aliases that are safe to search for in job ads (exclusion phrases such as Go's `-Go-to`, case rules). So a review script turns O\*NET and Stack Exchange into suggestions, and each one is approved by hand. It was planned for 2.11 and moved to the backlog on 2026-10-20.
 
 ### Other changes from the original plan
 - Bronze has **one row per landed file** (the whole page as VARIANT) instead of one row per job. The `jobs` array is exploded in silver. This keeps the bronze notebook identical for every source.
@@ -135,7 +135,7 @@ transform/                              ← pure Python (stdlib only), imported 
     text.py                            ← html_to_text()
     seniority.py                       ← seniority rules + fallback
     skills.py                          ← SkillMatcher (loads skills.csv, has taxonomy_version)
-scripts/suggest_skills.py               ← local: skill and alias suggestions from O*NET and Stack Exchange (2.11)
+scripts/suggest_skills.py               ← (backlog) local: skill and alias suggestions from O*NET and Stack Exchange
 ingestion/sources/frankfurter/
     client.py, land.py                 ← same shape as ingestion/sources/jobicy/
 airflow/dags/ingest_fx_rates.py
@@ -335,10 +335,7 @@ Follow the Phase 1 checklist "Adding another API later":
    - AI Agents is limited to work phrases ("agentic workflows", "building AI agents"), because the bare "AI agents" matched 4 company blurbs out of 5.
 
    **Known limitations, accepted:** patterns B, C and D (company descriptions, customer lists, negation) are about 7% of matches. Other examples are AI-tool names in hiring-process boilerplate ("how to use ChatGPT during our hiring process") and tool perks ("access to Claude, Cursor"). Fixing them would need section or sentence understanding beyond phrase matching. Skipped on purpose: CAD (mostly the Canadian dollar), Clay, Apollo, Linear, Outreach and Spring (ordinary words), and Codex (not reviewed).
-9. **Review against official sources:** `scripts/suggest_skills.py` runs locally and isn't part of the Job.
-   - It downloads O\*NET's Hot Technologies CSV (US Department of Labor, CC BY 4.0) and lists the technologies `skills.csv` doesn't cover.
-   - It asks the Stack Exchange API for tag synonyms of our tech skills and lists the ones missing from our aliases.
-   - Everything it prints is only a suggestion and gets approved by hand. Re-run it every few months.
+9. ~~Review against official sources (`scripts/suggest_skills.py`)~~: moved to the backlog in `PLAN.md` on 2026-10-20. It isn't urgent, because the hand-checked skill list is in place.
 
 ### 2.12 Commit, PR and merge
 Small commits per step (FX source, bundle, bronze, reference data, transform package, silver, skills, checks, docs), then push, PR, merge, and update local `main`.
