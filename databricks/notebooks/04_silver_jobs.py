@@ -37,9 +37,10 @@ print(f"Building {catalog}.silver job tables, using transform/ from {bundle_root
 # MAGIC %md
 # MAGIC ## Python functions for SQL
 # MAGIC
-# MAGIC `clean_html(html)` and `derive_seniority(title, source_level)` wrap the tested functions in `transform/`, so the
-# MAGIC SQL below can call them like built-in functions. `derive_seniority` returns a struct: read its fields with
-# MAGIC `.seniority` and `.seniority_source`.
+# MAGIC `clean_html(html)` and `derive_seniority(title, fallback_level)` wrap the tested functions in `transform/`, so
+# MAGIC the SQL below can call them like built-in functions. `fallback_level` is the source's own level already mapped
+# MAGIC to ours through `silver.ref_levels`. `derive_seniority` returns a struct: read its fields with `.seniority` and
+# MAGIC `.seniority_source`.
 
 # COMMAND ----------
 
@@ -62,8 +63,8 @@ SENIORITY_TYPE = StructType(
 )
 
 
-def derive_seniority(title, source_level):
-    level, source = seniority(title, source_level)
+def derive_seniority(title, fallback_level):
+    level, source = seniority(title, fallback_level)
     return {"seniority": level, "seniority_source": source}
 
 
@@ -73,8 +74,8 @@ spark.udf.register("derive_seniority", derive_seniority, SENIORITY_TYPE)
 # A quick self-test that runs both functions on the workers, not only here on the driver.
 display(spark.sql("""
     SELECT clean_html('<p>Python &amp; SQL</p><ul><li>dbt</li></ul>') AS cleaned,
-           derive_seniority('Sr. Data Engineer', 'Any') AS from_title,
-           derive_seniority('Data Analyst', 'Midweight') AS from_source_level
+           derive_seniority('Sr. Data Engineer', NULL) AS from_title,
+           derive_seniority('Data Analyst', 'Mid') AS from_source_level
 """))
 
 # COMMAND ----------
@@ -163,7 +164,7 @@ spark.sql(f"""
     CREATE OR REPLACE TABLE {catalog}.silver.jobs AS
     WITH clean AS (
         SELECT lo.*, clean_html(description_html) AS description_text,
-            derive_seniority(title, level_raw) AS s,
+            derive_seniority(lo.title, lvl.seniority) AS s,
             date(published_at) AS published_date,
             CASE lower(coalesce(salary_period, 'yearly'))
                 WHEN 'yearly' THEN 1
@@ -174,6 +175,9 @@ spark.sql(f"""
                 ELSE NULL
             END AS yearly_factor
         FROM latest_observations AS lo
+        -- the source's own level mapped to ours (NULL when unmapped, e.g. Jobicy's unreliable "Director")
+        LEFT JOIN {catalog}.silver.ref_levels AS lvl
+            ON lvl.source = lo.source AND lower(lvl.raw_value) = lower(lo.level_raw)
     ),
     as_of_usd AS (
         SELECT c.*, fx.usd_per_unit, fx.rate_date AS fx_rate_date
