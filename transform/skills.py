@@ -26,7 +26,9 @@ def _phrase_pattern(phrases: list[str], case_sensitive: bool) -> re.Pattern | No
     if not phrases:
         return None
     alternatives = [
-        r"\s+".join(re.escape(word) for word in phrase.split())  # a space in a phrase matches any whitespace
+        r"\s+".join(
+            re.escape(word) for word in phrase.split()
+        )  # a space in a phrase matches any whitespace
         for phrase in sorted(phrases, key=len, reverse=True)
     ]
     flags = 0 if case_sensitive else re.IGNORECASE
@@ -35,7 +37,8 @@ def _phrase_pattern(phrases: list[str], case_sensitive: bool) -> re.Pattern | No
 
 def _anchors(aliases: list[str]) -> frozenset[str] | None:
     """The first word of each alias, lowercased ("Node.js" -> "node", ".NET" -> "net", "C++" -> "c"). An alias can only
-    match where its first word stands as a whole word in the text. None (always search) if an alias has no word."""
+    match where its first word stands as a whole word in the text. None (always search) if an alias has no word.
+    """
     first_words = [_WORD.findall(alias.lower())[:1] for alias in aliases]
     return None if [] in first_words else frozenset(words[0] for words in first_words)
 
@@ -77,20 +80,27 @@ class SkillMatcher:
             if not include:
                 raise ValueError(f"skill {row['skill']!r} has no aliases to search for")
             pattern = _phrase_pattern(include, case_sensitive)
-            exclusions = _phrase_pattern(exclude, case_sensitive=False)  # an excluded phrase never counts, in any case
-            self._skills.append((row["skill"], row["category"], pattern, exclusions, _anchors(include)))
+            exclusions = _phrase_pattern(
+                exclude, case_sensitive=False
+            )  # an excluded phrase never counts, in any case
+            self._skills.append(
+                (row["skill"], row["category"], pattern, exclusions, _anchors(include))
+            )
 
     @classmethod
     def from_csv(cls, path) -> "SkillMatcher":
         with open(path, encoding="utf-8", newline="") as file:
             return cls(list(csv.DictReader(file)))
 
-    def _candidates(self, title: str | None, text: str | None, company: str | None, prefilter: bool) -> list[tuple]:
+    def _candidates(
+        self, title: str | None, text: str | None, company: str | None, prefilter: bool
+    ) -> list[tuple]:
         """The skills worth searching for.
         - A skill that is part of the employer's own name (Grafana at "Grafana Labs") is left out: in that posting the
           word names the employer, not something the job asks for.
         - With the prefilter, a skill is left out when none of its aliases' first words occurs in the texts. That only
-          skips searches that couldn't find anything, so results never change; it makes matching about 10x faster."""
+          skips searches that couldn't find anything, so results never change; it makes matching about 10x faster.
+        """
         words = _words(title, text) if prefilter else None
         return [
             entry
@@ -100,26 +110,47 @@ class SkillMatcher:
         ]
 
     def match(
-        self, title: str | None, text: str | None, company: str | None = None, *, prefilter: bool = True
+        self,
+        title: str | None,
+        text: str | None,
+        company: str | None = None,
+        *,
+        prefilter: bool = True,
     ) -> list[dict]:
         """Return one dict per skill mentioned: skill, category, mentions (title + text) and in_title."""
         found = []
-        for skill, category, pattern, exclusions, _ in self._candidates(title, text, company, prefilter):
+        for skill, category, pattern, exclusions, _ in self._candidates(
+            title, text, company, prefilter
+        ):
             in_title = _count(pattern, exclusions, title)
             in_text = _count(pattern, exclusions, text)
             if in_title or in_text:
                 found.append(
-                    {"skill": skill, "category": category, "mentions": in_title + in_text, "in_title": in_title > 0}
+                    {
+                        "skill": skill,
+                        "category": category,
+                        "mentions": in_title + in_text,
+                        "in_title": in_title > 0,
+                    }
                 )
         return found
 
     def snippets(
-        self, title: str | None, text: str | None, company: str | None = None, width: int = 40, *, prefilter: bool = True
+        self,
+        title: str | None,
+        text: str | None,
+        company: str | None = None,
+        width: int = 40,
+        *,
+        prefilter: bool = True,
     ) -> list[dict]:
         """For reviewing matches: one dict per counted match with skill, category, field ("title" or "text") and the
-        matched text in [brackets] with up to `width` characters on each side, on one line."""
+        matched text in [brackets] with up to `width` characters on each side, on one line.
+        """
         found = []
-        for skill, category, pattern, exclusions, _ in self._candidates(title, text, company, prefilter):
+        for skill, category, pattern, exclusions, _ in self._candidates(
+            title, text, company, prefilter
+        ):
             for field, value in (("title", title), ("text", text)):
                 if not value:
                     continue
@@ -127,6 +158,11 @@ class SkillMatcher:
                     start, end = hit.span()
                     snippet = f"{value[max(0, start - width):start]}[{value[start:end]}]{value[end:end + width]}"
                     found.append(
-                        {"skill": skill, "category": category, "field": field, "snippet": " ".join(snippet.split())}
+                        {
+                            "skill": skill,
+                            "category": category,
+                            "field": field,
+                            "snippet": " ".join(snippet.split()),
+                        }
                     )
         return found
