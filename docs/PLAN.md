@@ -81,7 +81,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Faster skill matching: an anchor-word prefilter (10.8× faster) and a persistent skill cache, so silver only matches new or changed jobs.
 - [x] Reference data for more sources: complete countries, GeoNames cities, industry, job-type and level mappings.
 - [x] Arbeitnow ingestion: full daily sync of all jobs (`is_remote` comes with silver).
-- [ ] Himalayas ingestion: incremental, Tech categories only, expired jobs removed per its API terms.
+- [x] Himalayas ingestion: incremental, Tech categories only, expired jobs purged from landing per its API terms (bronze in 2b.9).
 - [ ] Silver and checks for all three sources; a hand-check of the new sources.
 
 ### Phase 3: dbt models

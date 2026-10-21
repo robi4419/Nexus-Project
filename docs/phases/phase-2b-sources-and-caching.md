@@ -16,10 +16,10 @@
 - [x] 2b.3 Reference data: complete country list, GeoNames cities, `industries.csv`, `job_types.csv`, `levels.csv`
 - [x] 2b.4 `transform/`: location parser, DE/FR seniority rules, fallback levels via `levels.csv`
 - [x] 2b.5 Arbeitnow ingestion: client, landing, tests, `ingest_arbeitnow` DAG
-- [ ] 2b.6 Himalayas ingestion: client (API key, incremental, category filter), landing, tests, `ingest_himalayas` DAG
+- [x] 2b.6 Himalayas ingestion: client (API key, incremental, category filter), landing, tests, `ingest_himalayas` DAG
 - [ ] 2b.7 Bronze tasks for both sources
 - [ ] 2b.8 Silver: conform both sources; `is_remote`; mappings; per-source checks
-- [ ] 2b.9 Himalayas retention: purge expired jobs from landing and bronze
+- [ ] 2b.9 Himalayas retention: purge expired jobs from bronze (landing is purged by the DAG since 2b.6)
 - [ ] 2b.10 Verify end to end, and hand-check the new sources
 - [ ] 2b.11 Commit, PR and merge
 
@@ -54,7 +54,7 @@
    - `url` is the API's `applicationLink`;
    - dashboards (Phase 5) credit Himalayas with a visible link.
 5. **Himalayas, Tech categories only:** Developer, Data Science, Product, Design, Hardware Engineer, Research & Development. That's about 33% of jobs, roughly 600 a day. The API can't filter by category, so the filter is applied before landing. It saves storage and processing, not requests.
-6. **Himalayas is fetched incrementally:** newest first, until reaching jobs older than the previous run's newest one (with a 1-day overlap). The first run covers the last 7 days. It needs a free API key, `HIMALAYAS_API_KEY` in the root `.env` (you add it; the compose file already loads `.env` into Airflow).
+6. **Himalayas is fetched incrementally:** newest first, until reaching jobs older than the previous run's newest one (with a 1-day overlap). The first run covers the last 7 days (changed to 2 days by decision 21). It needs a free API key, `HIMALAYAS_API_KEY` in the root `.env` (you add it; the compose file already loads `.env` into Airflow).
 7. **Arbeitnow is downloaded in full every day** (about 28 polite requests), as with Jobicy, so `times_seen` and `is_listed_now` keep the same meaning. **All jobs are kept**, including on-site ones, with a new `is_remote` column in `silver.jobs`.
 8. **Arbeitnow's cities map to countries through GeoNames**: the cities list with population over 15,000 (geonames.org, CC BY 4.0, credited in the docs). "City, Region, Country" strings are parsed, and an ambiguous city name takes the most populous match. Locations left unmatched stay `unknown`. That's an **error** for Jobicy and Himalayas, and a **warning** with the unknown share for Arbeitnow.
 9. **German and French rules for seniority and job types:**
@@ -72,6 +72,21 @@
     - `cities.csv` grows from 205,652 to 599,326 aliases (18 MB).
 16. **(2026-10-21) All three job DAGs run at 18:00 UTC.** The APIs are separate servers with their own limits, the DAGs only upload files, and starting together means they land within minutes of each other, ready for one `transform_jobs` run in Phase 4.
 17. **(2026-10-21) Arbeitnow's `is_listed_now` means seen in either of its last two runs.** Each full download misses about 1% of the feed at random (see 2b.5). With one run, about 60 listed jobs a day would show as not listed; with two, a job only counts as gone when two runs in a row miss it (about 0.01%). The cost: a job really removed from the feed still shows as listed for one more day. Jobicy keeps "in the latest run", and Himalayas uses `expires_at`.
+18. **(2026-10-21) Himalayas jobs are removed at `expiryDate`, from storage too.** This confirms decision 4 after reading the full API terms.
+    - Clause 113(d) says: "Cache job data where you can, stay within your request limits, and remove jobs once they expire." It's a caching rule, so it's read as covering stored copies, not only what dashboards show. Landing files and bronze rows are purged too, followed by `VACUUM`.
+    - The API docs add that jobs can close before `expiryDate` and suggest re-reading the feed daily. That's advice for mirrors and would take 6,422 requests a day, so a job taken down early stays until its `expiryDate`.
+    - Real Himalayas jobs are never committed to the repo; the test fixture is made up.
+19. **(2026-10-21) Himalayas' incremental state is a `manifest.json` in each run's folder,** written last. The next run reads the manifest of the finished run that saw the newest job. The state lives with the data: deleting the landed files makes the next run start over with 7 days. Rejected: an Airflow Variable (the state lives apart from the data) and a fixed 3-day window (misses jobs after a longer break).
+20. **(2026-10-21) Himalayas jobs are landed in one file per expiry day, and the DAG purges landing from the first run.**
+    - Files of mixed expiry dates can't lose only their expired jobs without being rewritten. Grouped by the UTC day the jobs expire (`expires_2026-12-19.json`), a whole file is deleted once that day is tomorrow or earlier: up to a day early, never late.
+    - A `purge_expired` task in `ingest_himalayas` does this every run, alongside `fetch_and_land`, so landing complies from day one.
+    - Bronze, with one row per file, follows the same rule in 2b.9.
+    - Measured on the sample: `expiryDate` is `pubDate` + 60 days for 90% of jobs (the shortest Tech job had 52.7 days), so a run's jobs fall on a few expiry days.
+21. **(2026-10-21) Himalayas' first run goes back 2 days, not 7, and catching up is capped at 7 days.** This changes decision 6.
+    - The feed is busier than the 500-job sample suggested: about 3,300 jobs are updated a day (5,000 jobs within 1.7 days, 20,000 within 5.8). Uncached deep pages take about 1.9 s each, including the 1 s wait.
+    - The first 7-day attempt failed after 31 minutes and about 950 pages, about 5.7 days back. A dropped connection came first, then a 503 that outlasted the session's retries (about a minute). `land` writes at the end, so the whole walk was lost.
+    - Now: the first run is 2 days (about 330 pages, about 10 minutes). This source's session retries 8 times (about 6 minutes of waiting), a progress line is logged every 100 pages, and `MAX_PAGES` is 2,000.
+    - Rejected: a resumable walk (more code) and keeping 7 days with patient retries (a late outage still loses about 40 minutes of work).
 
 ## How data flows in Phase 2b
 
@@ -165,6 +180,44 @@ Known limits:
 | Only in this run, though inside both runs' windows | 72 | 56 |
 
 The page sizes and date ranges were identical, so the feed didn't change between the runs, only its order. Together the runs saw about 5,880 distinct jobs. Each download sees about 99% of them, and which 1% it misses changes from run to run. The likely cause is ties: many jobs share the same `created_at` second, and the API's order within a tie isn't stable, so paging by position repeats some jobs and skips others. Silver keeps one row per job, so the repeats don't matter. Decision 17 handles the misses.
+
+## Himalayas ingestion (2b.6)
+
+`ingestion/sources/himalayas/`:
+- **`client.py`** walks the feed newest first, 20 jobs per request, 1 second apart (the key allows 60 a minute). It follows `nextCursor` until a page reaches a job last updated before the cutoff, or the feed ends. The API key goes in the `Authorization: Bearer` header, never in the URL, so it can't reach logs or error messages. Every job must have a numeric `pubDate` and `expiryDate`, and a date that looks like milliseconds stops the run instead of walking the whole feed.
+- **`land.py`** decides the cutoff and keeps the Tech jobs updated since then. It writes them in one file per UTC expiry day (`expires_2026-12-19.json`, about 960 jobs and 5 MB each), skipping jobs that expire by tomorrow. Then it writes `manifest.json`: the cutoff and why, pages, jobs seen, Tech jobs, skipped jobs, files, and the newest and oldest `pubDate`.
+- **`purge_expired()`** (also in `land.py`) deletes every landed `expires_*.json` whose day is tomorrow or earlier (decision 20). Manifests stay: they hold no job data, and the newest one is the incremental state.
+
+| Situation | Cutoff |
+|---|---|
+| First run (no manifest anywhere) | now − 2 days |
+| Normal run | the previous finished run's newest `pubDate` − 1 day |
+| After a long break | never more than 7 days back |
+| A run cleared in Airflow after it had finished | its own manifest's cutoff, so the rerun fetches the same range before replacing its files |
+
+A run that fails midway writes no manifest, so the next run ignores it.
+
+The `ingest_himalayas` DAG runs daily at 18:00 UTC: `ensure_landing_volume`, then `fetch_and_land` → `check_run`, with `purge_expired` running alongside so a failed fetch doesn't block deleting. It needs `HIMALAYAS_API_KEY` in the root `.env`. `check_run` fails when no Tech jobs were found: the cutoff always covers at least a day, so zero would mean the categories changed.
+
+**Expected size (measured 2026-10-21, decision 21):** about 3,300 updated jobs a day, of which about 29% (~960) are Tech. A page takes about 1.9 s.
+
+| Run | Pages | Tech jobs landed | Duration |
+|---|---|---|---|
+| Normal day or first run (2 days; on a normal day half the jobs are repeats that silver collapses) | about 330 | about 1,900 in 2–3 files of about 5 MB | about 10 minutes |
+| Catching up after a break (at most 7 days) | about 1,200 | about 6,700 in about 8 files | about 40 minutes |
+
+**First run (2026-10-21):**
+- Attempt 1 (7 days back) failed after 31 minutes (decision 21).
+- Attempt 2 (2 days back) walked 239 pages: 4,780 jobs from 2026-10-19 20:30 to 2026-10-21 18:26 UTC, about 2,500 a day.
+- It landed 1,443 Tech jobs (30%) in 15 files, 9.2 MB in total:
+  - three files (expiring 2026-12-18, -19 and -20) hold about 95% of the jobs;
+  - twelve small files of 1 to ~50 jobs expire between 2026-10-23 and 12-16. Those are jobs updated without their expiry being reset, so they go sooner. The earliest is purged by the next run.
+
+**Known limit:** 19% of jobs have no parent category and are left out. Their free-form `categories` show that a few of them are tech roles ("IT SAP Analyst", "Zoho Developer"), about 3–4% of all jobs.
+
+**For 2b.7 and 2b.9:**
+- The manifest sits next to the job files, so `bronze_himalayas` must load only `expires_*.json`.
+- Bronze rows are deleted by the same rule as landing files: the expiry day in `file_path` is tomorrow or earlier.
 
 ## Silver changes (2b.8)
 
