@@ -18,6 +18,16 @@ def jobicy_body(template: dict, *, has_more: bool, cursor: str | None = None, jo
     return body
 
 
+def arbeitnow_body(template: dict, *, page: int, has_next: bool, jobs: list | None = None) -> dict:
+    """A copy of an Arbeitnow response for another page number, with links.next (and optionally the jobs) replaced."""
+    body = copy.deepcopy(template)
+    body["meta"]["current_page"] = page
+    body["links"]["next"] = f"https://www.arbeitnow.com/api/job-board-api?page={page + 1}" if has_next else None
+    if jobs is not None:
+        body["data"] = jobs
+    return body
+
+
 class FakeResponse:
     """Looks like requests.Response for the parts our code uses."""
 
