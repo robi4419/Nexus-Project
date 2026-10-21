@@ -52,6 +52,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [Phase 0: Fix the scaffolding](phases/phase-0-scaffolding.md)
 - [Phase 1: Ingestion](phases/phase-1-ingestion.md)
 - [Phase 2: Bronze and Silver in Databricks](phases/phase-2-bronze-silver.md)
+- [Phase 2b: More sources and incremental silver](phases/phase-2b-sources-and-caching.md)
 
 ### Phase 0: Fix the scaffolding
 - [x] `airflow/Dockerfile` extending `apache/airflow:3.3.2` with `apache-airflow-providers-databricks`; install dbt in a separate virtualenv inside the image (dbt and Airflow pin conflicting dependencies).
@@ -66,15 +67,22 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Airflow DAG `ingest_jobicy`: `ensure_landing_volume` → `fetch_and_land` → `check_run`, daily at 18:00 UTC; updates the Asset `landing/jobicy`.
 - [x] Unit tests against a saved sample response.
 - [x] Put it on a schedule early so history starts accumulating.
-- [ ] Optional: add more sources (Arbeitnow, Himalayas) using the same layout.
+- [ ] Optional: add more sources (Arbeitnow, Himalayas) using the same layout. Planned in Phase 2b.
 
 ### Phase 2: Bronze and Silver in Databricks
 - [x] Exchange-rate source (Frankfurter/ECB): client, landing, tests, `ingest_fx_rates` DAG with backfill.
 - [x] Databricks Asset Bundle (`databricks.yml`) defining the `transform_jobs` Job, deployed with the Databricks CLI.
 - [x] Bronze: Auto Loader into `bronze.jobicy_raw` and `bronze.frankfurter_raw` (one row per landed file, VARIANT).
-- [x] Reference data (`skills.csv` with 351 skills, `locations.csv`) and a tested `transform/` package (HTML to text, seniority, skill matcher).
+- [x] Reference data (`skills.csv` with 384 skills after the 2.11 hand-check, `locations.csv`) and a tested `transform/` package (HTML to text, seniority, skill matcher).
 - [x] Silver rebuilt each run: `jobs`, `job_locations`, `job_industries`, `job_types`, `job_skills`, `fx_rates`; salaries in yearly USD.
 - [x] Data-quality checks; hand-check 50 postings (skill precision ≥ 90%).
+
+### Phase 2b: More sources and incremental silver
+- [x] Faster skill matching: an anchor-word prefilter (10.8× faster) and a persistent skill cache, so silver only matches new or changed jobs.
+- [ ] Reference data for more sources: complete countries, GeoNames cities, industry, job-type and level mappings.
+- [ ] Arbeitnow ingestion: full daily sync, all jobs, with `is_remote`.
+- [ ] Himalayas ingestion: incremental, Tech categories only, expired jobs removed per its API terms.
+- [ ] Silver and checks for all three sources; a hand-check of the new sources.
 
 ### Phase 3: dbt models
 - [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).
