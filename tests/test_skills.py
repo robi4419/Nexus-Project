@@ -43,9 +43,7 @@ def mentions(matcher: SkillMatcher, title: str | None, text: str | None, company
     return {found["skill"]: found["mentions"] for found in matcher.match(title, text, company)}
 
 
-@pytest.mark.parametrize(
-    ("text", "expected"),
-    [
+RULE_CASES = [
         # whole words only
         ("We use JavaScript", {"JavaScript": 1}),
         ("Java and JavaScript", {"Java": 1, "JavaScript": 1}),
@@ -67,8 +65,10 @@ def mentions(matcher: SkillMatcher, title: str | None, text: str | None, company
         ("React Native and React", {"React": 1, "React Native": 1}),
         ("Excel at teamwork, build Excel reports", {"Excel": 1}),
         ("Go-To-Market plans: Go deep, GO-TO-MARKET", {}),
-    ],
-)
+]
+
+
+@pytest.mark.parametrize(("text", "expected"), RULE_CASES)
 def test_matching_rules(matcher, text, expected):
     assert mentions(matcher, None, text) == expected
 
@@ -137,9 +137,7 @@ def test_real_skill_list_on_jobicy_jobs(real_matcher, jobicy_page, index, expect
     assert mentions(real_matcher, job["jobTitle"], html_to_text(job["jobDescription"])) == expected
 
 
-@pytest.mark.parametrize(
-    ("text", "skill", "expected"),
-    [
+REAL_TRAPS = [
         ("Trained in DBT therapy.", "dbt", 0),
         ("We model data with dbt.", "dbt", 1),
         ("Advanced Excel skills; you excel at teamwork", "Excel", 1),
@@ -191,8 +189,10 @@ def test_real_skill_list_on_jobicy_jobs(real_matcher, jobicy_page, index, expect
         ("Zoom, ZoomInfo and Slack", "Zoom", 1),
         ("A positive outlook on growth", "Microsoft Outlook", 0),
         ("Kubernetes on EKS or GKE", "Kubernetes", 3),
-    ],
-)
+]
+
+
+@pytest.mark.parametrize(("text", "skill", "expected"), REAL_TRAPS)
 def test_real_skill_list_traps(real_matcher, text, skill, expected):
     assert mentions(real_matcher, None, text).get(skill, 0) == expected
 
@@ -211,6 +211,34 @@ def test_real_skill_list_skips_the_employer(real_matcher):
     assert "Supabase" in mentions(real_matcher, "Support Engineer", text)
     assert "Supabase" not in mentions(real_matcher, "Support Engineer", text, company="Supabase")
     assert "Grafana" not in mentions(real_matcher, None, "Grafana Labs is behind Grafana Cloud.", company="Grafana Labs")
+
+
+def test_prefilter_never_changes_a_result(matcher, real_matcher, jobicy_page):
+    texts = [text for text, _ in RULE_CASES] + [text for text, _, _ in REAL_TRAPS]
+    texts += [html_to_text(job["jobDescription"]) for job in jobicy_page["jobs"]]
+    for skill_list in (matcher, real_matcher):
+        for text in texts:
+            for title in (None, "Senior Python Engineer (C#/.NET)"):
+                assert skill_list.match(title, text) == skill_list.match(title, text, prefilter=False)
+                assert skill_list.snippets(title, text) == skill_list.snippets(title, text, prefilter=False)
+
+
+def test_prefilter_skips_skills_that_cannot_match(real_matcher):
+    with_prefilter = real_matcher._candidates(None, "Python and SQL", None, prefilter=True)
+    without = real_matcher._candidates(None, "Python and SQL", None, prefilter=False)
+
+    assert {entry[0] for entry in with_prefilter} >= {"Python", "SQL"}
+    assert len(with_prefilter) < len(without) / 10
+
+
+def test_matcher_version_follows_the_list_and_is_not_the_taxonomy_version():
+    version = SkillMatcher(ROWS).matcher_version
+    changed = [*ROWS[:-1], {**ROWS[-1], "aliases": "Excel|MS Excel|-Excel at"}]
+
+    assert len(version) == 12
+    assert version != SkillMatcher(ROWS).taxonomy_version
+    assert SkillMatcher([dict(row) for row in ROWS]).matcher_version == version
+    assert SkillMatcher(changed).matcher_version != version
 
 
 def test_real_skill_list_snippets_agree_with_match(real_matcher, jobicy_page):
