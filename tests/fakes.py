@@ -1,11 +1,12 @@
 """In-memory stand-ins for the HTTP session and the Databricks WorkspaceClient, so tests run offline."""
 
 import copy
+import io
 import json
 
 import requests
 from databricks.sdk.errors import NotFound
-from databricks.sdk.service.files import DirectoryEntry
+from databricks.sdk.service.files import DirectoryEntry, DownloadResponse
 
 
 def jobicy_body(template: dict, *, has_more: bool, cursor: str | None = None, jobs: list | None = None) -> dict:
@@ -25,6 +26,25 @@ def arbeitnow_body(template: dict, *, page: int, has_next: bool, jobs: list | No
     body["links"]["next"] = f"https://www.arbeitnow.com/api/job-board-api?page={page + 1}" if has_next else None
     if jobs is not None:
         body["data"] = jobs
+    return body
+
+
+def himalayas_body(
+    template: dict, *, pub_dates: list[int], expiry_dates: list[int] | None = None, cursor: str | None = None
+) -> dict:
+    """A copy of a Himalayas response with one job per pubDate (the template's jobs, repeated in order) and nextCursor
+    replaced; without a cursor, nextCursor is left out, as on the feed's last page. Each job expires 60 days after its
+    pubDate, as almost all real ones do, unless expiry_dates are given."""
+    body = copy.deepcopy(template)
+    jobs = template["jobs"]
+    expiry_dates = expiry_dates or [value + 60 * 86400 for value in pub_dates]
+    body["jobs"] = [
+        {**copy.deepcopy(jobs[i % len(jobs)]), "pubDate": pub_date, "expiryDate": expiry_date}
+        for i, (pub_date, expiry_date) in enumerate(zip(pub_dates, expiry_dates, strict=True))
+    ]
+    body.pop("nextCursor", None)
+    if cursor:
+        body["nextCursor"] = cursor
     return body
 
 
@@ -50,29 +70,46 @@ class FakeSession:
         self.responses = list(responses)
         self.calls: list[dict] = []
 
-    def get(self, url: str, params: dict | None = None) -> FakeResponse:
-        self.calls.append({"url": url, "params": dict(params or {})})
+    def get(self, url: str, params: dict | None = None, headers: dict | None = None) -> FakeResponse:
+        call = {"url": url, "params": dict(params or {})}
+        if headers is not None:
+            call["headers"] = dict(headers)
+        self.calls.append(call)
         return self.responses.pop(0)
 
 
 class FakeFiles:
-    """Volume files kept in a dict: path -> bytes."""
+    """Volume files kept in a dict: path -> bytes. Folders exist only through the files inside them."""
 
     def __init__(self):
         self.files: dict[str, bytes] = {}
 
     def list_directory_contents(self, directory_path: str) -> list[DirectoryEntry]:
+        """What's directly inside a folder: its files, and its subfolders with a trailing '/' as the real API gives."""
         prefix = directory_path.rstrip("/") + "/"
-        paths = [path for path in self.files if path.startswith(prefix)]
-        if not paths:
+        entries: dict[str, DirectoryEntry] = {}
+        for path in self.files:
+            if not path.startswith(prefix):
+                continue
+            name, _, rest = path[len(prefix):].partition("/")
+            if rest:
+                entries[name] = DirectoryEntry(path=f"{prefix}{name}/", name=name, is_directory=True)
+            else:
+                entries[name] = DirectoryEntry(path=path, name=name, is_directory=False)
+        if not entries:
             raise NotFound(f"directory not found: {directory_path}")
-        return [DirectoryEntry(path=path, is_directory=False) for path in paths]
+        return list(entries.values())
 
     def delete(self, file_path: str) -> None:
         del self.files[file_path]
 
     def upload(self, file_path: str, contents, *, overwrite: bool | None = None) -> None:
         self.files[file_path] = contents.read()
+
+    def download(self, file_path: str) -> DownloadResponse:
+        if file_path not in self.files:
+            raise NotFound(f"file not found: {file_path}")
+        return DownloadResponse(contents=io.BytesIO(self.files[file_path]))
 
 
 class FakeSchemas:
