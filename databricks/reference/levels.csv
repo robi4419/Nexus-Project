@@ -1,0 +1,63 @@
+source,raw_value,seniority
+jobicy,Senior,Senior
+jobicy,Midweight,Mid
+jobicy,"Entry-Level, Junior",Junior
+jobicy,Director,
+jobicy,Any,
+himalayas,Entry-level,Junior
+himalayas,Mid-level,Mid
+himalayas,Senior,Senior
+himalayas,Manager,Lead
+himalayas,Director,Director
+himalayas,Executive,Executive
+arbeitnow,internship,Intern
+arbeitnow,Intern,Intern
+arbeitnow,Internship (praktikum),Intern
+arbeitnow,Internship (praktikumsvertrag),Intern
+arbeitnow,Internships,Intern
+arbeitnow,Praktikum,Intern
+arbeitnow,Praktikumsvertrag,Intern
+arbeitnow,Convention de stage,Intern
+arbeitnow,Stage (convention de stage),Intern
+arbeitnow,Stage,Intern
+arbeitnow,Stage & Afstuderen,Intern
+arbeitnow,Apprenticeship,Intern
+arbeitnow,Cursus en alternance,Intern
+arbeitnow,dual studies,Intern
+arbeitnow,vocational,Intern
+arbeitnow,Werkstudent,Intern
+arbeitnow,working student,Intern
+arbeitnow,Working student (werkstudent),Intern
+arbeitnow,Working students / Interns / Trainees,Intern
+arbeitnow,hilfstätigkeit / student,Intern
+arbeitnow,Students,Intern
+arbeitnow,Student college,Intern
+arbeitnow,Student school,Intern
+arbeitnow,student (college),Intern
+arbeitnow,student (high school),Intern
+arbeitnow,aucune expérience requise / Étudiant,Intern
+arbeitnow,no experience required / student,Intern
+arbeitnow,Entry,Junior
+arbeitnow,berufseinstieg,Junior
+arbeitnow,débutant,Junior
+arbeitnow,associate,Junior
+arbeitnow,Student & Early Professionals,Junior
+arbeitnow,Mid,Mid
+arbeitnow,mid-senior,Mid
+arbeitnow,Experienced,Mid
+arbeitnow,berufserfahren,Mid
+arbeitnow,professional / experienced,Mid
+arbeitnow,professional / ervaren,Mid
+arbeitnow,professionnel / expérimenté,Mid
+arbeitnow,teamleitung,Lead
+arbeitnow,Team Leader,Lead
+arbeitnow,manager,Lead
+arbeitnow,manager / superviseur,Lead
+arbeitnow,Senior manager,Lead
+arbeitnow,director,Director
+arbeitnow,Directors,Director
+arbeitnow,executive,Executive
+arbeitnow,Senior executive,Executive
+arbeitnow,Chief Executives,Executive
+arbeitnow,cadre supérieur / dirigeant,Executive
+arbeitnow,geschäftsleitung,Executive

@@ -25,6 +25,7 @@ sync:
     - tests/**
     - ingestion/**
     - dashboards/**
+    - scripts/**
     - docker-compose.yaml
     - requirements.txt
     - pyproject.toml

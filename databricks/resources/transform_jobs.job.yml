@@ -32,7 +32,7 @@ resources:
               source: frankfurter
 
         - task_key: reference
-          description: Load databricks/reference/*.csv into silver.ref_locations and silver.ref_skills
+          description: Load databricks/reference/*.csv into silver.ref_*
           notebook_task:
             notebook_path: ../notebooks/02_reference.py
 
@@ -53,7 +53,7 @@ resources:
             notebook_path: ../notebooks/04_silver_jobs.py
 
         - task_key: silver_skills
-          description: Rebuild silver.job_skills from title and description_text columns of silver.jobs
+          description: Rebuild silver.job_skills from title, description_text and company_name columns of silver.jobs
           depends_on:
             - task_key: silver_jobs
           notebook_task:
