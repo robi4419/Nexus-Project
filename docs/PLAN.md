@@ -79,7 +79,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 
 ### Phase 2b: More sources and incremental silver
 - [x] Faster skill matching: an anchor-word prefilter (10.8× faster) and a persistent skill cache, so silver only matches new or changed jobs.
-- [ ] Reference data for more sources: complete countries, GeoNames cities, industry, job-type and level mappings.
+- [x] Reference data for more sources: complete countries, GeoNames cities, industry, job-type and level mappings.
 - [ ] Arbeitnow ingestion: full daily sync, all jobs, with `is_remote`.
 - [ ] Himalayas ingestion: incremental, Tech categories only, expired jobs removed per its API terms.
 - [ ] Silver and checks for all three sources; a hand-check of the new sources.

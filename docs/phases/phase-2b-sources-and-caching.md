@@ -13,7 +13,7 @@
 ## Progress
 - [x] 2b.1 Branch, plan doc, `PLAN.md`
 - [x] 2b.2 Faster skill matching: an anchor-word prefilter and a persistent skill cache (built and measured on Jobicy first)
-- [ ] 2b.3 Reference data: complete country list, GeoNames cities, `industries.csv`, `job_types.csv`, `levels.csv`
+- [x] 2b.3 Reference data: complete country list, GeoNames cities, `industries.csv`, `job_types.csv`, `levels.csv`
 - [ ] 2b.4 `transform/`: location parser, DE/FR seniority rules, fallback levels via `levels.csv`
 - [ ] 2b.5 Arbeitnow ingestion: client, landing, tests, `ingest_arbeitnow` DAG
 - [ ] 2b.6 Himalayas ingestion: client (API key, incremental, category filter), landing, tests, `ingest_himalayas` DAG
@@ -62,6 +62,10 @@
    - gender suffixes such as "(m/w/d)" and "(H/F)" are ignored;
    - skills stay as they are, because tool names are the same in every language.
 10. **(2026-10-21) The measurements changed 2b.2.** Matching is the cost and HTML cleaning isn't, so the plan is now the anchor-word prefilter plus the skill cache, without a description-text cache. The UDF stays a plain row-at-a-time Python UDF. A pandas (vectorised) UDF only cuts the transfer cost per row, which is small next to the 40 ms of regex work per job.
+11. **(2026-10-21) The industry list is Jobicy's 22 plus 4 new ones** where nothing fits: Hardware & Electronics, Research & Science, Engineering & Manufacturing (non-software), and Logistics & Supply Chain. Two of the kept Himalayas Tech categories (Hardware Engineer, Research & Development) and many on-site Arbeitnow jobs need them.
+12. **(2026-10-21) Arbeitnow tags map by exact value.** Only the generic tags are mapped: frequent ones, checked against sample job titles ("Credit Analysis" is really telesales, and "Security" is risk and compliance). The long tail of company department names gets no industry, and a checks warning reports the unmapped share.
+13. **(2026-10-21) Job types follow the schedule:** Full-Time, Part-Time, Contract (freelance or contractor), Internship, plus **Temporary**. Contract-only values (permanent, fixed-term, CDI/CDD) give no job type unless a schedule value is listed too. Level-like values ("berufserfahren", "teamleitung", "Werkstudent") feed `levels.csv` instead.
+14. **(2026-10-21) No `silver.ref_cities` table.** `cities.csv` (205,652 lowercased aliases) is read only by the Python location parser, which locates the few hundred distinct raw location strings per run. `countries.csv` becomes `silver.ref_countries`.
 
 ## How data flows in Phase 2b
 
