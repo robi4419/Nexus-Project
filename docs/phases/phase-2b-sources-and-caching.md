@@ -14,7 +14,7 @@
 - [x] 2b.1 Branch, plan doc, `PLAN.md`
 - [x] 2b.2 Faster skill matching: an anchor-word prefilter and a persistent skill cache (built and measured on Jobicy first)
 - [x] 2b.3 Reference data: complete country list, GeoNames cities, `industries.csv`, `job_types.csv`, `levels.csv`
-- [ ] 2b.4 `transform/`: location parser, DE/FR seniority rules, fallback levels via `levels.csv`
+- [x] 2b.4 `transform/`: location parser, DE/FR seniority rules, fallback levels via `levels.csv`
 - [ ] 2b.5 Arbeitnow ingestion: client, landing, tests, `ingest_arbeitnow` DAG
 - [ ] 2b.6 Himalayas ingestion: client (API key, incremental, category filter), landing, tests, `ingest_himalayas` DAG
 - [ ] 2b.7 Bronze tasks for both sources
@@ -65,7 +65,11 @@
 11. **(2026-10-21) The industry list is Jobicy's 22 plus 4 new ones** where nothing fits: Hardware & Electronics, Research & Science, Engineering & Manufacturing (non-software), and Logistics & Supply Chain. Two of the kept Himalayas Tech categories (Hardware Engineer, Research & Development) and many on-site Arbeitnow jobs need them.
 12. **(2026-10-21) Arbeitnow tags map by exact value.** Only the generic tags are mapped: frequent ones, checked against sample job titles ("Credit Analysis" is really telesales, and "Security" is risk and compliance). The long tail of company department names gets no industry, and a checks warning reports the unmapped share.
 13. **(2026-10-21) Job types follow the schedule:** Full-Time, Part-Time, Contract (freelance or contractor), Internship, plus **Temporary**. Contract-only values (permanent, fixed-term, CDI/CDD) give no job type unless a schedule value is listed too. Level-like values ("berufserfahren", "teamleitung", "Werkstudent") feed `levels.csv` instead.
-14. **(2026-10-21) No `silver.ref_cities` table.** `cities.csv` (205,652 lowercased aliases) is read only by the Python location parser, which locates the few hundred distinct raw location strings per run. `countries.csv` becomes `silver.ref_countries`.
+14. **(2026-10-21) No `silver.ref_cities` table.** `cities.csv` (lowercased aliases) is read only by the Python location parser, which locates the few hundred distinct raw location strings per run. `countries.csv` becomes `silver.ref_countries`.
+15. **(2026-10-21) Cities come from GeoNames `cities1000`, and a shared name goes to the European place first,** then the most populous. This changes decision 8. Measured on the 1,500 sampled Arbeitnow jobs:
+    - unknown locations fell from 10.3% to 4.5%, and 2.6% of jobs have an empty location;
+    - by population alone, 8 jobs landed outside Europe, because GeoNames also lists old and foreign names: Baden → South San Francisco, Sion → Jerusalem, Malakoff → Oued Sly in Algeria;
+    - `cities.csv` grows from 205,652 to 599,326 aliases (18 MB).
 
 ## How data flows in Phase 2b
 
@@ -118,11 +122,31 @@ All 7 tasks and every error check passed in both runs. What remains of the 25 s 
 | File | Rows | From |
 |---|---|---|
 | `countries.csv` | every ISO country: alpha-2 code, English name, region | GeoNames `countryInfo.txt`, continent → our regions, with explicit overrides (Middle East → Middle East & Africa; Mexico, Central America and the Caribbean → LATAM; Türkiye → Europe as today) |
-| `cities.csv` | city name (plus Latin-script alternate names), country code, population | GeoNames `cities15000`, built by `scripts/build_geo_reference.py` |
+| `cities.csv` | place name (plus Latin-script alternate names), city, country code, population; a shared name goes to the European place, then the most populous | GeoNames `cities1000` (places over 1,000 people), built by `scripts/build_geo_reference.py` |
 | `locations.csv` | stays the **alias** table: the exact raw values sources use ("USA", "Anywhere", "EMEA", "Remote"), plus local country names (Deutschland, Nederland, Schweiz, Suisse, Österreich, España, Italia…) | hand-made, as now |
 | `industries.csv` | `source, raw_value, industry`, mapping Himalayas `parentCategories` and Arbeitnow `tags` to Jobicy's 22 industries (Jobicy maps to itself); role-only tags such as "Team Leader" map to nothing | hand-made from the profiling |
 | `job_types.csv` | `raw_value, job_type`, the multilingual values to Jobicy's job types | hand-made from the profiling |
 | `levels.csv` | `source, raw_value, seniority`: Jobicy `jobLevel`, Himalayas `seniority` (highest wins; Manager → Lead), Arbeitnow level-like job types ("berufserfahren" → Mid, "Werkstudent" → Intern, "teamleitung" → Lead) | hand-made; replaces the Jobicy mapping hard-coded in `seniority.py` |
+
+## Location parser (2b.4)
+
+`transform/locations.py`: `Locator.locate(raw)` returns a `Place` (`location_name`, `location_type`, `country_code`, `region`). The type is city, country, region, worldwide or unknown.
+1. The whole string is looked up as one name: a `locations.csv` alias, a country name, then a city alias ("Berlin", "USA", "Remote job").
+2. Otherwise it's split into parts at `, ; | / & : ( )` and at a dash with spaces around it, and noise words are dropped ("Office", "HQ", "Hybrid", "Remote"…). The first city in the named country wins, else the country, else the first region.
+   - "Utrecht, Utrecht, Nederland" → Utrecht
+   - "UK - Remote" → United Kingdom
+   - "London, Ontario, Canada" → Canada
+3. Otherwise it's unknown, and the cleaned text is kept as the name.
+
+**Result on the profiled samples (2026-10-21):**
+- Himalayas: all 81 values are countries.
+- Jobicy: all its values are aliases.
+- Arbeitnow (1,500 jobs): city 87.7%, country 4.4%, worldwide 3.1%, region 0.3%, unknown 4.5%. The unknown ones are 2.6% empty, plus tiny places, a street ("Moorgate London") and non-places ("Hybrid").
+
+Known limits:
+- A name shared by two European places goes to the bigger one: Brest → Belarus, Emmen → Netherlands.
+- When the town isn't listed, a region with the same name as a city counts as that city: "Kleindorf, Utrecht, Nederland" would give Utrecht.
+- 3 of the 1,500 sampled jobs list several places ("Bristol; Cambridge"), and the parser returns the first. Splitting them is a 2b.8 choice.
 
 ## Silver changes (2b.8)
 
