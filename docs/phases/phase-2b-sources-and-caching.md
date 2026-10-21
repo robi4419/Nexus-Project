@@ -15,7 +15,7 @@
 - [x] 2b.2 Faster skill matching: an anchor-word prefilter and a persistent skill cache (built and measured on Jobicy first)
 - [x] 2b.3 Reference data: complete country list, GeoNames cities, `industries.csv`, `job_types.csv`, `levels.csv`
 - [x] 2b.4 `transform/`: location parser, DE/FR seniority rules, fallback levels via `levels.csv`
-- [ ] 2b.5 Arbeitnow ingestion: client, landing, tests, `ingest_arbeitnow` DAG
+- [x] 2b.5 Arbeitnow ingestion: client, landing, tests, `ingest_arbeitnow` DAG
 - [ ] 2b.6 Himalayas ingestion: client (API key, incremental, category filter), landing, tests, `ingest_himalayas` DAG
 - [ ] 2b.7 Bronze tasks for both sources
 - [ ] 2b.8 Silver: conform both sources; `is_remote`; mappings; per-source checks
@@ -70,13 +70,15 @@
     - unknown locations fell from 10.3% to 4.5%, and 2.6% of jobs have an empty location;
     - by population alone, 8 jobs landed outside Europe, because GeoNames also lists old and foreign names: Baden → South San Francisco, Sion → Jerusalem, Malakoff → Oued Sly in Algeria;
     - `cities.csv` grows from 205,652 to 599,326 aliases (18 MB).
+16. **(2026-10-21) All three job DAGs run at 18:00 UTC.** The APIs are separate servers with their own limits, the DAGs only upload files, and starting together means they land within minutes of each other, ready for one `transform_jobs` run in Phase 4.
+17. **(2026-10-21) Arbeitnow's `is_listed_now` means seen in either of its last two runs.** Each full download misses about 1% of the feed at random (see 2b.5). With one run, about 60 listed jobs a day would show as not listed; with two, a job only counts as gone when two runs in a row miss it (about 0.01%). The cost: a job really removed from the feed still shows as listed for one more day. Jobicy keeps "in the latest run", and Himalayas uses `expires_at`.
 
 ## How data flows in Phase 2b
 
 ```
 ingest_jobicy     18:00 daily ─► landing/jobicy/     ─► bronze_jobicy    ──┐
-ingest_arbeitnow  18:30 daily ─► landing/arbeitnow/  ─► bronze_arbeitnow ──┤
-ingest_himalayas  19:00 daily ─► landing/himalayas/  ─► bronze_himalayas ──┼─► silver_jobs ─► silver_skills ─► checks
+ingest_arbeitnow  18:00 daily ─► landing/arbeitnow/  ─► bronze_arbeitnow ──┤
+ingest_himalayas  18:00 daily ─► landing/himalayas/  ─► bronze_himalayas ──┼─► silver_jobs ─► silver_skills ─► checks
 ingest_fx_rates   17:00 Mon–Fri ► landing/frankfurter/ ► bronze_fx ► silver_fx ┤                   (skill cache)
 reference CSVs ──────────────────────────────────────► reference ────────────┘
                                                         retention_himalayas (after bronze_himalayas)
@@ -148,6 +150,22 @@ Known limits:
 - When the town isn't listed, a region with the same name as a city counts as that city: "Kleindorf, Utrecht, Nederland" would give Utrecht.
 - 3 of the 1,500 sampled jobs list several places ("Bristol; Cambridge"), and the parser returns the first. Splitting them is a 2b.8 choice.
 
+## Arbeitnow ingestion (2b.5)
+
+`ingestion/sources/arbeitnow/`:
+- `client.py` asks for `?page=1, 2, 3…`, 2 seconds apart, until `links.next` is empty. It checks that `meta.current_page` is the page asked for, and stops after 60 pages.
+- `land.py` writes one file per page. Its summary adds `distinct_jobs` and `remote_jobs`.
+- The `ingest_arbeitnow` DAG runs daily at 18:00 UTC.
+
+**First runs (2026-10-21):** two full downloads about 40 minutes apart, the first started by unpausing (`run_immediately`), the second by the 18:00 schedule. Each had 25 pages and 6,013 rows, from 2026-10-14 17:17 to 2026-10-21 17:17, with 703 remote jobs (11.7%).
+
+| | Run 1 | Run 2 |
+|---|---|---|
+| Distinct jobs | 5,824 | 5,808 |
+| Only in this run, though inside both runs' windows | 72 | 56 |
+
+The page sizes and date ranges were identical, so the feed didn't change between the runs, only its order. Together the runs saw about 5,880 distinct jobs. Each download sees about 99% of them, and which 1% it misses changes from run to run. The likely cause is ties: many jobs share the same `created_at` second, and the API's order within a tie isn't stable, so paging by position repeats some jobs and skips others. Silver keeps one row per job, so the repeats don't matter. Decision 17 handles the misses.
+
 ## Silver changes (2b.8)
 
 - **One conform `SELECT` per source**, combined with `UNION ALL` into `observations`, with the same columns in the same order. New columns:
@@ -155,7 +173,10 @@ Known limits:
   - `expires_at` (Himalayas only);
   - `locations_raw` (an array: Jobicy's comma list split, Himalayas' countries, Arbeitnow's single string);
   - `industries_raw`, `job_types_raw`, `levels_raw`.
-- **Himalayas jobs with `expires_at` in the past are left out.** `is_listed_now` is `expires_at > now` for Himalayas, and "present in the source's latest run" for the others.
+- **Himalayas jobs with `expires_at` in the past are left out.** `is_listed_now` means:
+  - Himalayas: `expires_at > now`;
+  - Arbeitnow: present in either of its last two runs (decision 17);
+  - Jobicy: present in its latest run.
 - **Mappings by SQL joins to the new reference tables.** Locations are located once per **distinct** raw value with the tested Python parser, which only handles a few hundred values.
 - **Salary:** new period factors `annual` = 1 and `fortnightly` = 26. Unpublished currencies (CLP, BGN) stay unconverted, as now.
 - **Checks per source:**
@@ -183,7 +204,7 @@ tests/  test_skills.py (prefilter, matcher_version), test_locations.py, test_arb
 ## Pitfalls
 
 - **A cache can go stale:** that's why `matcher_version` includes the code (`skills.py`), not only the CSV. A rule change with an unchanged list would otherwise keep serving old matches.
-- **Arbeitnow's pages aren't strictly in date order,** so only a full download sees every job. Page sizes also shrink towards the end (300, 281, 150, 100), so stop when `links.next` is empty, not on a short page.
+- **Arbeitnow's page order isn't stable,** so even a full download repeats some jobs and misses about 1% (2b.5). Page sizes also shrink towards the end (300 … 250 … 150, 64), so stop when `links.next` is empty, not on a short page.
 - **Himalayas' docs and real responses differ:** dates come in seconds, and `locationRestrictions` holds plain strings. Parse defensively, and test with real saved pages.
 - **Deleting rows isn't removing data in Delta:** a `DELETE` keeps old versions for time travel. `VACUUM` removes the files after the retention period (7 days by default), so purged Himalayas jobs are gone from storage within about a week.
 - **Comma meaning differs by source:** Jobicy's "Canada, USA" is a list of places, while Arbeitnow's "Utrecht, Utrecht, Nederland" is one place. Each conform `SELECT` has to produce the right array.
