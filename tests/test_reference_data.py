@@ -194,7 +194,8 @@ def test_cities_have_lowercase_aliases_and_known_countries(cities, countries):
         ("zurich", "Zürich", "CH"),
         ("den haag", "The Hague", "NL"),
         ("london", "London", "GB"),
-        ("paris", "Paris", "FR"),  # not Paris, Texas: the most populous city wins
+        ("paris", "Paris", "FR"),  # not Paris, Texas: a European place wins, then the most populous
+        ("baden", "Baden-Baden", "DE"),  # not South San Francisco, which GeoNames also lists as Baden
     ],
 )
 def test_known_cities(cities, alias, city, country):

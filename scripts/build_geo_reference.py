@@ -53,25 +53,28 @@ def countries(session) -> dict[str, tuple[str, str]]:
     return result
 
 
-def cities(session, known_countries: set[str]) -> list[tuple[str, str, str, int]]:
-    """(alias, city, country code, population) rows: every name a city goes by, lowercased and kept once, for its most
-    populous city (so "paris" is the French capital, not Paris, Texas)."""
-    archive = zipfile.ZipFile(io.BytesIO(session.get(f"{GEONAMES}/cities15000.zip").content))
-    best: dict[str, tuple[str, str, str, int]] = {}
-    with archive.open("cities15000.txt") as file:
+def cities(session, regions: dict[str, str]) -> list[tuple[str, str, str, int]]:
+    """(alias, city, country code, population) rows for every place with over 1,000 people: every name a place goes by,
+    lowercased and kept once. When places share a name, a European one wins, then the most populous one. Only
+    Arbeitnow, a European job board, gives city names, and GeoNames lists old and foreign names too: by population
+    alone "baden" would be South San Francisco (once called Baden) and "sion" Jerusalem (Zion)."""
+    archive = zipfile.ZipFile(io.BytesIO(session.get(f"{GEONAMES}/cities1000.zip").content))
+    best: dict[str, tuple[tuple[bool, int], tuple[str, str, str, int]]] = {}
+    with archive.open("cities1000.txt") as file:
         for line in io.TextIOWrapper(file, encoding="utf-8"):
             fields = line.rstrip("\n").split("\t")
             name, ascii_name, alternates, country, population = fields[1], fields[2], fields[3], fields[8], int(fields[14])
-            if country not in known_countries:
+            if country not in regions:
                 continue
             aliases = {name, ascii_name} | {
                 alias for alias in alternates.split(",")
                 if len(alias) >= 3 and LATIN_NAME.fullmatch(alias) and any(char.islower() for char in alias)
             }
+            rank = (regions[country] == "Europe", population)
             for alias in {alias.lower() for alias in aliases}:
-                if alias not in best or population > best[alias][3]:
-                    best[alias] = (alias, name, country, population)
-    return sorted(best.values())
+                if alias not in best or rank > best[alias][0]:
+                    best[alias] = (rank, (alias, name, country, population))
+    return sorted(row for _, row in best.values())
 
 
 def write_csv(path: Path, header: list[str], rows) -> None:
@@ -90,7 +93,8 @@ def main() -> None:
         ["country_code", "country_name", "region"],
         [(code, name, region) for code, (name, region) in sorted(country_rows.items())],
     )
-    write_csv(REFERENCE / "cities.csv", ["alias", "city", "country_code", "population"], cities(session, set(country_rows)))
+    regions = {code: region for code, (_, region) in country_rows.items()}
+    write_csv(REFERENCE / "cities.csv", ["alias", "city", "country_code", "population"], cities(session, regions))
 
 
 if __name__ == "__main__":
