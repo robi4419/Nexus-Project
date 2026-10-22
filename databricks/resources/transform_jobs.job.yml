@@ -24,6 +24,28 @@ resources:
             base_parameters:
               source: jobicy
 
+        - task_key: bronze_arbeitnow
+          description: Auto Loader from landing/arbeitnow/ into bronze.arbeitnow_raw
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze.py
+            base_parameters:
+              source: arbeitnow
+
+        - task_key: bronze_himalayas
+          description: Auto Loader from landing/himalayas/ (expires_*.json only, not the run manifests) into bronze.himalayas_raw
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze.py
+            base_parameters:
+              source: himalayas
+              file_glob: expires_*.json
+
+        - task_key: retention_himalayas
+          description: Delete bronze.himalayas_raw rows whose jobs expire by tomorrow, then purge and vacuum them (API terms)
+          depends_on:
+            - task_key: bronze_himalayas
+          notebook_task:
+            notebook_path: ../notebooks/07_retention_himalayas.py
+
         - task_key: bronze_fx
           description: Auto Loader from landing/frankfurter/ into bronze.frankfurter_raw
           notebook_task:
@@ -44,9 +66,11 @@ resources:
             notebook_path: ../notebooks/03_silver_fx.py
 
         - task_key: silver_jobs
-          description: Rebuild silver.jobs and its industry, type and location tables from the bronze job tables
+          description: Rebuild silver.jobs and its industry, type and location tables from the bronze job tables (only Jobicy until 2b.8)
           depends_on:
             - task_key: bronze_jobicy
+            - task_key: bronze_arbeitnow
+            - task_key: retention_himalayas  # so silver never reads an expired Himalayas row
             - task_key: silver_fx
             - task_key: reference
           notebook_task:

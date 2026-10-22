@@ -7,21 +7,25 @@
 # MAGIC column `body`. Auto Loader remembers which files it has already loaded (in a checkpoint), so each file is
 # MAGIC loaded exactly once; a file re-written by an Airflow retry is loaded again as a new row.
 # MAGIC
-# MAGIC Parameters: `catalog` (e.g. `workspace`) and `source` (`jobicy` or `frankfurter`).
+# MAGIC Parameters: `catalog` (e.g. `workspace`), `source` (`jobicy`, `frankfurter`, `arbeitnow` or `himalayas`) and
+# MAGIC `file_glob` (optional: load only files whose name matches, e.g. `expires_*.json` so Himalayas' run manifests
+# MAGIC stay out of bronze; empty loads every file).
 
 # COMMAND ----------
 
 dbutils.widgets.text("catalog", "workspace")
 dbutils.widgets.text("source", "jobicy")
+dbutils.widgets.text("file_glob", "")
 
 catalog = dbutils.widgets.get("catalog")
 source = dbutils.widgets.get("source")
+file_glob = dbutils.widgets.get("file_glob")
 
 landing_path = f"/Volumes/{catalog}/bronze/landing/{source}/"
 checkpoint_path = f"/Volumes/{catalog}/bronze/checkpoints/{source}_raw"
 table = f"{catalog}.bronze.{source}_raw"
 
-print(f"Loading new files from {landing_path} into {table}")
+print(f"Loading new files from {landing_path}{file_glob} into {table}")
 
 # COMMAND ----------
 
@@ -37,13 +41,19 @@ from pyspark.sql import functions as F
 
 file_path = F.col("_metadata.file_path")
 
-new_files = (
+reader = (
     spark.readStream.format("cloudFiles")
     .option("cloudFiles.format", "json")
     .option("multiLine", "true")
     .option("singleVariantColumn", "body")
     .option("cloudFiles.allowOverwrites", "true")
-    .load(landing_path)
+)
+if file_glob:
+    # Matches file names only, e.g. expires_*.json loads .../expires_2026-12-19.json but not .../manifest.json
+    reader = reader.option("pathGlobFilter", file_glob)
+
+new_files = (
+    reader.load(landing_path)
     .select(
         F.lit(source).alias("source"),
         file_path.alias("file_path"),
