@@ -189,6 +189,19 @@ REAL_TRAPS = [
         ("Zoom, ZoomInfo and Slack", "Zoom", 1),
         ("A positive outlook on growth", "Microsoft Outlook", 0),
         ("Kubernetes on EKS or GKE", "Kubernetes", 3),
+        # added after the 2026-10-22 hand-check of Arbeitnow and Himalayas (other meanings and languages, boilerplate)
+        ("Een afgeronde bachelor- of masteropleiding in Informatica, Elektrotechniek", "Informatica", 0),
+        ("Laurea in Informatica o Ingegneria Informatica", "Informatica", 0),
+        ("ETL pipelines in Informatica PowerCenter", "Informatica", 1),
+        ("- React quickly to incoming complaint surges", "React", 0),
+        ("Frontends in React and TypeScript", "React", 1),
+        ("- Lever les obstacles rencontrés par les équipes", "Lever", 0),
+        ("Our ATS is Lever", "Lever", 1),
+        ("Compliance with ICH-GCP, ICH GCP and ICH/GCP", "Google Cloud", 0),
+        ("Trained in Good Clinical Practice (GCP)", "Google Cloud", 0),
+        ("Data pipelines on GCP", "Google Cloud", 1),
+        ("Please click here to log in to Workday to apply", "Workday", 0),
+        ("HR administration in Workday", "Workday", 1),
 ]
 
 
