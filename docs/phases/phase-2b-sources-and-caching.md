@@ -18,7 +18,7 @@
 - [x] 2b.5 Arbeitnow ingestion: client, landing, tests, `ingest_arbeitnow` DAG
 - [x] 2b.6 Himalayas ingestion: client (API key, incremental, category filter), landing, tests, `ingest_himalayas` DAG
 - [x] 2b.7 Bronze tasks for both sources
-- [ ] 2b.8 Silver: conform both sources; `is_remote`; mappings; per-source checks
+- [x] 2b.8 Silver: conform both sources; `is_remote`; mappings; per-source checks
 - [x] 2b.9 Himalayas retention: purge expired jobs from bronze (landing is purged by the DAG since 2b.6)
 - [ ] 2b.10 Verify end to end, and hand-check the new sources
 - [ ] 2b.11 Commit, PR and merge
@@ -93,6 +93,19 @@
     - `VACUUM`s with `delta.deletedFileRetentionDuration` = 1 day.
 
     A job is out of every query before it expires, and its bytes are gone about 1–2 days after. Time travel on this table reaches back only 1 day. Rejected: deleting 3 days ahead so the bytes go before expiry (jobs would leave silver early), and Delta's default 7-day retention (bytes kept for about 8 days after expiry). `silver_jobs` waits for `retention_himalayas`, so it never reads an expired row.
+23. **(2026-10-22) Arbeitnow locations are split at `;`.** "Bristol; Cambridge" gives two `job_locations` rows, like Jobicy's comma lists. Only `;` splits: `/` and `-` also occur inside single places ("Lausanne / Hybrid / Remote", "Saint-Etienne").
+24. **(2026-10-22) Arbeitnow checks.**
+    - Unknown locations are a warning above 10% of Arbeitnow jobs (4.5% expected). They stay an error for Jobicy and Himalayas.
+    - The shares of jobs without an industry or job type are info lines per source. About 41% and 52% are expected for Arbeitnow by design (decisions 12 and 13).
+25. **(2026-10-22) Arbeitnow's "Engineering" and "Development" tags are left unmapped.**
+    - On the first full silver run, Software Engineering skill coverage fell to 89.9%: Arbeitnow 81.9%, against Himalayas 93.2% and Jobicy 97.4%.
+    - The cause was these two tags. For 515 and 66 jobs respectively they were the only Software Engineering tag. Behind them: software jobs ("AI Engineer", "DevOps Engineer") mixed with construction, plant and electrical engineering, and marketing or treasury traineeships.
+    - Like "IT" and "Consulting" (decision 12), they're too broad to name one industry. Projected: Arbeitnow without an industry ~50%; SE coverage ~92% for Arbeitnow, ~93% overall.
+    - Rejected: mapping "Engineering" to Engineering & Manufacturing (software jobs labelled non-software) and a title keyword rule (more to maintain, still guesses).
+26. **(2026-10-22) ISO 3166 country names are aliases in `locations.csv`.**
+    - Some Himalayas jobs use ISO short names, and split at their comma or parenthesis several landed on the wrong place: "Congo, The Democratic Republic of the" → a town in Brazil, "Viet Nam" → a village in Ukraine, "Korea, Republic of" → Koréa in Ivory Coast. Others came out unknown ("Russian Federation", "Åland Islands").
+    - Every ISO 3166-1 short and common name was run through `Locator`; the 21 that didn't resolve to their country are now aliases. Source: `iso_3166-1.json` of the Debian iso-codes project, the list `pycountry` uses.
+    - GeoNames' name for BQ had a trailing space: fixed in `countries.csv`, and the build script now strips names.
 
 ## How data flows in Phase 2b
 
@@ -240,6 +253,42 @@ The `ingest_himalayas` DAG runs daily at 18:00 UTC: `ensure_landing_volume`, the
 `VACUUM` removes a purged file from the second daily run after the purge.
 
 ## Silver changes (2b.8)
+
+**As built (2026-10-22):**
+- **Observations:** `04_silver_jobs.py` has one conform `SELECT` per source in the `observations` view, with the shared columns in the table at the top of the notebook.
+- **Seniority:** each job's level values are mapped through `ref_levels`, and the highest (by `transform.seniority.LEVELS`) is `derive_seniority`'s fallback.
+- **Locations:** the distinct raw values are located on the driver with `Locator` and joined back with `<=>`.
+- **Schema of `silver.jobs`:**
+  - new columns `expires_at` and `is_remote`;
+  - `geo_raw` (string) became `locations_raw` (array);
+  - `source_level` (string) became `source_levels`: the source's level values that `levels.csv` lists, as given.
+
+**Checked on the warehouse before the first Job run** (read-only `SELECT`s of the new SQL on today's bronze):
+
+| | Arbeitnow | Himalayas | Jobicy |
+|---|---|---|---|
+| Rows → distinct jobs | 12,026 → 5,880 | 1,442 → 1,442 | 6,838 → 1,875 |
+| Missing a required field | 0 | 0 | 0 |
+| With a source level | 2,931 | 1,442 | 813 |
+| Without industry / job type | 2,396 / 3,083 | 0 / 11 | 0 / 0 |
+| Distinct raw locations | 1,137 | 137 | 54 |
+
+**First runs with all three sources (2026-10-22, after the 18:00 ingestion):**
+- **Run 1:** one error check failed. 3 Himalayas locations were unknown and 3 more had landed on wrong places (decision 26). Software Engineering skill coverage dropped to 89.9% (decision 25).
+- **Run 2, after both fixes:** every error check passed.
+
+| | Arbeitnow | Himalayas | Jobicy |
+|---|---|---|---|
+| Jobs (silver = bronze) | 6,948 | 3,028 | 2,115 |
+| Listed now | 6,947 | 3,028 | 1,189 |
+| With at least 1 skill | 65.1% | 89.5% | 79.8% |
+| Seniority Unspecified | 26.3% | 0.0% | 38.5% |
+| Without an industry / a job type | 50.5% / 50.7% | 0.0% / 0.6% | 0.0% / 0.0% |
+| Unknown location | 5.7% | 0 | 0 |
+
+Software Engineering skill coverage: 93.4% overall. The only warning left is the known salary one: 7 jobs without a currency, and 2 in currencies the ECB doesn't publish.
+
+**Planned:**
 
 - **One conform `SELECT` per source**, combined with `UNION ALL` into `observations`, with the same columns in the same order. New columns:
   - `is_remote`;
