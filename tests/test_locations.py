@@ -131,6 +131,17 @@ def locator() -> Locator:
         ("Haut-Rhin, Grand Est, France", ("France", "country", "FR", "Europe")),
         ("UK - Remote", ("United Kingdom", "country", "GB", "Europe")),
         ("🇪🇺 Germany (remote)", ("Germany", "country", "DE", "Europe")),
+        # ISO 3166 names that some Himalayas jobs use, where GeoNames uses the common name (aliases in locations.csv);
+        # split at the comma or parenthesis, several would land on a wrong place
+        ("Lao People's Democratic Republic", ("Laos", "country", "LA", "APAC")),
+        ("Cocos (Keeling) Islands", ("Cocos Islands", "country", "CC", "APAC")),
+        (
+            "Congo, The Democratic Republic of the",
+            ("Democratic Republic of the Congo", "country", "CD", "Middle East & Africa"),  # not Congo in Brazil
+        ),
+        ("Viet Nam", ("Vietnam", "country", "VN", "APAC")),  # not a village in Ukraine
+        ("Korea, Republic of", ("South Korea", "country", "KR", "APAC")),  # not Koréa in Ivory Coast
+        ("Russian Federation", ("Russia", "country", "RU", "Europe")),
         ("Remote job", ("Anywhere", "worldwide", None, "Worldwide")),
         ("Werken op afstand", ("Anywhere", "worldwide", None, "Worldwide")),
         ("Remote - EMEA", ("EMEA", "region", None, "EMEA")),

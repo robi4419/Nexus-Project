@@ -92,3 +92,24 @@ England,United Kingdom,country,GB,Europe
 Scotland,United Kingdom,country,GB,Europe
 Wales,United Kingdom,country,GB,Europe
 Northern Ireland,United Kingdom,country,GB,Europe
+Brunei Darussalam,Brunei,country,BN,APAC
+Timor-Leste,Timor Leste,country,TL,APAC
+Lao People's Democratic Republic,Laos,country,LA,APAC
+Cocos (Keeling) Islands,Cocos Islands,country,CC,APAC
+Åland Islands,Aland Islands,country,AX,Europe
+"Bonaire, Sint Eustatius and Saba","Bonaire, Saint Eustatius and Saba",country,BQ,LATAM
+Saint Barthélemy,Saint Barthelemy,country,BL,LATAM
+Côte d'Ivoire,Ivory Coast,country,CI,Middle East & Africa
+"Congo, The Democratic Republic of the",Democratic Republic of the Congo,country,CD,Middle East & Africa
+Congo,Republic of the Congo,country,CG,Middle East & Africa
+Curaçao,Curacao,country,CW,LATAM
+"Korea, Republic of",South Korea,country,KR,APAC
+"Korea, Democratic People's Republic of",North Korea,country,KP,APAC
+"Palestine, State of",Palestinian Territory,country,PS,Middle East & Africa
+Réunion,Reunion,country,RE,Middle East & Africa
+Russian Federation,Russia,country,RU,Europe
+Syrian Arab Republic,Syria,country,SY,Middle East & Africa
+Holy See (Vatican City State),Vatican,country,VA,Europe
+"Virgin Islands, British",British Virgin Islands,country,VG,LATAM
+"Virgin Islands, U.S.",U.S. Virgin Islands,country,VI,LATAM
+Viet Nam,Vietnam,country,VN,APAC

@@ -46,7 +46,7 @@ def countries(session) -> dict[str, tuple[str, str]]:
         if not line or line.startswith("#"):
             continue
         fields = line.split("\t")
-        code, name, continent = fields[0], fields[4], fields[8]
+        code, name, continent = fields[0], fields[4].strip(), fields[8]  # BQ's name ends in a space
         if continent == "AN":
             continue
         result[code] = (NAME_OVERRIDES.get(code, name), REGION_OVERRIDES.get(code, CONTINENT_REGIONS[continent]))

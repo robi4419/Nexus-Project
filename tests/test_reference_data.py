@@ -163,6 +163,7 @@ def test_countries_columns_codes_and_regions(countries):
 
     assert list(countries[0]) == ["country_code", "country_name", "region"]
     assert len(codes) == len(set(codes)) and all(len(code) == 2 and code.isupper() for code in codes)
+    assert [row["country_name"] for row in countries if row["country_name"] != row["country_name"].strip()] == []
     assert {row["region"] for row in countries} <= REGIONS - {"EMEA", "Worldwide"}
 
 
