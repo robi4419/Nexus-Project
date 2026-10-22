@@ -17,9 +17,9 @@
 - [x] 2b.4 `transform/`: location parser, DE/FR seniority rules, fallback levels via `levels.csv`
 - [x] 2b.5 Arbeitnow ingestion: client, landing, tests, `ingest_arbeitnow` DAG
 - [x] 2b.6 Himalayas ingestion: client (API key, incremental, category filter), landing, tests, `ingest_himalayas` DAG
-- [ ] 2b.7 Bronze tasks for both sources
+- [x] 2b.7 Bronze tasks for both sources
 - [ ] 2b.8 Silver: conform both sources; `is_remote`; mappings; per-source checks
-- [ ] 2b.9 Himalayas retention: purge expired jobs from bronze (landing is purged by the DAG since 2b.6)
+- [x] 2b.9 Himalayas retention: purge expired jobs from bronze (landing is purged by the DAG since 2b.6)
 - [ ] 2b.10 Verify end to end, and hand-check the new sources
 - [ ] 2b.11 Commit, PR and merge
 
@@ -87,6 +87,12 @@
     - The first 7-day attempt failed after 31 minutes and about 950 pages, about 5.7 days back. A dropped connection came first, then a 503 that outlasted the session's retries (about a minute). `land` writes at the end, so the whole walk was lost.
     - Now: the first run is 2 days (about 330 pages, about 10 minutes). This source's session retries 8 times (about 6 minutes of waiting), a progress line is logged every 100 pages, and `MAX_PAGES` is 2,000.
     - Rejected: a resumable walk (more code) and keeping 7 days with patient retries (a late outage still loses about 40 minutes of work).
+22. **(2026-10-22) Bronze retention for Himalayas: the same 1-day lead as landing, and a 1-day file retention.** `07_retention_himalayas.py` (task `retention_himalayas`, after `bronze_himalayas`) runs three steps:
+    - `DELETE`s the rows whose expiry day in `file_path` is tomorrow or earlier;
+    - `REORG TABLE … APPLY (PURGE)` rewrites the files that still hold deleted rows (a `DELETE` only marks them in a deletion vector);
+    - `VACUUM`s with `delta.deletedFileRetentionDuration` = 1 day.
+
+    A job is out of every query before it expires, and its bytes are gone about 1–2 days after. Time travel on this table reaches back only 1 day. Rejected: deleting 3 days ahead so the bytes go before expiry (jobs would leave silver early), and Delta's default 7-day retention (bytes kept for about 8 days after expiry). `silver_jobs` waits for `retention_himalayas`, so it never reads an expired row.
 
 ## How data flows in Phase 2b
 
@@ -218,6 +224,20 @@ The `ingest_himalayas` DAG runs daily at 18:00 UTC: `ensure_landing_volume`, the
 **For 2b.7 and 2b.9:**
 - The manifest sits next to the job files, so `bronze_himalayas` must load only `expires_*.json`.
 - Bronze rows are deleted by the same rule as landing files: the expiry day in `file_path` is tomorrow or earlier.
+
+## Bronze and retention (2b.7, 2b.9)
+
+- **New tasks:** `bronze_arbeitnow` and `bronze_himalayas` run the same `01_bronze.py`. Its new `file_glob` parameter sets Auto Loader's `pathGlobFilter`, so Himalayas loads only `expires_*.json`.
+- **Purge:** `retention_himalayas` runs `07_retention_himalayas.py` after it (decision 22).
+- **Dependencies:** `silver_jobs` now waits for both.
+
+**First run (2026-10-22):**
+- `bronze.arbeitnow_raw` got 50 files (two runs of 25).
+- `bronze.himalayas_raw` got 15 files and no manifest.
+- `retention_himalayas` deleted the `expires_2026-10-23` row, leaving 14 files and 1,442 jobs (earliest expiry 2026-11-02).
+- All error checks passed.
+
+`VACUUM` removes a purged file from the second daily run after the purge.
 
 ## Silver changes (2b.8)
 
