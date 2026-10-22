@@ -14,11 +14,14 @@
 
 # COMMAND ----------
 
+from datetime import datetime, timezone
+
 dbutils.widgets.text("catalog", "workspace")
 catalog = dbutils.widgets.get("catalog")
 
 bronze = f"{catalog}.bronze"
 silver = f"{catalog}.silver"
+SOURCES = ["jobicy", "arbeitnow", "himalayas"]
 
 checks = []  # (level, name, sql), shown in this order
 
@@ -27,6 +30,22 @@ def check(level: str, name: str, sql: str) -> None:
     """Register a check. Its SQL must return one row with the columns `value` and `passed`."""
     assert level in ("error", "warning", "info"), f"unknown level {level!r}"
     checks.append((level, name, sql))
+
+
+def share_by_source(hit: str, join: str = "") -> str:
+    """SQL for an info check: the share of each source's jobs (alias j) where `hit` is true, after an optional join,
+    shown as e.g. 'arbeitnow 36.4% (2119 of 5824), himalayas 0.0% (0 of 1442), jobicy 0.0% (0 of 1875)'."""
+    return f"""
+        SELECT array_join(sort_array(collect_list(
+                   format_string('%s %.1f%% (%d of %d)', source, 100 * hits / jobs, hits, jobs))), ', ') AS value,
+               true AS passed
+        FROM (
+            SELECT j.source, count(*) AS jobs, count_if({hit}) AS hits
+            FROM {silver}.jobs AS j
+            {join}
+            GROUP BY j.source
+        )
+    """
 
 
 # COMMAND ----------
@@ -54,19 +73,46 @@ check(
     """,
 )
 
+# Per source: silver jobs / distinct jobs in bronze. A Himalayas job counts only while its latest copy hasn't expired.
 check(
     "error",
-    "jobs: silver job count equals distinct jobs in bronze",
+    "jobs: silver job count equals distinct jobs in bronze, per source",
     f"""
-    WITH bronze_jobs_variants AS (
-        SELECT run_id, landed_at, EXPLODE(cast(body:jobs AS ARRAY<VARIANT>)) as job
-        FROM {bronze}.jobicy_raw
+    WITH jobicy AS (
+        SELECT landed_at, explode(cast(body:jobs AS ARRAY<VARIANT>)) AS job FROM {bronze}.jobicy_raw
+    ),
+    arbeitnow AS (
+        SELECT landed_at, explode(cast(body:data AS ARRAY<VARIANT>)) AS job FROM {bronze}.arbeitnow_raw
+    ),
+    himalayas AS (
+        SELECT landed_at, explode(cast(body:jobs AS ARRAY<VARIANT>)) AS job FROM {bronze}.himalayas_raw
+    ),
+    bronze_jobs AS (
+        SELECT 'jobicy' AS source, job:id::STRING AS source_job_id, landed_at, CAST(NULL AS TIMESTAMP) AS expires_at
+        FROM jobicy
+        UNION ALL
+        SELECT 'arbeitnow', job:slug::STRING, landed_at, NULL FROM arbeitnow
+        UNION ALL
+        SELECT 'himalayas', job:guid::STRING, landed_at, timestamp_seconds(job:expiryDate::BIGINT) FROM himalayas
+    ),
+    bronze_counts AS (
+        SELECT source, count_if(latest_expiry IS NULL OR latest_expiry > current_timestamp()) AS in_bronze
+        FROM (
+            SELECT source, source_job_id, max_by(expires_at, landed_at) AS latest_expiry
+            FROM bronze_jobs
+            GROUP BY source, source_job_id
+        )
+        GROUP BY source
+    ),
+    silver_counts AS (
+        SELECT source, count(*) AS in_silver FROM {silver}.jobs GROUP BY source
     )
-    SELECT 
-        (SELECT count(DISTINCT job:id::string) FROM bronze_jobs_variants) AS bronze_jobs,
-        (SELECT count(*) FROM {silver}.jobs) AS silver_jobs,
-        concat(silver_jobs, '/', bronze_jobs) AS value,
-        silver_jobs = bronze_jobs as passed
+    SELECT
+        array_join(sort_array(collect_list(
+            format_string('%s %d/%d', b.source, coalesce(s.in_silver, 0), b.in_bronze))), ', ') AS value,
+        bool_and(coalesce(s.in_silver, 0) = b.in_bronze) AS passed
+    FROM bronze_counts AS b
+    LEFT JOIN silver_counts AS s ON s.source = b.source
 """,
 )
 
@@ -80,12 +126,39 @@ check(
     """,
 )
 
+# Jobicy and Himalayas use fixed lists of places, so an unknown one means a gap in locations.csv or countries.csv.
+# Arbeitnow's free text has its own warning below.
 check(
     "error",
-    "job_locations: no unknown locations",
+    "job_locations: no unknown Jobicy or Himalayas locations",
     f"""
     SELECT count_if(location_type = 'unknown') AS value, value = 0 AS passed
     FROM {silver}.job_locations
+    WHERE source IN ('jobicy', 'himalayas')
+    """,
+)
+
+# API terms (Phase 2b, decisions 18, 20 and 22): no expired Himalayas job in silver, and no expired row in bronze.
+check(
+    "error",
+    "jobs: no expired Himalayas job",
+    f"""
+    SELECT count(*) AS value, value = 0 AS passed
+    FROM {silver}.jobs
+    WHERE source = 'himalayas' AND (expires_at IS NULL OR expires_at <= current_timestamp())
+    """,
+)
+
+# The retention task deletes rows expiring by tomorrow; this checks the stricter minimum, nothing expiring today or
+# earlier, so a run that crosses midnight UTC can't fail it by accident. A row without an expiry day fails it too.
+today = datetime.now(timezone.utc).date().isoformat()
+expiry_day = "regexp_extract(file_path, 'expires_([0-9]{4}-[0-9]{2}-[0-9]{2})[.]json$', 1)"
+check(
+    "error",
+    "bronze: no expired Himalayas row",
+    f"""
+    SELECT count_if({expiry_day} = '' OR {expiry_day} <= '{today}') AS value, value = 0 AS passed
+    FROM {bronze}.himalayas_raw
     """,
 )
 
@@ -149,12 +222,31 @@ for table in ["job_industries", "job_types", "job_locations", "job_skills"]:
 
 # COMMAND ----------
 
+for source in SOURCES:
+    check(
+        "warning",
+        f"bronze: newest {source} file landed less than 2 days ago",
+        f"""
+        SELECT max(landed_at) AS value, value >= current_timestamp() - INTERVAL 2 DAYS AS passed
+        FROM {bronze}.{source}_raw
+    """,
+    )
+
+# Arbeitnow locations are free text: 4.5% of sampled jobs had an unknown one, 2.6 points of them empty (decision 15).
 check(
     "warning",
-    "bronze: newest Jobicy file landed less than 2 days ago",
+    "job_locations: at most 10% of Arbeitnow jobs have an unknown location",
     f"""
-    SELECT max(landed_at) AS value, value >= current_timestamp() - INTERVAL 2 DAYS AS passed
-    FROM {bronze}.jobicy_raw
+    SELECT
+        -- try_divide gives NULL (shown as WARN) instead of an error when there are no Arbeitnow rows at all
+        try_divide(
+            count(DISTINCT CASE WHEN location_type = 'unknown' THEN source_job_id END),
+            count(DISTINCT source_job_id)
+        ) AS share,
+        format_string('%.1f%%', 100 * share) AS value,
+        share <= 0.10 AS passed
+    FROM {silver}.job_locations
+    WHERE source = 'arbeitnow'
 """,
 )
 
@@ -202,30 +294,20 @@ check(
 
 # COMMAND ----------
 
-check(
-    "info",
-    "job_skills: share of jobs with at least 1 skill",
-    f"""
-    SELECT
-        (SELECT count(DISTINCT source, source_job_id) FROM {silver}.job_skills) AS with_skills,
-        (SELECT count(*) FROM {silver}.jobs) AS all_jobs,
-        format_string('%.1f%% (%d of %d jobs)', 100 * with_skills / all_jobs, with_skills, all_jobs) AS value,
-        true AS passed
-""",
-)
+def found_in(table: str) -> str:
+    """A LEFT JOIN to the jobs that have at least one row in a bridge table; `x.found` is NULL for the others."""
+    return f"""
+        LEFT JOIN (SELECT DISTINCT source, source_job_id, true AS found FROM {silver}.{table}) AS x
+            ON x.source = j.source AND x.source_job_id = j.source_job_id
+    """
 
-check(
-    "info",
-    "jobs: share with seniority Unspecified",
-    f"""
-    SELECT
-        count_if(seniority = 'Unspecified') AS unspecified,
-        count(*) AS all_jobs,
-        format_string('%.1f%% (%d of %d jobs)', 100 * unspecified / all_jobs, unspecified, all_jobs) AS value,
-        true AS passed
-    FROM {silver}.jobs
-""",
-)
+
+check("info", "job_skills: share of jobs with at least 1 skill", share_by_source("x.found", found_in("job_skills")))
+check("info", "jobs: share with seniority Unspecified", share_by_source("j.seniority = 'Unspecified'"))
+# Expected by design for Arbeitnow (decisions 12 and 13): company-specific tags and contract-only job types map to
+# nothing.
+check("info", "jobs: share without an industry", share_by_source("x.found IS NULL", found_in("job_industries")))
+check("info", "jobs: share without a job type", share_by_source("x.found IS NULL", found_in("job_types")))
 
 # COMMAND ----------
 
