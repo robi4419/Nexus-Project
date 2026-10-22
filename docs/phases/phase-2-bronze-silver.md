@@ -30,7 +30,7 @@ The Job also runs data-quality checks. A second ingestion source, daily ECB exch
 - [x] 2.9 Silver skills: `silver.job_skills`
 - [x] 2.10 Data-quality checks
 - [x] 2.11 Verify end to end, idempotency, and hand-check of 50 postings
-- [ ] 2.12 Commit, PR and merge
+- [x] 2.12 Commit, PR and merge (PR #3, merged 2026-10-20)
 
 ---
 
@@ -327,7 +327,7 @@ Follow the Phase 1 checklist "Adding another API later":
    Fixes:
    - **The employer-name rule:** `SkillMatcher` skips a skill whose aliases match the company name, and silver_skills passes `company_name`.
    - Exclusions `-Rails Foundation` and `-Grafana K6`.
-   - 27 new skills found through the candidate-terms list and the no-skill review:
+   - 33 new skills (351 → 384), found through the candidate-terms list and the no-skill review. The PR #3 description and commit `33ddc64` say 27 and 378, which is a counting mistake:
      - AI tools: Claude, ChatGPT, Cursor, GitHub and Microsoft Copilot, Gemini, MCP, AI Agents, LLM Fine-tuning;
      - identity and compliance: SSO, SAML, OAuth, OIDC, SCIM, FedRAMP, SOX, CCPA, SOAR, CAMS, CFE, CRCM, Certified Internal Auditor;
      - tools: RabbitMQ, ClickHouse, Kibana, OpenTelemetry, Pulumi, Puppet, Chef, Zuora, Workato, Zoom, Microsoft Outlook.

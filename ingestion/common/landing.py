@@ -96,3 +96,28 @@ def reset_folder(ws: WorkspaceClient, folder: str) -> int:
 def write_file(ws: WorkspaceClient, path: str, data: bytes) -> None:
     """Upload bytes to a Volume path, replacing any existing file."""
     ws.files.upload(path, io.BytesIO(data), overwrite=True)
+
+
+def read_file(ws: WorkspaceClient, path: str) -> bytes | None:
+    """A Volume file's bytes, or None if there's no such file."""
+    try:
+        return ws.files.download(path).contents.read()
+    except NotFound:
+        return None
+
+
+def list_subfolders(ws: WorkspaceClient, folder: str) -> list[str]:
+    """Paths of the folders directly inside a Volume folder, sorted, without the trailing '/'; [] if it doesn't exist."""
+    return sorted(entry.path.rstrip("/") for entry in _entries(ws, folder) if entry.is_directory)
+
+
+def list_files(ws: WorkspaceClient, folder: str) -> list[str]:
+    """Paths of the files directly inside a Volume folder, sorted; [] if it doesn't exist."""
+    return sorted(entry.path for entry in _entries(ws, folder) if not entry.is_directory)
+
+
+def _entries(ws: WorkspaceClient, folder: str) -> list:
+    try:
+        return list(ws.files.list_directory_contents(folder))
+    except NotFound:
+        return []

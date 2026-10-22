@@ -1,0 +1,224 @@
+source,raw_value,industry
+jobicy,Admin & Virtual Assistance,Admin & Virtual Assistance
+jobicy,Business Development,Business Development
+jobicy,Content & Editorial,Content & Editorial
+jobicy,Creative & Design,Creative & Design
+jobicy,Customer Support & Success,Customer Support & Success
+jobicy,Cybersecurity,Cybersecurity
+jobicy,Data Science & Analytics,Data Science & Analytics
+jobicy,DevOps & Infrastructure,DevOps & Infrastructure
+jobicy,Education & E-learning,Education & E-learning
+jobicy,Finance & Accounting,Finance & Accounting
+jobicy,Healthcare & Medical,Healthcare & Medical
+jobicy,HR & Recruiting,HR & Recruiting
+jobicy,Legal & Compliance,Legal & Compliance
+jobicy,Marketing & Sales,Marketing & Sales
+jobicy,Product & Operations,Product & Operations
+jobicy,Project & Program Management,Project & Program Management
+jobicy,QA & Testing,QA & Testing
+jobicy,Sales,Sales
+jobicy,SEO,SEO
+jobicy,Software Engineering,Software Engineering
+jobicy,Technical Support,Technical Support
+jobicy,"Web, UI & UX Design","Web, UI & UX Design"
+himalayas,Content Creator,Content & Editorial
+himalayas,Customer Service,Customer Support & Success
+himalayas,Data Science,Data Science & Analytics
+himalayas,Design,"Web, UI & UX Design"
+himalayas,Developer,Software Engineering
+himalayas,Education,Education & E-learning
+himalayas,Finance,Finance & Accounting
+himalayas,Growth,Marketing & Sales
+himalayas,Hardware Engineer,Hardware & Electronics
+himalayas,Healthcare,Healthcare & Medical
+himalayas,Human Resources,HR & Recruiting
+himalayas,Legal,Legal & Compliance
+himalayas,Logistics,Logistics & Supply Chain
+himalayas,Management,
+himalayas,Marketing,Marketing & Sales
+himalayas,Operations,Product & Operations
+himalayas,Product,Product & Operations
+himalayas,Research & Development,Research & Science
+himalayas,Sales,Sales
+himalayas,Social Impact,
+arbeitnow,Engineering,
+arbeitnow,Software Development,Software Engineering
+arbeitnow,Development,
+arbeitnow,Software Engineering,Software Engineering
+arbeitnow,Web Development,Software Engineering
+arbeitnow,Technology,Software Engineering
+arbeitnow,Software,Software Engineering
+arbeitnow,Tech,Software Engineering
+arbeitnow,SAP/ERP Consulting,Software Engineering
+arbeitnow,Back-end,Software Engineering
+arbeitnow,Platform Engineering,Software Engineering
+arbeitnow,Mobile,Software Engineering
+arbeitnow,Internet and software,Software Engineering
+arbeitnow,Computer Software,Software Engineering
+arbeitnow,System and Network Administration,DevOps & Infrastructure
+arbeitnow,Infrastructure & DevOps,DevOps & Infrastructure
+arbeitnow,IT & DevOps,DevOps & Infrastructure
+arbeitnow,DevOps Engineering,DevOps & Infrastructure
+arbeitnow,Cloud,DevOps & Infrastructure
+arbeitnow,Cloud Platform,DevOps & Infrastructure
+arbeitnow,Infrastructure,DevOps & Infrastructure
+arbeitnow,Database Administration,DevOps & Infrastructure
+arbeitnow,Data Centres,DevOps & Infrastructure
+arbeitnow,IT Security,Cybersecurity
+arbeitnow,Computer & Network Security,Cybersecurity
+arbeitnow,Security Engineering,Cybersecurity
+arbeitnow,Defensive Security,Cybersecurity
+arbeitnow,Data & Analytics,Data Science & Analytics
+arbeitnow,Data Scientist,Data Science & Analytics
+arbeitnow,Data Science & AI,Data Science & Analytics
+arbeitnow,Applied AI,Data Science & Analytics
+arbeitnow,Data & AI,Data Science & Analytics
+arbeitnow,Data Engineer,Data Science & Analytics
+arbeitnow,Business Intelligence,Data Science & Analytics
+arbeitnow,Data Processing,Data Science & Analytics
+arbeitnow,Data Science,Data Science & Analytics
+arbeitnow,Data,Data Science & Analytics
+arbeitnow,Data Analyst,Data Science & Analytics
+arbeitnow,Analytics Engineering,Data Science & Analytics
+arbeitnow,AI & ML,Data Science & Analytics
+arbeitnow,AI Engineer,Data Science & Analytics
+arbeitnow,Machine Learning Engineer,Data Science & Analytics
+arbeitnow,Data Science & Analytics,Data Science & Analytics
+arbeitnow,Quality Assurance,QA & Testing
+arbeitnow,QA,QA & Testing
+arbeitnow,Helpdesk,Technical Support
+arbeitnow,Operations,Product & Operations
+arbeitnow,Product,Product & Operations
+arbeitnow,Product Management,Product & Operations
+arbeitnow,Business Operations,Product & Operations
+arbeitnow,Product Excellence,Product & Operations
+arbeitnow,Operations Excellence,Product & Operations
+arbeitnow,Project Management,Project & Program Management
+arbeitnow,Projectlead & Business Analyst,Project & Program Management
+arbeitnow,Programmes,Project & Program Management
+arbeitnow,Business Analyst,Project & Program Management
+arbeitnow,Sales,Sales
+arbeitnow,Field Sales,Sales
+arbeitnow,Enterprise Sales,Sales
+arbeitnow,Credit Analysis,Sales
+arbeitnow,Commercial Sales,Sales
+arbeitnow,Advertising Sales,Sales
+arbeitnow,Account Executive,Sales
+arbeitnow,Sales Engineer,Sales
+arbeitnow,Vente,Sales
+arbeitnow,Commerce et Vente,Sales
+arbeitnow,Business Development,Business Development
+arbeitnow,Partnerships,Business Development
+arbeitnow,Marketing and Communication,Marketing & Sales
+arbeitnow,Marketing,Marketing & Sales
+arbeitnow,Marketing Manager,Marketing & Sales
+arbeitnow,Online Marketing,Marketing & Sales
+arbeitnow,Social Media Manager,Marketing & Sales
+arbeitnow,Marketing Assistant,Marketing & Sales
+arbeitnow,Direct Marketing,Marketing & Sales
+arbeitnow,Growth,Marketing & Sales
+arbeitnow,Growth Marketing,Marketing & Sales
+arbeitnow,Public Relations,Marketing & Sales
+arbeitnow,Corporate Communication,Marketing & Sales
+arbeitnow,Marketing & Communication,Marketing & Sales
+arbeitnow,Marketing & Sales,Marketing & Sales
+arbeitnow,Brand,Marketing & Sales
+arbeitnow,Trade Marketing,Marketing & Sales
+arbeitnow,Strategic Marketing,Marketing & Sales
+arbeitnow,GTM,Marketing & Sales
+arbeitnow,Go To Market,Marketing & Sales
+arbeitnow,Go-To-Market,Marketing & Sales
+arbeitnow,Customer Service,Customer Support & Success
+arbeitnow,Customer Success,Customer Support & Success
+arbeitnow,Customer Support,Customer Support & Success
+arbeitnow,Customer Care,Customer Support & Success
+arbeitnow,Finance,Finance & Accounting
+arbeitnow,Controlling,Finance & Accounting
+arbeitnow,Asset,Finance & Accounting
+arbeitnow,Fonds Management,Finance & Accounting
+arbeitnow,Accounts Receivable,Finance & Accounting
+arbeitnow,Finance & Controlling,Finance & Accounting
+arbeitnow,Financial Services,Finance & Accounting
+arbeitnow,Finance Operations,Finance & Accounting
+arbeitnow,Banking and Markets,Finance & Accounting
+arbeitnow,Private Banking,Finance & Accounting
+arbeitnow,Auditor,Finance & Accounting
+arbeitnow,HR,HR & Recruiting
+arbeitnow,Recruitment and Selection,HR & Recruiting
+arbeitnow,Personnel Specialist,HR & Recruiting
+arbeitnow,People,HR & Recruiting
+arbeitnow,Human Resources,HR & Recruiting
+arbeitnow,Recruitment,HR & Recruiting
+arbeitnow,Talent,HR & Recruiting
+arbeitnow,People and Culture,HR & Recruiting
+arbeitnow,People & Talent,HR & Recruiting
+arbeitnow,Legal,Legal & Compliance
+arbeitnow,Compliance,Legal & Compliance
+arbeitnow,Security,Legal & Compliance
+arbeitnow,Regulatory,Legal & Compliance
+arbeitnow,Administration,Admin & Virtual Assistance
+arbeitnow,Administration and Secretariat,Admin & Virtual Assistance
+arbeitnow,General & Administration,Admin & Virtual Assistance
+arbeitnow,General & Administrative,Admin & Virtual Assistance
+arbeitnow,Graphic Arts and Communication Design,Creative & Design
+arbeitnow,Media,Creative & Design
+arbeitnow,Industrial Design,Creative & Design
+arbeitnow,Product Design,"Web, UI & UX Design"
+arbeitnow,Screen and Web Design,"Web, UI & UX Design"
+arbeitnow,User Experience,"Web, UI & UX Design"
+arbeitnow,Content Operations,Content & Editorial
+arbeitnow,Technical Documentation,Content & Editorial
+arbeitnow,Training,Education & E-learning
+arbeitnow,Hardware Engineering,Hardware & Electronics
+arbeitnow,Hardware Development,Hardware & Electronics
+arbeitnow,Electronics,Hardware & Electronics
+arbeitnow,Electrical/Electronic Manufacturing,Hardware & Electronics
+arbeitnow,HW Circuit Design,Hardware & Electronics
+arbeitnow,Firmware,Hardware & Electronics
+arbeitnow,Consumer Electronics,Hardware & Electronics
+arbeitnow,Electrical Engineering,Hardware & Electronics
+arbeitnow,R&D,Research & Science
+arbeitnow,Research & Development,Research & Science
+arbeitnow,Biology,Research & Science
+arbeitnow,Life Sciences,Research & Science
+arbeitnow,Research & Innovation,Research & Science
+arbeitnow,Applied Research,Research & Science
+arbeitnow,Protein Sciences,Research & Science
+arbeitnow,Building,Engineering & Manufacturing
+arbeitnow,Supply,Engineering & Manufacturing
+arbeitnow,Safety Services Engineering,Engineering & Manufacturing
+arbeitnow,Power Engineering and Environmental Engineering,Engineering & Manufacturing
+arbeitnow,Automation Engineering,Engineering & Manufacturing
+arbeitnow,Automation,Engineering & Manufacturing
+arbeitnow,Automotive Engineering,Engineering & Manufacturing
+arbeitnow,Building System,Engineering & Manufacturing
+arbeitnow,Manufacturing,Engineering & Manufacturing
+arbeitnow,Production,Engineering & Manufacturing
+arbeitnow,Process Engineering,Engineering & Manufacturing
+arbeitnow,Maintenance,Engineering & Manufacturing
+arbeitnow,Construction,Engineering & Manufacturing
+arbeitnow,Automotive,Engineering & Manufacturing
+arbeitnow,Quality Management,Engineering & Manufacturing
+arbeitnow,Inspection,Engineering & Manufacturing
+arbeitnow,Medical Devices,Engineering & Manufacturing
+arbeitnow,Supply Chain & Logistics,Logistics & Supply Chain
+arbeitnow,Warehouse & Logistics,Logistics & Supply Chain
+arbeitnow,Warehouse,Logistics & Supply Chain
+arbeitnow,Purchasing,Logistics & Supply Chain
+arbeitnow,Project Logistics,Logistics & Supply Chain
+arbeitnow,Last Mile,Logistics & Supply Chain
+arbeitnow,Remote,
+arbeitnow,IT,
+arbeitnow,Management,
+arbeitnow,Consulting,
+arbeitnow,Business Consulting,
+arbeitnow,Consultancy,
+arbeitnow,Professional Services,
+arbeitnow,Commercial,
+arbeitnow,Business,
+arbeitnow,Solutions,
+arbeitnow,All Departments,
+arbeitnow,Interim management,
+arbeitnow,Kantoor,
+arbeitnow,Core,
+arbeitnow,Agentic Search,

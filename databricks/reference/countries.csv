@@ -1,0 +1,248 @@
+country_code,country_name,region
+AD,Andorra,Europe
+AE,United Arab Emirates,Middle East & Africa
+AF,Afghanistan,APAC
+AG,Antigua and Barbuda,LATAM
+AI,Anguilla,LATAM
+AL,Albania,Europe
+AM,Armenia,Europe
+AN,Netherlands Antilles,LATAM
+AO,Angola,Middle East & Africa
+AR,Argentina,LATAM
+AS,American Samoa,APAC
+AT,Austria,Europe
+AU,Australia,APAC
+AW,Aruba,LATAM
+AX,Aland Islands,Europe
+AZ,Azerbaijan,Europe
+BA,Bosnia and Herzegovina,Europe
+BB,Barbados,LATAM
+BD,Bangladesh,APAC
+BE,Belgium,Europe
+BF,Burkina Faso,Middle East & Africa
+BG,Bulgaria,Europe
+BH,Bahrain,Middle East & Africa
+BI,Burundi,Middle East & Africa
+BJ,Benin,Middle East & Africa
+BL,Saint Barthelemy,LATAM
+BM,Bermuda,North America
+BN,Brunei,APAC
+BO,Bolivia,LATAM
+BQ,"Bonaire, Saint Eustatius and Saba",LATAM
+BR,Brazil,LATAM
+BS,Bahamas,LATAM
+BT,Bhutan,APAC
+BW,Botswana,Middle East & Africa
+BY,Belarus,Europe
+BZ,Belize,LATAM
+CA,Canada,North America
+CC,Cocos Islands,APAC
+CD,Democratic Republic of the Congo,Middle East & Africa
+CF,Central African Republic,Middle East & Africa
+CG,Republic of the Congo,Middle East & Africa
+CH,Switzerland,Europe
+CI,Ivory Coast,Middle East & Africa
+CK,Cook Islands,APAC
+CL,Chile,LATAM
+CM,Cameroon,Middle East & Africa
+CN,China,APAC
+CO,Colombia,LATAM
+CR,Costa Rica,LATAM
+CS,Serbia and Montenegro,Europe
+CU,Cuba,LATAM
+CV,Cabo Verde,Middle East & Africa
+CW,Curacao,LATAM
+CX,Christmas Island,APAC
+CY,Cyprus,Europe
+CZ,Czechia,Europe
+DE,Germany,Europe
+DJ,Djibouti,Middle East & Africa
+DK,Denmark,Europe
+DM,Dominica,LATAM
+DO,Dominican Republic,LATAM
+DZ,Algeria,Middle East & Africa
+EC,Ecuador,LATAM
+EE,Estonia,Europe
+EG,Egypt,Middle East & Africa
+EH,Western Sahara,Middle East & Africa
+ER,Eritrea,Middle East & Africa
+ES,Spain,Europe
+ET,Ethiopia,Middle East & Africa
+FI,Finland,Europe
+FJ,Fiji,APAC
+FK,Falkland Islands,LATAM
+FM,Micronesia,APAC
+FO,Faroe Islands,Europe
+FR,France,Europe
+GA,Gabon,Middle East & Africa
+GB,United Kingdom,Europe
+GD,Grenada,LATAM
+GE,Georgia,Europe
+GF,French Guiana,LATAM
+GG,Guernsey,Europe
+GH,Ghana,Middle East & Africa
+GI,Gibraltar,Europe
+GL,Greenland,North America
+GM,Gambia,Middle East & Africa
+GN,Guinea,Middle East & Africa
+GP,Guadeloupe,LATAM
+GQ,Equatorial Guinea,Middle East & Africa
+GR,Greece,Europe
+GT,Guatemala,LATAM
+GU,Guam,APAC
+GW,Guinea-Bissau,Middle East & Africa
+GY,Guyana,LATAM
+HK,Hong Kong,APAC
+HN,Honduras,LATAM
+HR,Croatia,Europe
+HT,Haiti,LATAM
+HU,Hungary,Europe
+ID,Indonesia,APAC
+IE,Ireland,Europe
+IL,Israel,Middle East & Africa
+IM,Isle of Man,Europe
+IN,India,APAC
+IO,British Indian Ocean Territory,APAC
+IQ,Iraq,Middle East & Africa
+IR,Iran,Middle East & Africa
+IS,Iceland,Europe
+IT,Italy,Europe
+JE,Jersey,Europe
+JM,Jamaica,LATAM
+JO,Jordan,Middle East & Africa
+JP,Japan,APAC
+KE,Kenya,Middle East & Africa
+KG,Kyrgyzstan,APAC
+KH,Cambodia,APAC
+KI,Kiribati,APAC
+KM,Comoros,Middle East & Africa
+KN,Saint Kitts and Nevis,LATAM
+KP,North Korea,APAC
+KR,South Korea,APAC
+KW,Kuwait,Middle East & Africa
+KY,Cayman Islands,LATAM
+KZ,Kazakhstan,APAC
+LA,Laos,APAC
+LB,Lebanon,Middle East & Africa
+LC,Saint Lucia,LATAM
+LI,Liechtenstein,Europe
+LK,Sri Lanka,APAC
+LR,Liberia,Middle East & Africa
+LS,Lesotho,Middle East & Africa
+LT,Lithuania,Europe
+LU,Luxembourg,Europe
+LV,Latvia,Europe
+LY,Libya,Middle East & Africa
+MA,Morocco,Middle East & Africa
+MC,Monaco,Europe
+MD,Moldova,Europe
+ME,Montenegro,Europe
+MF,Saint Martin,LATAM
+MG,Madagascar,Middle East & Africa
+MH,Marshall Islands,APAC
+MK,North Macedonia,Europe
+ML,Mali,Middle East & Africa
+MM,Myanmar,APAC
+MN,Mongolia,APAC
+MO,Macao,APAC
+MP,Northern Mariana Islands,APAC
+MQ,Martinique,LATAM
+MR,Mauritania,Middle East & Africa
+MS,Montserrat,LATAM
+MT,Malta,Europe
+MU,Mauritius,Middle East & Africa
+MV,Maldives,APAC
+MW,Malawi,Middle East & Africa
+MX,Mexico,LATAM
+MY,Malaysia,APAC
+MZ,Mozambique,Middle East & Africa
+NA,Namibia,Middle East & Africa
+NC,New Caledonia,APAC
+NE,Niger,Middle East & Africa
+NF,Norfolk Island,APAC
+NG,Nigeria,Middle East & Africa
+NI,Nicaragua,LATAM
+NL,Netherlands,Europe
+NO,Norway,Europe
+NP,Nepal,APAC
+NR,Nauru,APAC
+NU,Niue,APAC
+NZ,New Zealand,APAC
+OM,Oman,Middle East & Africa
+PA,Panama,LATAM
+PE,Peru,LATAM
+PF,French Polynesia,APAC
+PG,Papua New Guinea,APAC
+PH,Philippines,APAC
+PK,Pakistan,APAC
+PL,Poland,Europe
+PM,Saint Pierre and Miquelon,North America
+PN,Pitcairn,APAC
+PR,Puerto Rico,LATAM
+PS,Palestinian Territory,Middle East & Africa
+PT,Portugal,Europe
+PW,Palau,APAC
+PY,Paraguay,LATAM
+QA,Qatar,Middle East & Africa
+RE,Reunion,Middle East & Africa
+RO,Romania,Europe
+RS,Serbia,Europe
+RU,Russia,Europe
+RW,Rwanda,Middle East & Africa
+SA,Saudi Arabia,Middle East & Africa
+SB,Solomon Islands,APAC
+SC,Seychelles,Middle East & Africa
+SD,Sudan,Middle East & Africa
+SE,Sweden,Europe
+SG,Singapore,APAC
+SH,Saint Helena,Middle East & Africa
+SI,Slovenia,Europe
+SJ,Svalbard and Jan Mayen,Europe
+SK,Slovakia,Europe
+SL,Sierra Leone,Middle East & Africa
+SM,San Marino,Europe
+SN,Senegal,Middle East & Africa
+SO,Somalia,Middle East & Africa
+SR,Suriname,LATAM
+SS,South Sudan,Middle East & Africa
+ST,Sao Tome and Principe,Middle East & Africa
+SV,El Salvador,LATAM
+SX,Sint Maarten,LATAM
+SY,Syria,Middle East & Africa
+SZ,Eswatini,Middle East & Africa
+TC,Turks and Caicos Islands,LATAM
+TD,Chad,Middle East & Africa
+TG,Togo,Middle East & Africa
+TH,Thailand,APAC
+TJ,Tajikistan,APAC
+TK,Tokelau,APAC
+TL,Timor Leste,APAC
+TM,Turkmenistan,APAC
+TN,Tunisia,Middle East & Africa
+TO,Tonga,APAC
+TR,Türkiye,Europe
+TT,Trinidad and Tobago,LATAM
+TV,Tuvalu,APAC
+TW,Taiwan,APAC
+TZ,Tanzania,Middle East & Africa
+UA,Ukraine,Europe
+UG,Uganda,Middle East & Africa
+UM,United States Minor Outlying Islands,APAC
+US,United States,North America
+UY,Uruguay,LATAM
+UZ,Uzbekistan,APAC
+VA,Vatican,Europe
+VC,Saint Vincent and the Grenadines,LATAM
+VE,Venezuela,LATAM
+VG,British Virgin Islands,LATAM
+VI,U.S. Virgin Islands,LATAM
+VN,Vietnam,APAC
+VU,Vanuatu,APAC
+WF,Wallis and Futuna,APAC
+WS,Samoa,APAC
+XK,Kosovo,Europe
+YE,Yemen,Middle East & Africa
+YT,Mayotte,Middle East & Africa
+ZA,South Africa,Middle East & Africa
+ZM,Zambia,Middle East & Africa
+ZW,Zimbabwe,Middle East & Africa

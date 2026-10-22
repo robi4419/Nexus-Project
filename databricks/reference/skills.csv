@@ -30,7 +30,7 @@ Solidity,Programming Languages,Solidity,true
 VBA,Programming Languages,VBA|Visual Basic for Applications,false
 HTML,Programming Languages,HTML|HTML5,false
 CSS,Programming Languages,CSS|CSS3|SCSS|Sass,false
-React,Web & Mobile Frameworks,React|ReactJS|React.js|-React Native,true
+React,Web & Mobile Frameworks,React|ReactJS|React.js|-React Native|-React quickly|-React promptly|-React swiftly|-React calmly|-React appropriately|-React accordingly|-React immediately,true
 React Native,Web & Mobile Frameworks,React Native,true
 Next.js,Web & Mobile Frameworks,Next.js|NextJS,false
 Angular,Web & Mobile Frameworks,Angular|AngularJS,true
@@ -75,7 +75,7 @@ Delta Lake,Data Engineering,Delta Lake,false
 Apache Iceberg,Data Engineering,Apache Iceberg|Iceberg tables,false
 Fivetran,Data Engineering,Fivetran,false
 Airbyte,Data Engineering,Airbyte,false
-Informatica,Data Engineering,Informatica,false
+Informatica,Data Engineering,Informatica|-masteropleiding in Informatica|-bacheloropleiding in Informatica|-opleiding Informatica|-opleiding in Informatica|-HBO Informatica|-WO Informatica|-studie Informatica|-Technische Informatica|-bachelor in Informatica|-laurea in Informatica|-Ingegneria Informatica,false
 SSIS,Data Engineering,SSIS|SQL Server Integration Services,false
 Azure Data Factory,Data Engineering,Azure Data Factory,false
 AWS Glue,Data Engineering,AWS Glue,false
@@ -145,7 +145,7 @@ Supabase,Databases,Supabase,false
 NoSQL,Databases,NoSQL,false
 AWS,Cloud,AWS|Amazon Web Services,true
 Microsoft Azure,Cloud,Azure|Microsoft Azure,false
-Google Cloud,Cloud,GCP|Google Cloud|Google Cloud Platform,false
+Google Cloud,Cloud,GCP|Google Cloud|Google Cloud Platform|-ICH-GCP|-ICH GCP|-ICH/GCP|-GCP/ICH|-Good Clinical Practice (GCP)|-Good Clinical Practices (GCP),false
 AWS Lambda,Cloud,AWS Lambda|Lambda functions,false
 Amazon S3,Cloud,S3|Amazon S3|AWS S3,true
 Amazon EC2,Cloud,EC2|Amazon EC2,true
@@ -345,9 +345,9 @@ Blender,Design Tools,Blender,true
 Design Systems,Design Tools,design system|design systems,false
 Wireframing,Design Tools,wireframing|wireframes|wireframe,false
 Prototyping,Design Tools,prototyping,false
-Workday,HR & Recruiting Tools,Workday,true
+Workday,HR & Recruiting Tools,Workday|-log in to Workday|-log into Workday|-login to Workday,true
 Greenhouse,HR & Recruiting Tools,Greenhouse|-Greenhouse Gas,true
-Lever,HR & Recruiting Tools,Lever,true
+Lever,HR & Recruiting Tools,Lever|-Lever les|-Lever des|-Lever le|-Lever la,true
 BambooHR,HR & Recruiting Tools,BambooHR,false
 ADP,HR & Recruiting Tools,ADP,true
 Gusto,HR & Recruiting Tools,Gusto,true

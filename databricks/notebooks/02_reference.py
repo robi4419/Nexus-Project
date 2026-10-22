@@ -3,7 +3,8 @@
 # MAGIC # Reference data
 # MAGIC
 # MAGIC Loads the version-controlled lookup files `databricks/reference/*.csv` (uploaded by the bundle) into
-# MAGIC `<catalog>.silver.ref_locations` and `<catalog>.silver.ref_skills`. Both tables are replaced on every run,
+# MAGIC `<catalog>.silver.ref_locations`, `ref_countries`, `ref_industries`, `ref_job_types`, `ref_levels` and `ref_skills`.
+# MAGIC The tables are replaced on every run,
 # MAGIC so changing a mapping only takes editing the CSV and running `databricks bundle deploy`.
 # MAGIC
 # MAGIC `ref_skills` also gets the skill list's `taxonomy_version` (see `transform/skills.py`).
@@ -63,6 +64,19 @@ def replace_table(frame: pd.DataFrame, table: str) -> None:
 locations = read_reference_csv("locations.csv")
 locations["country_code"] = [code or None for code in locations["country_code"]]  # regions: "" -> NULL
 replace_table(locations, "ref_locations")
+
+# Every country with its region (GeoNames, CC BY 4.0); cities.csv is only read by the location parser in Python.
+replace_table(read_reference_csv("countries.csv"), "ref_countries")
+
+# Each source's own values -> ours. An empty target means "reviewed, deliberately not mapped": stored as NULL.
+for file_name, target, table in [
+    ("industries.csv", "industry", "ref_industries"),
+    ("job_types.csv", "job_type", "ref_job_types"),
+    ("levels.csv", "seniority", "ref_levels"),
+]:
+    mapping = read_reference_csv(file_name)
+    mapping[target] = [value or None for value in mapping[target]]
+    replace_table(mapping, table)
 
 from transform.skills import SkillMatcher
 
