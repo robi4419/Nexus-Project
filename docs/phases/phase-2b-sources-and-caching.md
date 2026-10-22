@@ -20,7 +20,7 @@
 - [x] 2b.7 Bronze tasks for both sources
 - [x] 2b.8 Silver: conform both sources; `is_remote`; mappings; per-source checks
 - [x] 2b.9 Himalayas retention: purge expired jobs from bronze (landing is purged by the DAG since 2b.6)
-- [ ] 2b.10 Verify end to end, and hand-check the new sources
+- [x] 2b.10 Verify end to end, and hand-check the new sources
 - [ ] 2b.11 Commit, PR and merge
 
 ---
@@ -251,6 +251,43 @@ The `ingest_himalayas` DAG runs daily at 18:00 UTC: `ensure_landing_volume`, the
 - All error checks passed.
 
 `VACUUM` removes a purged file from the second daily run after the purge.
+
+## Hand-check of the new sources (2b.10)
+
+`review_skills.py` now samples **per source**, spread over each source's industries. Jobs without an industry form their own group, which matters because half of Arbeitnow has none. It also shows each sampled job's seniority and locations.
+
+**2026-10-22:** seed `2026-10-22`, 72 jobs (Arbeitnow 39 over 25 industry groups, Himalayas 33 over 16). Skills were judged per job × skill pair, as in Phase 2. Claude did the first pass and the user reviewed it.
+
+| Skills | Pairs | Right | Wrong | Borderline | Precision (strict / lenient) |
+|---|---|---|---|---|---|
+| Arbeitnow, before fixes | 126 | 118 | 8 | 0 | 93.7% / 93.7% |
+| Himalayas, before fixes | 147 | 139 | 5 | 3 | 94.6% / 96.6% |
+| Both, before fixes | 273 | 257 | 13 | 3 | 94.1% / 95.2% |
+| **Both, after fixes** | 268 | 257 | 8 | 3 | **95.9% / 97.0%** |
+
+**Wrong matches:**
+- **Another meaning or language (fixed):** Informatica in a Dutch degree ("masteropleiding in Informatica"), "React quickly to…", French "Lever les obstacles", and GCP in "ICH-GCP" (Good Clinical Practice, about 47 clinical jobs in silver).
+- **Boilerplate:** "log in to Workday to apply" (fixed). An applicant privacy notice naming GDPR (known limit).
+- **Company, customer, competitor or partner lists (known limit, as in Phase 2):** MariaDB, SAP and SuccessFactors, Generative AI, Datadog, Linux.
+- **A recruiter posting** whose title names the employer ("… | Deel"). The employer-name rule only checks `company_name` (known limit).
+
+**Fixes:** exclusions on Informatica, React, Lever, Google Cloud and Workday, each with a trap test. Re-running the same 72 jobs removed exactly those 5 matches.
+
+On all data, the next Job run re-matched every job (new `matcher_version`) and every error check passed. 19 jobs lost their only, false, skill matches: 4 Arbeitnow, 9 Himalayas and 6 Jobicy. Jobs with at least one skill are now Arbeitnow 65.0%, Himalayas 89.2% and Jobicy 79.5%, and Software Engineering coverage stays at 93.4%.
+
+**Not changed, by choice:**
+- Misses: the alias "GoLang", the skills MuleSoft (34 jobs), Bitbucket (41) and BrowserStack (8), and an uppercase "GIT".
+- HTML entities left in 81 Himalayas titles, 4 Arbeitnow titles and 15 Jobicy company names ("&#x28;3-Month Contract&#x2f;…", "&amp;").
+
+**Seniority:** 71 of 72 right.
+- The miss: French "Responsable Service Technique", a head of department, got Mid from the source level. "Responsable" ranges from sales rep to department head, so there's no rule for it (known limit).
+- Borderline: a Himalayas "Program Manager" became Lead through `levels.csv` (Manager → Lead).
+
+**Locations:** all 72 placed correctly or honestly unknown. Lacq (about 700 people) and Widnau aren't in GeoNames' 1,000+ list.
+
+**Noticed:** Arbeitnow's tag-based industries are coarse. A React Native engineer landed under Data Science & Analytics, and a welding support engineer under Software Engineering.
+
+The scratch copies of Himalayas job data used for profiling and this review were deleted afterwards (decision 18).
 
 ## Silver changes (2b.8)
 

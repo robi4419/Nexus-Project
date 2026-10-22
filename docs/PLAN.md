@@ -82,7 +82,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Reference data for more sources: complete countries, GeoNames cities, industry, job-type and level mappings.
 - [x] Arbeitnow ingestion: full daily sync of all jobs (`is_remote` comes with silver).
 - [x] Himalayas ingestion: incremental, Tech categories only, expired jobs purged from landing per its API terms (bronze in 2b.9).
-- [ ] Silver and checks for all three sources; a hand-check of the new sources.
+- [x] Silver and checks for all three sources; a hand-check of the new sources (skill precision 95.9%).
 
 ### Phase 3: dbt models
 - [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).
