@@ -145,7 +145,9 @@ spark.sql(f"""
     SELECT cache_key, '{matcher_version}', match_skills(title, description_text, company_name), current_timestamp()
     FROM cache_misses
 """)
-print(f"Matched {misses} new or changed job texts in {time.perf_counter() - start:.1f} s")
+print(
+    f"Matched {misses} new or changed job texts in {time.perf_counter() - start:.1f} s"
+)
 
 # Safety net: job_skills is built with an inner join, so a job without a cache row would silently lose its skills.
 uncached = spark.sql(f"""
@@ -154,7 +156,9 @@ uncached = spark.sql(f"""
         USING (cache_key)
 """).first()[0]
 if uncached:
-    raise Exception(f"{uncached} jobs have no cached skill match for matcher version {matcher_version}")
+    raise Exception(
+        f"{uncached} jobs have no cached skill match for matcher version {matcher_version}"
+    )
 
 # COMMAND ----------
 
@@ -183,7 +187,9 @@ deleted = spark.sql(f"""
     DELETE FROM {cache_table}
     WHERE matcher_version <> '{matcher_version}' OR cache_key NOT IN (SELECT cache_key FROM job_keys)
 """).first()[0]
-print(f"Removed {deleted} cache rows no longer needed; cache size {spark.table(cache_table).count()} rows")
+print(
+    f"Removed {deleted} cache rows no longer needed; cache size {spark.table(cache_table).count()} rows"
+)
 
 # COMMAND ----------
 
