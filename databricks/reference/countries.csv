@@ -8,6 +8,7 @@ AL,Albania,Europe
 AM,Armenia,Europe
 AN,Netherlands Antilles,LATAM
 AO,Angola,Middle East & Africa
+AQ,Antarctica,Antarctica
 AR,Argentina,LATAM
 AS,American Samoa,APAC
 AT,Austria,Europe
@@ -32,6 +33,7 @@ BQ,"Bonaire, Saint Eustatius and Saba",LATAM
 BR,Brazil,LATAM
 BS,Bahamas,LATAM
 BT,Bhutan,APAC
+BV,Bouvet Island,Antarctica
 BW,Botswana,Middle East & Africa
 BY,Belarus,Europe
 BZ,Belize,LATAM
@@ -88,11 +90,13 @@ GN,Guinea,Middle East & Africa
 GP,Guadeloupe,LATAM
 GQ,Equatorial Guinea,Middle East & Africa
 GR,Greece,Europe
+GS,South Georgia and the South Sandwich Islands,Antarctica
 GT,Guatemala,LATAM
 GU,Guam,APAC
 GW,Guinea-Bissau,Middle East & Africa
 GY,Guyana,LATAM
 HK,Hong Kong,APAC
+HM,Heard Island and McDonald Islands,Antarctica
 HN,Honduras,LATAM
 HR,Croatia,Europe
 HT,Haiti,LATAM
@@ -212,6 +216,7 @@ SY,Syria,Middle East & Africa
 SZ,Eswatini,Middle East & Africa
 TC,Turks and Caicos Islands,LATAM
 TD,Chad,Middle East & Africa
+TF,French Southern Territories,Antarctica
 TG,Togo,Middle East & Africa
 TH,Thailand,APAC
 TJ,Tajikistan,APAC

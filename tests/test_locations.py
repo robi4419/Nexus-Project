@@ -142,6 +142,11 @@ def locator() -> Locator:
         ("Viet Nam", ("Vietnam", "country", "VN", "APAC")),  # not a village in Ukraine
         ("Korea, Republic of", ("South Korea", "country", "KR", "APAC")),  # not Koréa in Ivory Coast
         ("Russian Federation", ("Russia", "country", "RU", "Europe")),
+        # an uninhabited territory, listed by Himalayas jobs that name every country
+        (
+            "South Georgia and the South Sandwich Islands",
+            ("South Georgia and the South Sandwich Islands", "country", "GS", "Antarctica"),
+        ),
         ("Remote job", ("Anywhere", "worldwide", None, "Worldwide")),
         ("Werken op afstand", ("Anywhere", "worldwide", None, "Worldwide")),
         ("Remote - EMEA", ("EMEA", "region", None, "EMEA")),
