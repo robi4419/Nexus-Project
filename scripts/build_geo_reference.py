@@ -20,8 +20,12 @@ from ingestion.common.http import build_session  # noqa: E402
 GEONAMES = "https://download.geonames.org/export/dump"
 REFERENCE = REPO / "databricks" / "reference"
 
-# GeoNames gives each country a continent; our regions follow it, with the overrides below.
-CONTINENT_REGIONS = {"EU": "Europe", "AF": "Middle East & Africa", "AS": "APAC", "OC": "APAC", "SA": "LATAM", "NA": "LATAM"}
+# GeoNames gives each country a continent; our regions follow it, with the overrides below. "AN" holds the uninhabited
+# Antarctic territories (Antarctica, Bouvet Island, South Georgia…): some Himalayas jobs list them among every country.
+CONTINENT_REGIONS = {
+    "EU": "Europe", "AF": "Middle East & Africa", "AS": "APAC", "OC": "APAC", "SA": "LATAM", "NA": "LATAM",
+    "AN": "Antarctica",
+}
 REGION_OVERRIDES = {
     # North America means the US and Canada (plus Bermuda, Greenland, Saint Pierre); the rest of it is LATAM.
     **dict.fromkeys(["US", "CA", "BM", "GL", "PM"], "North America"),
@@ -39,7 +43,7 @@ LATIN_NAME = re.compile(r"[A-Za-zÀ-ÖØ-öø-ɏ][A-Za-zÀ-ÖØ-öø-ɏ' .\-]*")
 
 
 def countries(session) -> dict[str, tuple[str, str]]:
-    """{ISO code: (name, region)} for every country GeoNames lists, except Antarctica's territories."""
+    """{ISO code: (name, region)} for every country and territory GeoNames lists."""
     text = session.get(f"{GEONAMES}/countryInfo.txt").text
     result = {}
     for line in text.splitlines():
@@ -47,8 +51,6 @@ def countries(session) -> dict[str, tuple[str, str]]:
             continue
         fields = line.split("\t")
         code, name, continent = fields[0], fields[4].strip(), fields[8]  # BQ's name ends in a space
-        if continent == "AN":
-            continue
         result[code] = (NAME_OVERRIDES.get(code, name), REGION_OVERRIDES.get(code, CONTINENT_REGIONS[continent]))
     return result
 

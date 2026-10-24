@@ -21,7 +21,7 @@
 - [x] 2b.8 Silver: conform both sources; `is_remote`; mappings; per-source checks
 - [x] 2b.9 Himalayas retention: purge expired jobs from bronze (landing is purged by the DAG since 2b.6)
 - [x] 2b.10 Verify end to end, and hand-check the new sources
-- [ ] 2b.11 Commit, PR and merge
+- [x] 2b.11 Commit, PR and merge (PR #4, merged 2026-10-22)
 
 ---
 
@@ -107,6 +107,29 @@
     - Every ISO 3166-1 short and common name was run through `Locator`; the 21 that didn't resolve to their country are now aliases. Source: `iso_3166-1.json` of the Debian iso-codes project, the list `pycountry` uses.
     - GeoNames' name for BQ had a trailing space: fixed in `countries.csv`, and the build script now strips names.
 
+### After Phase 2b
+
+27. **(2026-10-24) Token-based skill matching replaces the per-skill regexes and the prefilter.** Written by the user, step by step, on the branch `token-skill-matcher`.
+    - **How it works:** `SkillMatcher` splits a text into tokens once, with one regex. Then it walks a trie (nested dictionaries, one level per lowercased token) of every alias and exclusion phrase, starting from every token. One pass finds every skill, however many there are.
+      - A token is a run of letters, digits, `_`, `+` or `#`, with ".word" continuations and an optional leading dot ("C++", "C#", "Node.js", ".NET").
+      - Any other non-space character is a token of its own, and whitespace is skipped.
+      - Per skill, an exclusion blocks the matches it overlaps, and the leftmost-longest, non-overlapping matches count.
+      - `match`, `snippets`, the two versions and `skills.csv` are unchanged.
+    - **Measured on the 5,880 downloaded Arbeitnow jobs:** 2.09 → **0.44 ms per job (4.8×)**. Results were identical in 5,876 jobs; the other 4 are the first deliberate change below. All 15 rule cases and 62 real-list traps of the tests gave the same results.
+    - **Two deliberate changes:**
+      - Punctuation inside an alias may have spaces around it: "CI/ CD" is CI/CD, "C / C++" gives C, and "ETL / ELT" is one ETL mention instead of two.
+      - The employer rule applies exclusions too, so a "Go To Market Partners" posting asking for Go keeps Go. On the 2,473 Arbeitnow company names, this changed nothing.
+    - **Rejected:**
+      - **Aho-Corasick:** it finds substrings, not words. On 400 jobs that's 8,666 raw hits against 2,127 whole-word ones ("go" in "Google", "git" in "digital"), all needing a word-boundary filter in Python. It also needs a compiled library, meaning a `%pip install` in every serverless task, and it would only speed up the trie walk, about 0.15 ms per job.
+      - **spaCy's PhraseMatcher:** the same idea in a large library, and its tokenizer splits "C++" and "Node.js".
+      - **FlashText:** unmaintained since 2018, one case rule per matcher, no exclusions.
+      - **ML or LLM extraction:** it would address the remaining context errors (company blurbs, customer lists), at a cost per job and without determinism. That stays Phase 7's comparison.
+28. **(2026-10-24) The uninhabited Antarctic territories are countries with the region "Antarctica".**
+    - On 2026-10-23, three Himalayas jobs listed long country lists (194, 96 and 45 places) that included Antarctica, Bouvet Island, French Southern Territories, Heard Island and McDonald Islands, and South Georgia and the South Sandwich Islands.
+    - The build script used to skip them (GeoNames' continent "AN"), so they came out unknown and failed the error check.
+    - Now the continent maps to its own region "Antarctica", and `countries.csv` has 252 rows. Only that file was regenerated, so `cities.csv` didn't pick up a day's GeoNames changes.
+    - Rejected: dropping them from `job_locations` (a new "ignored" concept) and assigning them to the nearest existing region (arbitrary).
+
 ## How data flows in Phase 2b
 
 ```
@@ -122,7 +145,7 @@ reference CSVs ─────────────────────�
 
 **Measured first (2026-10-21, all 1,447 Jobicy jobs, locally):** `html_to_text` takes 0.33 s in total (0.23 ms per job), but `SkillMatcher.match` takes **58.7 s** (40.6 ms per job). It ran all 384 skills' regexes over every description, while a job mentions only a few. That changed the plan (decision 10).
 
-**1. A prefilter in `SkillMatcher`.** Each skill's **anchors** are the first word of each of its aliases, lowercased ("Node.js" → `node`, ".NET" → `net`, "C++" → `c`). Each job's text is split into a set of words once. A skill whose anchors are all missing from that set can't match, so its regex is skipped.
+**1. A prefilter in `SkillMatcher`** (replaced on 2026-10-24 by token-based matching, decision 27; the cache below stays). Each skill's **anchors** are the first word of each of its aliases, lowercased ("Node.js" → `node`, ".NET" → `net`, "C++" → `c`). Each job's text is split into a set of words once. A skill whose anchors are all missing from that set can't match, so its regex is skipped.
 - Results can't change: an alias can only match where its first word stands as a whole word in the text.
 - A test compares the prefiltered and the full search on all rule and trap sentences.
 - A prototype on all 1,447 real jobs gave **identical** results, **10.8× faster** (58.3 s → 5.4 s), with 29 of 384 regexes run per job on average.
@@ -357,7 +380,7 @@ transform/locations.py                  ← parse and locate raw location string
 ingestion/sources/arbeitnow/            ← client.py, land.py
 ingestion/sources/himalayas/            ← client.py, land.py (incremental state, category filter)
 airflow/dags/ingest_arbeitnow.py, ingest_himalayas.py
-tests/  test_skills.py (prefilter, matcher_version), test_locations.py, test_arbeitnow_*.py, test_himalayas_*.py, fixtures/ (trimmed real pages)
+tests/  test_skills.py (tokens, matcher_version), test_locations.py, test_arbeitnow_*.py, test_himalayas_*.py, fixtures/ (trimmed real pages)
 ```
 
 ## Pitfalls

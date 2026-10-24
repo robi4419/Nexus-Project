@@ -32,9 +32,17 @@ catalog = dbutils.widgets.get("catalog")
 bundle_root = dbutils.widgets.get("bundle_root") or os.path.abspath("../..")
 seed = dbutils.widgets.get("seed")
 sample_size = int(dbutils.widgets.get("sample_size"))
-sources = [source.strip() for source in dbutils.widgets.get("sources").split(",") if source.strip()]
+sources = [
+    source.strip()
+    for source in dbutils.widgets.get("sources").split(",")
+    if source.strip()
+]
 # A SQL condition that keeps the chosen sources (or every source when none is given).
-source_filter = "j.source IN (" + ", ".join(f"'{source}'" for source in sources) + ")" if sources else "true"
+source_filter = (
+    "j.source IN (" + ", ".join(f"'{source}'" for source in sources) + ")"
+    if sources
+    else "true"
+)
 
 # The bundle uploads the repo's transform/ package next to databricks/; make it importable.
 if bundle_root not in sys.path:
@@ -43,7 +51,9 @@ if bundle_root not in sys.path:
 from transform.skills import SkillMatcher
 
 matcher = SkillMatcher.from_csv(f"{bundle_root}/databricks/reference/skills.csv")
-print(f"Skill list version {matcher.taxonomy_version}, seed {seed!r}, sample size about {sample_size}")
+print(
+    f"Skill list version {matcher.taxonomy_version}, seed {seed!r}, sample size about {sample_size}"
+)
 
 # COMMAND ----------
 
@@ -79,11 +89,14 @@ sample = spark.sql(f"""
 
 for source in sorted({job["source"] for job in sample}):
     picked = [job for job in sample if job["source"] == source]
-    print(f"{source}: {len(picked)} jobs sampled from {len({job['industry'] for job in picked})} industries")
+    print(
+        f"{source}: {len(picked)} jobs sampled from {len({job['industry'] for job in picked})} industries"
+    )
 
 # The sampled jobs as a temp view, for the seniority and location sections.
 spark.createDataFrame(
-    [(job["source"], job["source_job_id"]) for job in sample], "source STRING, source_job_id STRING"
+    [(job["source"], job["source_job_id"]) for job in sample],
+    "source STRING, source_job_id STRING",
 ).createOrReplaceTempView("sampled_jobs")
 
 # COMMAND ----------
@@ -98,12 +111,27 @@ for job in sample:
     found = matcher.snippets(job["title"], job["description_text"], job["company_name"])
     for match in found:
         matches.append(
-            (job["source"], job["industry"], job["source_job_id"], job["title"],
-             match["skill"], match["field"], match["snippet"])
+            (
+                job["source"],
+                job["industry"],
+                job["source_job_id"],
+                job["title"],
+                match["skill"],
+                match["field"],
+                match["snippet"],
+            )
         )
     if not found:
         matches.append(
-            (job["source"], job["industry"], job["source_job_id"], job["title"], None, None, "(no skills found)")
+            (
+                job["source"],
+                job["industry"],
+                job["source_job_id"],
+                job["title"],
+                None,
+                None,
+                "(no skills found)",
+            )
         )
 
 print(f"{sum(match[4] is not None for match in matches)} matches in {len(sample)} jobs")
@@ -168,7 +196,11 @@ LOWER_WORD = re.compile(r"(?<![\w.+#-])[a-z][a-z0-9.+#-]*[a-z0-9+#]")
 companies = defaultdict(set)  # term -> companies whose postings use it
 jobs_capitalised = Counter()  # term -> jobs using it capitalised
 jobs_lowercase = Counter()  # lowercase word -> jobs using it in lowercase
-for job in spark.table(f"{catalog}.silver.jobs").select("company_name", "title", "description_text").collect():
+for job in (
+    spark.table(f"{catalog}.silver.jobs")
+    .select("company_name", "title", "description_text")
+    .collect()
+):
     text = f"{job['title']}\n{job['description_text'] or ''}"
     terms = set(TERM.findall(text))
     for term in terms:
@@ -186,4 +218,8 @@ candidates = [
 candidates.sort(key=lambda candidate: (-candidate[1], candidate[0]))
 
 print(f"{len(candidates)} candidate terms")
-display(spark.createDataFrame(candidates[:150], "term STRING, companies INT, jobs INT, jobs_lowercase INT"))
+display(
+    spark.createDataFrame(
+        candidates[:150], "term STRING, companies INT, jobs INT, jobs_lowercase INT"
+    )
+)

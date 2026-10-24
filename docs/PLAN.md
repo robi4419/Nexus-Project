@@ -83,6 +83,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Arbeitnow ingestion: full daily sync of all jobs (`is_remote` comes with silver).
 - [x] Himalayas ingestion: incremental, Tech categories only, expired jobs purged from landing per its API terms (bronze in 2b.9).
 - [x] Silver and checks for all three sources; a hand-check of the new sources (skill precision 95.9%).
+- [x] After Phase 2b: token-based skill matching, one pass over the text's tokens instead of a regex per skill (4.8× faster, same results; decision 27).
 
 ### Phase 3: dbt models
 - [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).

@@ -38,7 +38,8 @@ SKILL_CATEGORIES = {
     "Certifications",
 }
 LOCATION_TYPES = {"country", "region", "worldwide"}
-REGIONS = {"North America", "LATAM", "Europe", "Middle East & Africa", "APAC", "EMEA", "Worldwide"}
+# Antarctica: the uninhabited territories some Himalayas jobs list among every country (Phase 2b, decision 28)
+REGIONS = {"North America", "LATAM", "Europe", "Middle East & Africa", "APAC", "EMEA", "Worldwide", "Antarctica"}
 
 # Jobicy's official location list (GET /api/v2/remote-jobs?get=locations, 2026-10-15).
 JOBICY_LOCATIONS = [
