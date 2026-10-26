@@ -22,15 +22,15 @@ Things to handle:
  Unity Catalog Volume  /Volumes/<catalog>/bronze/landing/<source>/ingest_date=YYYY-MM-DD/run=<run id>/*.json
      │  (2) Databricks Job "transform_jobs": Auto Loader loads each new file once
      ▼
- BRONZE  jobicy_raw · frankfurter_raw   (append-only, one row per landed file, JSON kept as VARIANT)
+ BRONZE  jobicy_raw · arbeitnow_raw · himalayas_raw · frankfurter_raw   (append-only, one row per landed file, VARIANT)
      │  (3) same Job: rebuild silver (clean, normalise, dedup, skills, salaries in USD), then checks
      ▼
- SILVER  jobs · job_locations · job_industries · job_types · job_skills · fx_rates · ref_skills · ref_locations
+ SILVER  jobs · job_locations · job_industries · job_types · job_skills · fx_rates · ref_* (skills, countries, mappings)
      │  (4) Airflow runs dbt build: staging → intermediate → marts, plus tests
      ▼
- GOLD (dbt)  dim_skill · dim_geo · dim_industry · dim_company · dim_date
-             fct_job_postings · fct_job_skill
-             agg_skill_demand_by_country_month · skill_co_occurrence · salary_by_skill
+ GOLD (dbt)  dim_date · dim_skill · dim_country · dim_company · dim_industry · dim_seniority
+             fct_job_postings · fct_job_skills · bridge_job_locations · bridge_job_industries · bridge_job_types
+             agg_skill_demand_by_country_month · agg_skill_co_occurrence · agg_salary_by_skill
      │  (5)
      ▼
  Databricks AI/BI dashboards (filters: country, industry, level, job type, date)
@@ -53,6 +53,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [Phase 1: Ingestion](phases/phase-1-ingestion.md)
 - [Phase 2: Bronze and Silver in Databricks](phases/phase-2-bronze-silver.md)
 - [Phase 2b: More sources and incremental silver](phases/phase-2b-sources-and-caching.md)
+- [Phase 3: dbt models](phases/phase-3-dbt-models.md)
 
 ### Phase 0: Fix the scaffolding
 - [x] `airflow/Dockerfile` extending `apache/airflow:3.3.2` with `apache-airflow-providers-databricks`; install dbt in a separate virtualenv inside the image (dbt and Airflow pin conflicting dependencies).
