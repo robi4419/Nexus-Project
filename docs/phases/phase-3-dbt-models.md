@@ -12,8 +12,8 @@
 
 ## Progress
 - [x] 3.1 Branch, plan doc, `PLAN.md`
-- [ ] 3.2 Project setup: `dbt_utils` package, sources on silver (tests, freshness), project config
-- [ ] 3.3 Staging models, one per silver table, with tests
+- [x] 3.2 Project setup: `dbt_utils` package, sources on silver (tests, freshness), project config
+- [x] 3.3 Staging models, one per silver table, with tests
 - [ ] 3.4 Intermediate models: job postings with the salary-plausibility flag, skill pairs
 - [ ] 3.5 Dimensions: date, skill, country, company, industry, seniority (seed)
 - [ ] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types
@@ -127,4 +127,5 @@ docs/er-diagram.*        ← exported from DrawDB
 - **Primary-key columns must be `NOT NULL`** before Databricks accepts the constraint.
 - **Region-level places have no country:** "EMEA", "Europe" and "Worldwide" have a NULL `country_code`, so a foreign key to `dim_country` must allow that, and aggregates must keep them by region.
 - **Dates are UTC**, as in silver.
+- **A stale partial parse can hide new tests.** dbt reuses its last parse (`target/partial_parse.msgpack`), and dbt Power User re-parses in the background on every save. If a test or model you wrote is missing from the run, add `--no-partial-parse` once.
 - **`dbt_packages/`, `target/` and `logs/` are generated** and stay out of git (already in `.gitignore`). `package-lock.yml` is committed.

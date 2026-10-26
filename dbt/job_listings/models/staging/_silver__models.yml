@@ -1,0 +1,86 @@
+version: 2
+
+models:
+  - name: stg_silver__jobs
+    description: "One row per job posting from silver.jobs (Jobicy, Arbeitnow and Himalayas), with the surrogate key job_key. Leaves out the description text, raw levels and raw locations."
+    columns:
+      - name: job_key
+        description: "Surrogate key: md5 hash of source and source_job_id. Joins jobs to the skill, location, industry and type models."
+        data_tests: [unique, not_null]
+      - name: source
+        description: "The API the job came from: jobicy, arbeitnow or himalayas."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["jobicy", "arbeitnow", "himalayas"]
+      - name: seniority
+        description: "Seniority from the job title, else from the source's level, else Unspecified."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  [
+                    "Intern",
+                    "Junior",
+                    "Mid",
+                    "Senior",
+                    "Lead",
+                    "Director",
+                    "Executive",
+                    "Unspecified",
+                  ]
+  - name: stg_silver__job_skills
+    description: "One row per job x skill from silver.job_skills, with the surrogate key job_key."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "skill"]
+    columns:
+      - name: job_key
+        description: "Surrogate key: md5 hash of source and source_job_id."
+        data_tests: [not_null]
+  - name: stg_silver__job_locations
+    description: "One row per job x location from silver.job_locations, with the surrogate key job_key."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "location_raw"]
+    columns:
+      - name: job_key
+        description: "Surrogate key: md5 hash of source and source_job_id."
+        data_tests: [not_null]
+      - name: location_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["city", "country", "region", "worldwide", "unknown"]
+  - name: stg_silver__job_industries
+    description: "One row per job x industry from silver.job_industries, with the surrogate key job_key."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "industry"]
+    columns:
+      - name: job_key
+        description: "Surrogate key: md5 hash of source and source_job_id."
+        data_tests: [not_null]
+  - name: stg_silver__job_types
+    description: "One row per job x job_type from silver.job_types, with the surrogate key job_key."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "job_type"]
+    columns:
+      - name: job_key
+        description: "Surrogate key: md5 hash of source and source_job_id."
+        data_tests: [not_null]
+  - name: stg_silver__ref_skills
+    description: "One row per skill from silver.ref_skills. Leaves out the aliases and case sensitive flag."
+    columns:
+      - name: skill
+        data_tests: [unique, not_null]
+  - name: stg_silver__ref_countries
+    description: "One row per country from silver.ref_countries."
+    columns:
+      - name: country_code
+        data_tests: [unique, not_null]
