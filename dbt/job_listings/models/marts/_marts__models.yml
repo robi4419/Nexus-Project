@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: dim_skill
+    description: "One row per skill in the skill taxonomy (silver.ref_skills), including skills no job mentions yet."
+    columns:
+      - name: skill
+        description: "Skill name as written in the taxonomy. Primary key, referenced by fct_job_skills."
+        data_tests: [unique, not_null]
+      - name: category
+        description: "Taxonomy category, e.g. Programming Languages or CRM & Sales Tools."
+        data_tests: [not_null]
+      - name: taxonomy_version
+        description: "12-character fingerprint of the skill list's content. Changes whenever skills.csv changes."
+  - name: dim_country
+    description: "One row per country or territory in silver.ref_countries, including those without jobs. Regions, Worldwide and unknown places have no row here; their locations carry a NULL country_code."
+    columns:
+      - name: country_code
+        description: "Two-letter ISO country code. Primary key, referenced by bridge_job_locations."
+        data_tests: [unique, not_null]
+      - name: country_name
+        description: "Country name in English."
+        data_tests: [not_null]
+      - name: region
+        description: "Region the country belongs to: North America, LATAM, Europe, Middle East & Africa or APAC."
+        data_tests: [not_null]
+  - name: dim_industry
+    description: "One row per industry used by at least one job, from silver.job_industries. The sources' industry names are mapped to one shared list (industries.csv)."
+    columns:
+      - name: industry
+        description: "Industry name. Primary key, referenced by bridge_job_industries."
+        data_tests: [unique, not_null]
+  - name: dim_seniority
+    description: "One row per seniority level, from the seed seniority_levels.csv, with the order charts should sort by."
+    columns:
+      - name: seniority
+        description: "Seniority level: Intern, Junior, Mid, Senior, Lead, Director, Executive or Unspecified. Primary key, referenced by fct_job_postings."
+        data_tests: [unique, not_null]
+      - name: sort_order
+        description: "Position for sorting, from Intern (1) to Executive (7), with Unspecified last (8)."
+        data_tests: [unique, not_null]
+  - name: dim_company
+    description: "One row per company: int_job_postings grouped by company_key. The name and logo come from the company's latest posting."
+    columns:
+      - name: company_key
+        description: "Surrogate key of the company: md5 hash of the lower-cased, trimmed company name. Primary key, referenced by fct_job_postings."
+        data_tests: [unique, not_null]
+      - name: company_name
+        description: "Company name as written in the company's latest posting."
+        data_tests: [not_null]
+      - name: company_logo_url
+        description: "Logo URL from the latest posting that has one. NULL when no posting has a logo; Arbeitnow never sends logos."
+      - name: first_published_at
+        description: "When the company's earliest posting was published, in UTC."
+        data_tests: [not_null]
+      - name: last_published_at
+        description: "When the company's latest posting was published, in UTC."
+        data_tests: [not_null]
+  - name: dim_date
+    description: "One row per day from 2026-10-01 to the day of the build, made with dbt_utils.date_spine. Join on published_date, or on month_start for monthly data."
+    columns:
+      - name: date_day
+        description: "The calendar day. Primary key."
+        data_tests: [unique, not_null]
+      - name: year
+        description: "Calendar year, e.g. 2026."
+      - name: quarter
+        description: "Quarter of the year, 1 to 4."
+      - name: month
+        description: "Month number, 1 to 12."
+      - name: month_name
+        description: "Month name in English, e.g. October."
+      - name: month_start
+        description: "First day of the month. Matches published_month in int_job_postings."
+      - name: week_start
+        description: "Monday of the day's week."
+      - name: day_of_week
+        description: "Day of the week, 1 = Monday to 7 = Sunday."
+      - name: day_name
+        description: "Day name in English, e.g. Tuesday."
+      - name: is_weekend
+        description: "True on Saturday and Sunday."

@@ -39,3 +39,10 @@ models:
       +schema: staging
     marts: # dimension, fact and aggregate tables used by dashboards
       +materialized: table
+
+seeds:
+  job_listings:
+    +schema: staging
+    seniority_levels:
+      +column_types:
+        sort_order: int

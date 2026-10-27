@@ -15,7 +15,7 @@
 - [x] 3.2 Project setup: `dbt_utils` package, sources on silver (tests, freshness), project config
 - [x] 3.3 Staging models, one per silver table, with tests
 - [x] 3.4 Intermediate models: job postings with the salary-plausibility flag, skill pairs
-- [ ] 3.5 Dimensions: date, skill, country, company, industry, seniority (seed)
+- [x] 3.5 Dimensions: date, skill, country, company, industry, seniority (seed)
 - [ ] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types
 - [ ] 3.7 Aggregates: skill demand by country and month, skill co-occurrence, salary by skill
 - [ ] 3.8 Tests and the salary warning; `dbt build` green
@@ -72,7 +72,7 @@ seed: seniority_levels.csv ─────────────────�
 | staging | `stg_silver__ref_skills`, `stg_silver__ref_countries` | skill, country | the reference tables |
 | intermediate | `int_job_postings` | job | jobs, plus `company_key`, `published_month`, the salary midpoint and `salary_is_plausible` |
 | intermediate | `int_job_skill_pairs` | job × pair of skills | job skills joined to themselves |
-| mart | `dim_date` | day | `dbt_utils.date_spine` from the first posting to today |
+| mart | `dim_date` | day | `dbt_utils.date_spine` from 2026-10-01 (the month of the first posting) to the day of the build |
 | mart | `dim_skill`, `dim_country`, `dim_industry` | skill, country, industry | reference tables and silver |
 | mart | `dim_company` | company | distinct company names, with logo and first posting |
 | mart | `dim_seniority` | level | seed `seniority_levels.csv` (Intern … Executive, Unspecified), with a sort order for charts |
@@ -130,4 +130,5 @@ docs/er-diagram.*        ← exported from DrawDB
 - **Region-level places have no country:** "EMEA", "Europe" and "Worldwide" have a NULL `country_code`, so a foreign key to `dim_country` must allow that, and aggregates must keep them by region.
 - **Dates are UTC**, as in silver.
 - **A stale partial parse can hide new tests.** dbt reuses its last parse (`target/partial_parse.msgpack`), and dbt Power User re-parses in the background on every save. If a test or model you wrote is missing from the run, add `--no-partial-parse` once.
+- **`dbt_utils.date_spine` leaves out the end date and returns timestamps.** `dim_date` passes `date_add(current_date(), 1)` as the end so today is included, and casts `date_day` to `date`.
 - **`dbt_packages/`, `target/` and `logs/` are generated** and stay out of git (already in `.gitignore`). `package-lock.yml` is committed.
