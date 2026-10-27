@@ -14,7 +14,7 @@
 - [x] 3.1 Branch, plan doc, `PLAN.md`
 - [x] 3.2 Project setup: `dbt_utils` package, sources on silver (tests, freshness), project config
 - [x] 3.3 Staging models, one per silver table, with tests
-- [ ] 3.4 Intermediate models: job postings with the salary-plausibility flag, skill pairs
+- [x] 3.4 Intermediate models: job postings with the salary-plausibility flag, skill pairs
 - [ ] 3.5 Dimensions: date, skill, country, company, industry, seniority (seed)
 - [ ] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types
 - [ ] 3.7 Aggregates: skill demand by country and month, skill co-occurrence, salary by skill
@@ -48,6 +48,8 @@
 5. **Single-column surrogate keys** (`job_key`, `company_key`) are built with `dbt_utils.generate_surrogate_key`. A composite key such as (`source`, `source_job_id`) is awkward in relationship tests and foreign keys.
 6. **Gold leaves out the description text.** Dashboards need the title, company and `url`: Jobicy asks for a link back, and Himalayas requires its `applicationLink`. Skills are already extracted.
 7. **Salary plausibility, from Phase 2:** a salary is plausible when its yearly USD values are between 5,000 and 1,500,000 and the minimum doesn't exceed the maximum. A test warns when more than 5% of salaried jobs are implausible, and salary charts use plausible salaries only.
+8. **`company_key` ignores case and surrounding spaces:** it's the surrogate key of `lower(trim(company_name))`. That gives 5,194 companies instead of 5,243 exact names; decoding `&amp;` merges nothing more. The key leaves out the source, so the 187 companies posting on several sources get one key. `dim_company` shows the name from each company's latest posting.
+9. **One-sided salaries use the bound they have.** 12 Jobicy jobs give only a minimum or only a maximum, so the missing bound is filled with the other one (`coalesce`) for both the midpoint and the plausibility check. Jobs without a yearly USD salary get a NULL `salary_is_plausible`, not false, so they stay out of the warning's denominator. As of 2026-10-26, 29 of 3,171 salaried jobs (0.9%) are implausible.
 
 ## How data flows in Phase 3
 

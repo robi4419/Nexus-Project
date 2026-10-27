@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: int_job_postings
+    description: "One row per job: stg_silver__jobs plus company_key, published_month, a salary midpoint and a plausibility flag. Shared by fct_job_postings, dim_company and the salary and monthly aggregates."
+    columns:
+      - name: job_key
+        description: "Surrogate key: md5 hash of source and source_job_id."
+        data_tests: [unique, not_null]
+      - name: company_key
+        description: "Surrogate key of the company: md5 hash of the lower-cased, trimmed company name. Names differing only in case or surrounding spaces share one key, across sources."
+        data_tests: [not_null]
+      - name: published_month
+        description: "First day of the month the job was published, in UTC."
+        data_tests: [not_null]
+      - name: salary_mid_usd_yearly
+        description: "Midpoint of the yearly USD salary range. A range with only one bound uses that bound. NULL when the job has no yearly USD salary."
+      - name: salary_is_plausible
+        description: "True when both yearly USD bounds are between 5,000 and 1,500,000 and the minimum doesn't exceed the maximum; a missing bound is replaced by the other. NULL when the job has no yearly USD salary."
+  - name: int_job_skill_pairs
+    description: "One row per job x pair of skills found in that job, each pair once and in alphabetical order (skill_a < skill_b). Feeds agg_skill_co_occurrence."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "skill_a", "skill_b"]
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "skill_a < skill_b"
+    columns:
+      - name: job_key
+        description: "Surrogate key: md5 hash of source and source_job_id."
+        data_tests: [not_null]
+      - name: skill_a
+        description: "The alphabetically first skill of the pair."
+      - name: skill_b
+        description: "The alphabetically second skill of the pair."
