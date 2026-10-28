@@ -40,7 +40,7 @@ models:
         description: "Surrogate key: md5 hash of source and source_job_id."
         data_tests: [not_null]
   - name: stg_silver__job_locations
-    description: "One row per job x location from silver.job_locations, with the surrogate key job_key."
+    description: "One row per job x location from silver.job_locations, with the surrogate keys job_key and location_key."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -49,6 +49,8 @@ models:
       - name: job_key
         description: "Surrogate key: md5 hash of source and source_job_id."
         data_tests: [not_null]
+      - name: location_key
+        description: "Surrogate key: md5 hash of location_name, location_type and country_code."
       - name: location_type
         data_tests:
           - accepted_values:

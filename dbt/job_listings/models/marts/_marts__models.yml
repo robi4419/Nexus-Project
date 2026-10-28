@@ -12,18 +12,27 @@ models:
         data_tests: [not_null]
       - name: taxonomy_version
         description: "12-character fingerprint of the skill list's content. Changes whenever skills.csv changes."
-  - name: dim_country
-    description: "One row per country or territory in silver.ref_countries, including those without jobs. Regions, Worldwide and unknown places have no row here; their locations carry a NULL country_code."
+  - name: dim_location
+    description: "One row per place jobs are listed in: a city, country, region, Worldwide or an unknown place, from stg_silver__job_locations. Cities and countries carry their country and region; regions and Worldwide carry only a region; unknown places carry neither."
     columns:
-      - name: country_code
-        description: "Two-letter ISO country code. Primary key, referenced by bridge_job_locations."
+      - name: location_key
+        description: "Surrogate key: md5 hash of location_name, location_type and country_code. Primary key, referenced by bridge_job_locations."
         data_tests: [unique, not_null]
+      - name: location_name
+        description: "The place's name: a city, country or region, Anywhere for Worldwide, or the cleaned text of an unknown place. NULL for an empty location."
+      - name: location_type
+        description: "city, country, region, worldwide or unknown."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["city", "country", "region", "worldwide", "unknown"]
+      - name: country_code
+        description: "Two-letter ISO country code, shared by a country and its cities. NULL for regions, Worldwide and unknown places."
       - name: country_name
-        description: "Country name in English."
-        data_tests: [not_null]
+        description: "Country name in English, from ref_countries. NULL when country_code is NULL."
       - name: region
-        description: "Region the country belongs to: North America, LATAM, Europe, Middle East & Africa or APAC."
-        data_tests: [not_null]
+        description: "North America, LATAM, Europe, Middle East & Africa or APAC for cities and countries; the region itself for region-level places (e.g. EMEA), and Worldwide for Anywhere. NULL for unknown places."
   - name: dim_industry
     description: "One row per industry used by at least one job, from silver.job_industries. The sources' industry names are mapped to one shared list (industries.csv)."
     columns:

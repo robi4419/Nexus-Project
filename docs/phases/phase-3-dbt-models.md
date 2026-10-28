@@ -16,8 +16,8 @@
 - [x] 3.3 Staging models, one per silver table, with tests
 - [x] 3.4 Intermediate models: job postings with the salary-plausibility flag, skill pairs
 - [x] 3.5 Dimensions: date, skill, country, company, industry, seniority (seed)
-- [ ] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types
-- [ ] 3.7 Aggregates: skill demand by country and month, skill co-occurrence, salary by skill
+- [ ] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types; `dim_location` replaces `dim_country` (decision 12)
+- [ ] 3.7 Aggregates: skill demand by country and month, skill co-occurrence, salary by skill. Decide first how the dashboards' global filters reach them (decision 11)
 - [ ] 3.8 Tests and the salary warning; `dbt build` green
 - [ ] 3.9 Docs: descriptions, `dbt docs generate`, ER diagram in DrawDB
 - [ ] 3.10 Verify, commit, PR and merge
@@ -50,6 +50,18 @@
 7. **Salary plausibility, from Phase 2:** a salary is plausible when its yearly USD values are between 5,000 and 1,500,000 and the minimum doesn't exceed the maximum. A test warns when more than 5% of salaried jobs are implausible, and salary charts use plausible salaries only.
 8. **`company_key` ignores case and surrounding spaces:** it's the surrogate key of `lower(trim(company_name))`. That gives 5,194 companies instead of 5,243 exact names; decoding `&amp;` merges nothing more. The key leaves out the source, so the 187 companies posting on several sources get one key. `dim_company` shows the name from each company's latest posting.
 9. **One-sided salaries use the bound they have.** 12 Jobicy jobs give only a minimum or only a maximum, so the missing bound is filled with the other one (`coalesce`) for both the midpoint and the plausibility check. Jobs without a yearly USD salary get a NULL `salary_is_plausible`, not false, so they stay out of the warning's denominator. As of 2026-10-26, 29 of 3,171 salaried jobs (0.9%) are implausible.
+10. **`fct_job_skills` carries the job's dimension keys** (`published_date`, `company_key`, `seniority`) next to `job_key`, so skill charts join every dimension directly instead of going through `fct_job_postings` (a fact-to-fact join). It also copies the three job attributes skill charts filter by: `source` (trends without Himalayas, see decision 3), `is_listed_now` (current vs all-time demand) and `is_remote` (all on-site jobs are Arbeitnow's). Identifiers, lifecycle timestamps and salaries stay in `fct_job_postings`; salary by skill is `agg_salary_by_skill`. Job types get no dimension: their 5 names (Full-Time, Part-Time, Contract, Internship, Temporary) describe themselves, and an `accepted_values` test guards them. (2026-10-28)
+11. **Gold stays a star schema with bridge tables** (reviewed 2026-10-28). The main questions are many-to-many (about 5 skills per job, several places, industries or types), and the star keeps one table per grain, so counts are correct by construction. AI/BI's global filters each get a plain column, and the dashboards' job lists need a job-grain table anyway. Rejected:
+    - one big table with arrays: every chart has to `explode`, and AI/BI filters can't look inside a list;
+    - one big exploded table: 183,965 rows for 23,590 jobs, so counts, averages and medians are wrong without de-duplicating;
+    - a snowflake: extra joins, since region and category have no attributes of their own;
+    - aggregates only: they can't be filtered by columns they weren't grouped by, and they have no job rows with links;
+    - Data Vault: an unused layer, and keeping history would keep expired Himalayas jobs.
+
+    **Open for 3.7:** a pre-grouped aggregate (month × place × skill) can't take the industry, level and job-type filters, and a median can't be re-filtered. Before writing 3.7, choose between dashboards querying the star directly (keeping `agg_*` only for heavy work like co-occurrence) and Unity Catalog metric views, which dbt-databricks 1.12.7 builds with `materialized='metric_view'`. Check first that the workspace supports metric views.
+12. **`dim_location` replaces `dim_country`** (2026-10-28). It has one row per place: 1,384 on 2026-10-28, that is 1,024 cities, 249 countries, 5 regions, Worldwide and 105 unknown. Each place has exactly one region. Its columns are `location_key`, `location_name`, `location_type`, `country_code`, `country_name` and `region`; city, country and region roll up inside one flat dimension, so it stays a star.
+    - `location_key` is the surrogate key of `location_type`, `location_name` and `country_code`. It's made once, in `stg_silver__job_locations`, like `job_key`.
+    - `bridge_job_locations` holds only `job_key` and `location_key`, so no foreign key is NULL. With `dim_country`, 1,820 bridge rows (regions, Worldwide and unknown) had a NULL `country_code`, and an inner join silently dropped those jobs.
 
 ## How data flows in Phase 3
 
@@ -73,11 +85,12 @@ seed: seniority_levels.csv ─────────────────�
 | intermediate | `int_job_postings` | job | jobs, plus `company_key`, `published_month`, the salary midpoint and `salary_is_plausible` |
 | intermediate | `int_job_skill_pairs` | job × pair of skills | job skills joined to themselves |
 | mart | `dim_date` | day | `dbt_utils.date_spine` from 2026-10-01 (the month of the first posting) to the day of the build |
-| mart | `dim_skill`, `dim_country`, `dim_industry` | skill, country, industry | reference tables and silver |
+| mart | `dim_skill`, `dim_industry` | skill, industry | reference tables and silver |
+| mart | `dim_location` | place (city, country, region, Worldwide or unknown) | distinct places in `stg_silver__job_locations`, with the country name from `ref_countries` |
 | mart | `dim_company` | company | distinct company names, with logo and first posting |
 | mart | `dim_seniority` | level | seed `seniority_levels.csv` (Intern … Executive, Unspecified), with a sort order for charts |
 | mart | `fct_job_postings` | job | `int_job_postings`: dates, company, seniority, remote, listed now, salaries, title, `url` |
-| mart | `fct_job_skills` | job × skill | mentions, in title |
+| mart | `fct_job_skills` | job × skill | mentions, in title, plus the job's date, company and seniority keys, source, `is_listed_now` and `is_remote` |
 | mart | `bridge_job_locations`, `bridge_job_industries`, `bridge_job_types` | job × place, industry or type | staging |
 | mart | `agg_skill_demand_by_country_month` | month × place × skill | jobs per skill and place (country, or region for "EMEA"-style places) |
 | mart | `agg_skill_co_occurrence` | pair of skills | jobs mentioning both |
@@ -127,7 +140,8 @@ docs/er-diagram.*        ← exported from DrawDB
 - **Counting across bridges double-counts.** A job in two countries is two bridge rows, so "jobs" must be `count(distinct job_key)`. Also, totals over countries aren't the number of jobs.
 - **Contracts need exact types:** `string`, `bigint`, `int`, `double`, `date`, `timestamp`, `boolean`. Silver's `times_seen` is a `bigint` (shown as LONG), and `mentions` an `int`.
 - **Primary-key columns must be `NOT NULL`** before Databricks accepts the constraint.
-- **Region-level places have no country:** "EMEA", "Europe" and "Worldwide" have a NULL `country_code`, so a foreign key to `dim_country` must allow that, and aggregates must keep them by region.
+- **Region-level places have no country:** "EMEA", "Europe" and "Worldwide" have a NULL `country_code` in `dim_location`. Filtering by country leaves them out, so regional and worldwide jobs are counted by `region` or `location_type`.
+- **dbt never drops the table of a deleted model.** After renaming or removing a mart, drop its old table by hand (here `gold.dim_country`).
 - **Dates are UTC**, as in silver.
 - **A stale partial parse can hide new tests.** dbt reuses its last parse (`target/partial_parse.msgpack`), and dbt Power User re-parses in the background on every save. If a test or model you wrote is missing from the run, add `--no-partial-parse` once.
 - **`dbt_utils.date_spine` leaves out the end date and returns timestamps.** `dim_date` passes `date_add(current_date(), 1)` as the end so today is included, and casts `date_day` to `date`.
