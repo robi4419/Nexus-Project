@@ -62,6 +62,7 @@
 12. **`dim_location` replaces `dim_country`** (2026-10-28). It has one row per place: 1,384 on 2026-10-28, that is 1,024 cities, 249 countries, 5 regions, Worldwide and 105 unknown. Each place has exactly one region. Its columns are `location_key`, `location_name`, `location_type`, `country_code`, `country_name` and `region`; city, country and region roll up inside one flat dimension, so it stays a star.
     - `location_key` is the surrogate key of `location_type`, `location_name` and `country_code`. It's made once, in `stg_silver__job_locations`, like `job_key`.
     - `bridge_job_locations` holds only `job_key` and `location_key`, so no foreign key is NULL. With `dim_country`, 1,820 bridge rows (regions, Worldwide and unknown) had a NULL `country_code`, and an inner join silently dropped those jobs.
+    - **Hierarchy-ready:** `region` → `country_name` → `city_name` are always filled, so BI tools can drill down without blank members. A missing level gets a label: `(whole country)`, `(anywhere)`, `(unknown)`, or for a regional place its own name in parentheses. Europe holds two regional places, `(Europe)` and `(Benelux)`, and a shared `(whole region)` label would have merged them. `country_code` stays NULL where there's no country, so map charts never get a fake ISO code, and `location_name` keeps the raw text of unknown places. Rolling up across the bridge needs a distinct count of `job_key`.
 
 ## How data flows in Phase 3
 

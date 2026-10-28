@@ -13,7 +13,7 @@ models:
       - name: taxonomy_version
         description: "12-character fingerprint of the skill list's content. Changes whenever skills.csv changes."
   - name: dim_location
-    description: "One row per place jobs are listed in: a city, country, region, Worldwide or an unknown place, from stg_silver__job_locations. Cities and countries carry their country and region; regions and Worldwide carry only a region; unknown places carry neither."
+    description: "One row per place jobs are listed in: a city, country, region, Worldwide or an unknown place, from stg_silver__job_locations. region, country_name and city_name form a drill-down hierarchy and are always filled; a missing level gets a label in parentheses. Count jobs across bridge_job_locations with a distinct count of job_key."
     columns:
       - name: location_key
         description: "Surrogate key: md5 hash of location_name, location_type and country_code. Primary key, referenced by bridge_job_locations."
@@ -28,11 +28,16 @@ models:
               arguments:
                 values: ["city", "country", "region", "worldwide", "unknown"]
       - name: country_code
-        description: "Two-letter ISO country code, shared by a country and its cities. NULL for regions, Worldwide and unknown places."
-      - name: country_name
-        description: "Country name in English, from ref_countries. NULL when country_code is NULL."
+        description: "Two-letter ISO country code, shared by a country and its cities; use it for map charts. NULL for regions, Worldwide and unknown places."
       - name: region
-        description: "North America, LATAM, Europe, Middle East & Africa or APAC for cities and countries; the region itself for region-level places (e.g. EMEA), and Worldwide for Anywhere. NULL for unknown places."
+        description: "Hierarchy level 1. North America, LATAM, Europe, Middle East & Africa, APAC or Antarctica (5 remote territories) for cities and countries; the region itself for region-level places (e.g. EMEA); Worldwide for Anywhere; (unknown) for unknown places."
+        data_tests: [not_null]
+      - name: country_name
+        description: "Hierarchy level 2. Country name in English, from ref_countries, for cities and countries; the place's own name in parentheses for regions, e.g. (Benelux); (anywhere) for Worldwide and (unknown) for unknown places."
+        data_tests: [not_null]
+      - name: city_name
+        description: "Hierarchy level 3. The city for cities; (whole country) for countries, the place's own name in parentheses for regions, e.g. (Benelux); (anywhere) for Worldwide and (unknown) for unknown places."
+        data_tests: [not_null]
   - name: dim_industry
     description: "One row per industry used by at least one job, from silver.job_industries. The sources' industry names are mapped to one shared list (industries.csv)."
     columns:
