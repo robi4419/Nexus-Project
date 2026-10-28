@@ -14,6 +14,8 @@ select
   year(date_day) as year,
   quarter(date_day) as quarter,
   month(date_day) as month,
+  concat(year(date_day), '-Q', quarter(date_day)) as year_quarter,
+  date_format(date_day, 'yyyy-MM') as year_month,
   date_format(date_day, 'MMMM') as month_name,
   trunc(date_day, 'MM') as month_start,
   trunc(date_day, 'WEEK') as week_start,

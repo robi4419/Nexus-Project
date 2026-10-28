@@ -135,7 +135,7 @@ models:
           - type: not_null
 
   - name: dim_date
-    description: "One row per day from 2026-10-01 to the day of the build, made with dbt_utils.date_spine. Join on published_date, or on month_start for monthly data."
+    description: "One row per day from 2026-10-01 to the day of the build, made with dbt_utils.date_spine. Join on published_date, or on month_start for monthly data. Drill-down hierarchy: year > year_quarter > year_month > date_day; weeks (week_start) are a separate path because a week can span two months. Sort month_name by month and day_name by day_of_week."
     columns:
       - name: date_day
         data_type: date
@@ -152,12 +152,18 @@ models:
       - name: quarter
         data_type: int
         description: "Quarter of the year, 1 to 4."
+      - name: year_quarter
+        data_type: string
+        description: "Year and quarter, e.g. 2026-Q4. Unique across years and sorts correctly as text."
       - name: month
         data_type: int
         description: "Month number, 1 to 12."
       - name: month_name
         data_type: string
         description: "Month name in English, e.g. October."
+      - name: year_month
+        data_type: string
+        description: "Year and month, e.g. 2026-10. Unique across years and sorts correctly as text."
       - name: month_start
         data_type: date
         description: "First day of the month. Matches published_month in fct_job_postings."
