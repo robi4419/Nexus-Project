@@ -39,6 +39,8 @@ models:
       +schema: staging
     marts: # dimension, fact and aggregate tables used by dashboards
       +materialized: table
+      +contract: # every mart must declare each column's type; the build fails if the SQL differs
+        enforced: true
 
 seeds:
   job_listings:

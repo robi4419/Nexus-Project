@@ -16,7 +16,7 @@
 - [x] 3.3 Staging models, one per silver table, with tests
 - [x] 3.4 Intermediate models: job postings with the salary-plausibility flag, skill pairs
 - [x] 3.5 Dimensions: date, skill, country, company, industry, seniority (seed)
-- [ ] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types; `dim_location` replaces `dim_country` (decision 12)
+- [x] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types; `dim_location` replaces `dim_country` (decision 12)
 - [ ] 3.7 Aggregates: skill demand by country and month, skill co-occurrence, salary by skill. Decide first how the dashboards' global filters reach them (decision 11)
 - [ ] 3.8 Tests and the salary warning; `dbt build` green
 - [ ] 3.9 Docs: descriptions, `dbt docs generate`, ER diagram in DrawDB
@@ -142,6 +142,8 @@ docs/er-diagram.*        ← exported from DrawDB
 - **Contracts need exact types:** `string`, `bigint`, `int`, `double`, `date`, `timestamp`, `boolean`. Silver's `times_seen` is a `bigint` (shown as LONG), and `mentions` an `int`.
 - **Primary-key columns must be `NOT NULL`** before Databricks accepts the constraint.
 - **Region-level places have no country:** "EMEA", "Europe" and "Worldwide" have a NULL `country_code` in `dim_location`. Filtering by country leaves them out, so regional and worldwide jobs are counted by `region` or `location_type`.
+- **Name every constraint, and set `warn_unenforced: false` on primary and foreign keys.** Otherwise dbt-databricks warns on every build ("no `name` provided", "unenforced constraint type").
+- **Enforced vs informational constraints:** Databricks enforces `not_null` and `check`, so those columns need no `not_null` test. Primary and foreign keys are only recorded, so `unique`, `unique_combination_of_columns` and `relationships` tests still check them. A foreign key needs the parent's primary key, which the `ref()` in `to:` guarantees by building the dimension first.
 - **dbt never drops the table of a deleted model.** After renaming or removing a mart, drop its old table by hand (here `gold.dim_country`).
 - **Dates are UTC**, as in silver.
 - **A stale partial parse can hide new tests.** dbt reuses its last parse (`target/partial_parse.msgpack`), and dbt Power User re-parses in the background on every save. If a test or model you wrote is missing from the run, add `--no-partial-parse` once.
