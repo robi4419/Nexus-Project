@@ -19,7 +19,7 @@
 - [x] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types; `dim_location` replaces `dim_country` (decision 12)
 - [x] 3.7 Aggregates: skill co-occurrence and weekly skill trend tables (decisions 13 and 14)
 - [x] 3.8 Tests and the salary warning; `dbt build` green
-- [ ] 3.9 Docs: descriptions, `dbt docs generate`, ER diagram in DrawDB
+- [x] 3.9 Docs: descriptions, `dbt docs generate`, ER diagram in DrawDB
 - [ ] 3.10 Verify, commit, PR and merge
 
 ---
@@ -128,12 +128,15 @@ The exact columns are settled model by model as they're written; the contracts t
 ```
 dbt/job_listings/
     packages.yml, package-lock.yml       ← dbt_utils
-    seeds/seniority_levels.csv
+    seeds/seniority_levels.csv, _seeds.yml
+    models/_docs.md                       ← doc blocks: column descriptions shared by every layer
     models/staging/      _silver__sources.yml, _silver__models.yml, stg_silver__*.sql
     models/intermediate/ _int__models.yml, int_*.sql
-    models/marts/        _marts__models.yml, dim_*.sql, fct_*.sql, bridge_*.sql, agg_*.sql    tests/               assert_implausible_salary_share.sql
+    models/marts/        _marts__models.yml, dim_*.sql, fct_*.sql, bridge_*.sql, agg_*.sql    tests/               assert_implausible_salary_share.sql, _singular__tests.yml
     README.md            ← how to run the project locally
-docs/er-diagram.*        ← exported from DrawDB
+scripts/export_marts_ddl.py ← writes docs/er-diagram.sql from the mart contracts in dbt's manifest
+docs/er-diagram.sql      ← PostgreSQL CREATE TABLEs for importing into DrawDB (generated, don't edit)
+docs/er-diagram.png, .json ← exported from DrawDB: the picture, and the layout to re-import
 ```
 
 ## Concepts you'll meet
@@ -150,6 +153,8 @@ docs/er-diagram.*        ← exported from DrawDB
 - **Grain:** what one row means ("one row per job × skill"). Getting it right is most of dimensional modelling.
 - **Star schema:** *facts* (events or measures) at the centre, *dimensions* (descriptions) around them, and *bridges* for many-to-many relations.
 - **`persist_docs`:** writes the YAML descriptions into Unity Catalog as table and column comments.
+- **Doc blocks:** named descriptions in a Markdown file (`{% docs job_key %}…{% enddocs %}`), used in YAML as `description: "{{ doc('job_key') }}"`. A column shared by several layers is described once, and a change reaches the docs site and Unity Catalog everywhere.
+- **`dbt docs generate` and `dbt docs serve`:** build a static documentation site from the manifest (the project) and the catalog (what's in the warehouse), with every model's columns, tests and a lineage graph; `serve` shows it in the browser.
 - **Semantic layer:** where metrics are defined once and reused, such as "jobs = distinct count of `job_key`". Here it's the Power BI model: relationships plus DAX measures (decision 14). Unity Catalog metric views are Databricks' version; tested, but not used.
 
 ## Pitfalls

@@ -1,0 +1,1483 @@
+{
+  "tables": [
+    {
+      "name": "dim_company",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "WxHqS45PCImeBtwhMx6MP",
+          "name": "company_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "cwzt9zaudP3qnHDcGWM7R",
+          "name": "company_name",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "uLJ5sCHmxGQPs1RQjHf4-",
+          "name": "company_logo_url",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "bbItX6oNaklBr80XxWLlM",
+          "name": "first_published_at",
+          "type": "TIMESTAMP",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "lWh9OWY9xq_hAkWAfQtPQ",
+          "name": "last_published_at",
+          "type": "TIMESTAMP",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "VbahXtkGmjuwxK4yH2MgY",
+      "x": 936,
+      "y": 336,
+      "width": 272
+    },
+    {
+      "name": "dim_date",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "A6rPkW1R1OabqdpnZoXxq",
+          "name": "date_day",
+          "type": "DATE",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "hT1jNi4kqUJusOwPJYums",
+          "name": "year",
+          "type": "INTEGER",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "tiBO9sAkMq3KJa9KZNCka",
+          "name": "quarter",
+          "type": "INTEGER",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "6aH8CBUS8kvvwZREuhYO2",
+          "name": "year_quarter",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "ycIDupSXXqRc73tHZ_pEp",
+          "name": "month",
+          "type": "INTEGER",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "8My6TdwnPZQJJ2Td1RV13",
+          "name": "month_name",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "AXyXpOzK5bODiGYzROlhU",
+          "name": "year_month",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "Q1CFTpZD8GucjCCrKoncY",
+          "name": "month_start",
+          "type": "DATE",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "rskGMyFdJ__DBh7M-1f__",
+          "name": "week_start",
+          "type": "DATE",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "nKXKZwV0fHvypI62tjBZM",
+          "name": "day_of_week",
+          "type": "INTEGER",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "Pzy2XPu4J7AykPQ4AiyKs",
+          "name": "day_name",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "Q4LVkT0t_tR-fJOQNliI0",
+          "name": "is_weekend",
+          "type": "BOOLEAN",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "Dn1PYR_6VXwsbxCeNmYwE",
+      "x": 1008,
+      "y": -240
+    },
+    {
+      "name": "dim_industry",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "8Z94dkkKhnPpng5SAD_1_",
+          "name": "industry",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "74Hwyx03CX9l1i66slQlT",
+      "x": -264,
+      "y": 216
+    },
+    {
+      "name": "dim_location",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "i1fJh7y7jekEShKVWFrbG",
+          "name": "location_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "MwwN8I_k1hQCuOYTm2-x7",
+          "name": "location_name",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "EtZdm_O7_Y42hhpFo7IKE",
+          "name": "location_type",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "OuGrdFTiQJbJs-PUDuGOn",
+          "name": "country_code",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "xxjfFkSBJq4QHAlYKtj1T",
+          "name": "region",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "q3nxCT8KlkoLiwL_2doMQ",
+          "name": "country_name",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "SVJKC-y1AI677Aa_RX1xm",
+          "name": "city_name",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "T-9EwEP9AHd2l6e6M6fQf",
+      "x": -264,
+      "y": -120
+    },
+    {
+      "name": "dim_seniority",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "uCIyKEanIw8sgTFTBl6Mu",
+          "name": "seniority",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "kMpfYC989pxJW0XjeF6rF",
+          "name": "sort_order",
+          "type": "INTEGER",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "1Hko9IVKQjdiBdeyp-io-",
+      "x": 864,
+      "y": 600
+    },
+    {
+      "name": "dim_skill",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "Cv2x-Czx8Ki4i7cHBIJaS",
+          "name": "skill",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "7dg_QQbtQjrxsV26oreK4",
+          "name": "category",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "bOdrf35v_Tn-56pgncC9u",
+          "name": "taxonomy_version",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "h7CEOpItMrg-2KMFne3Ve",
+      "x": 1776,
+      "y": 336
+    },
+    {
+      "name": "fct_job_postings",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "-0yq54TlCIm6aqr_CwG12",
+          "name": "job_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "-d2nITPVBm9TlWNDsErr2",
+          "name": "company_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "2BRSa8J1f6NspOdxwQ9hA",
+          "name": "seniority",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "Gsz5RVeZgkLXqbmk8sTwE",
+          "name": "published_date",
+          "type": "DATE",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "k7Rg6uOnQmhkKVE2Cji9d",
+          "name": "source",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "i8NUuO4BG42JUVrLs9_An",
+          "name": "source_job_id",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "4Cvy5BGUtUos1L80zJV5_",
+          "name": "title",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "4C2ieCjXZxd_DpFG6MVvZ",
+          "name": "url",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "JjiAEG2pLqiKeXPhZX5VA",
+          "name": "is_remote",
+          "type": "BOOLEAN",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "nox5bhtm0tCzUhEx_DIoL",
+          "name": "is_listed_now",
+          "type": "BOOLEAN",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "ZzIDCQRxQ_hYVFmoYdoZd",
+          "name": "published_at",
+          "type": "TIMESTAMP",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "ypuREhpkZ8_GU22YdmKDX",
+          "name": "published_month",
+          "type": "DATE",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "ltSMpKqLH95mAESm0Od6a",
+          "name": "expires_at",
+          "type": "TIMESTAMP",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "XXLy--m8co5elAG-0VYAx",
+          "name": "first_seen_at",
+          "type": "TIMESTAMP",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "cAFZdX0JH9cTEQTfG7Vdj",
+          "name": "last_seen_at",
+          "type": "TIMESTAMP",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "6Q8qjY9HCac3_4H07Rd24",
+          "name": "times_seen",
+          "type": "BIGINT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "BxmiEiBIVhNmY7O-r79az",
+          "name": "salary_min",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "5MBqEc9wt83grBFmAmqoH",
+          "name": "salary_max",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "WDG40bVoJgtJ23t6ZoQgU",
+          "name": "salary_currency",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "ia5dGYxiXUT3hd1CpBo3b",
+          "name": "salary_period",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "UoU_rmMJcDyJZgwF48RJD",
+          "name": "salary_min_usd_yearly",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "J8FaptI0onhkJ7EXGgdqS",
+          "name": "salary_max_usd_yearly",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "6Cqwef8ASTj6xuJuakxAs",
+          "name": "salary_mid_usd_yearly",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "Ie1GB-wNuinvn-PIAVbN3",
+          "name": "salary_is_plausible",
+          "type": "BOOLEAN",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "oNs9p8qGwoFHUg2BV5Xxf",
+      "x": 384,
+      "y": -192,
+      "width": 387
+    },
+    {
+      "name": "fct_job_skills",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "i3UDce-c0dR3LqlqG40tP",
+          "name": "job_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "mb7UsKAQMu2cT1oUenYvT",
+          "name": "skill",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "-_ZRjfFJLpTfXFfldSYSa",
+          "name": "mentions",
+          "type": "INTEGER",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "XXRCsoRbF09iFuGB2Jqn0",
+          "name": "in_title",
+          "type": "BOOLEAN",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "tXiX89i_fP2G94FUMcvJl",
+          "name": "published_date",
+          "type": "DATE",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "IXKB0HDdp7lHvfalAaSEJ",
+          "name": "company_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "Kbg4a0LToJi2468yihErE",
+          "name": "seniority",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "01XARvQiT6EmCkNQpVf4e",
+          "name": "source",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "CCkuuBG38gGhSEGRztA0u",
+          "name": "is_listed_now",
+          "type": "BOOLEAN",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "Yb7jGToCHegtEKOIdiMuj",
+          "name": "is_remote",
+          "type": "BOOLEAN",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "fsQZMvmZrDUNk_Sx5MkJS",
+      "x": 1368,
+      "y": 216,
+      "locked": false
+    },
+    {
+      "name": "bridge_job_industries",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "pKg4LGuhhBy4FfX4va0hy",
+          "name": "job_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "RC1Iufmt-7vE7f4cbhhJM",
+          "name": "industry",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "lOaSpd_1Xsm83rms4MqPO",
+      "x": 48,
+      "y": 96
+    },
+    {
+      "name": "bridge_job_locations",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "DilpF_0zDSB_92WMrF8g7",
+          "name": "job_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "w5LWn4OUZagtujwAh1O5H",
+          "name": "location_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "gw6vyVSSHhd_qyv95QbJd",
+      "x": 48,
+      "y": -48
+    },
+    {
+      "name": "bridge_job_types",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "SYATvBvKX7OEY353XumT7",
+          "name": "job_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "KBeYiBxW6Zy8dck_iDa_p",
+          "name": "job_type",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "Gnsrq9T_CBlh2kUeHzUQI",
+      "x": 48,
+      "y": -192
+    },
+    {
+      "name": "agg_skill_co_occurrence",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "XbO639IiyJofy8iKl9Dw4",
+          "name": "skill",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "QctKhTwBfrd-aQIq4zN4x",
+          "name": "co_skill",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "thnEcRCQG07046Mubp0A8",
+          "name": "jobs_both",
+          "type": "BIGINT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "rKRpN8DtVcHdBZa8cNwdY",
+          "name": "skill_jobs",
+          "type": "BIGINT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "cqmojlfbLTl6sWaTnIY_y",
+          "name": "co_skill_jobs",
+          "type": "BIGINT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "Yl4XngTauxtgxTgtv5-Ph",
+          "name": "share_of_skill_jobs",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "SmHEonFNrqc_zefipeO7V",
+          "name": "lift",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "sGBuccureoKYbjmizawJq",
+      "x": 1306,
+      "y": 696,
+      "width": 330
+    },
+    {
+      "name": "agg_skill_weekly_trend",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "a-IywN_4bOR3sCqhswo0k",
+          "name": "week_start",
+          "type": "DATE",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "14nW3OeLj7eU2-G9borJJ",
+          "name": "skill",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "LR2_doMGxOZhGJbuQymyE",
+          "name": "jobs",
+          "type": "BIGINT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "FMZACE62CPDLxHuT6lsIZ",
+          "name": "week_jobs",
+          "type": "BIGINT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "ocOTPFZFe5slRBOshBl6i",
+          "name": "share",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "q5dhjN-TDcKZvXqZAXAfs",
+          "name": "prev_jobs",
+          "type": "BIGINT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "zDgR-tHfCHj_ELBT0X7_S",
+          "name": "prev_share",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "aRO3hJzXYKGpNohcRKxMz",
+          "name": "share_change",
+          "type": "DOUBLE PRECISION",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": false,
+          "primary": false,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "a3aN6aYy4B8kORFnJGns2",
+      "x": 1368,
+      "y": -192,
+      "width": 320
+    }
+  ],
+  "relationships": [
+    {
+      "name": "fk_fct_job_postings_company_key_dim_company",
+      "startTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "endTableId": "VbahXtkGmjuwxK4yH2MgY",
+      "fields": [
+        {
+          "startFieldId": "-d2nITPVBm9TlWNDsErr2",
+          "endFieldId": "WxHqS45PCImeBtwhMx6MP"
+        }
+      ],
+      "endFieldId": "WxHqS45PCImeBtwhMx6MP",
+      "startFieldId": "-d2nITPVBm9TlWNDsErr2",
+      "id": 0,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_fct_job_postings_seniority_dim_seniority",
+      "startTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "endTableId": "1Hko9IVKQjdiBdeyp-io-",
+      "fields": [
+        {
+          "startFieldId": "2BRSa8J1f6NspOdxwQ9hA",
+          "endFieldId": "uCIyKEanIw8sgTFTBl6Mu"
+        }
+      ],
+      "endFieldId": "uCIyKEanIw8sgTFTBl6Mu",
+      "startFieldId": "2BRSa8J1f6NspOdxwQ9hA",
+      "id": 1,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_fct_job_postings_published_date_dim_date",
+      "startTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "endTableId": "Dn1PYR_6VXwsbxCeNmYwE",
+      "fields": [
+        {
+          "startFieldId": "Gsz5RVeZgkLXqbmk8sTwE",
+          "endFieldId": "A6rPkW1R1OabqdpnZoXxq"
+        }
+      ],
+      "endFieldId": "A6rPkW1R1OabqdpnZoXxq",
+      "startFieldId": "Gsz5RVeZgkLXqbmk8sTwE",
+      "id": 2,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_fct_job_skills_job_key_fct_job_postings",
+      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
+      "endTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "fields": [
+        {
+          "startFieldId": "i3UDce-c0dR3LqlqG40tP",
+          "endFieldId": "-0yq54TlCIm6aqr_CwG12"
+        }
+      ],
+      "endFieldId": "-0yq54TlCIm6aqr_CwG12",
+      "startFieldId": "i3UDce-c0dR3LqlqG40tP",
+      "id": 3,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_fct_job_skills_skill_dim_skill",
+      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
+      "endTableId": "h7CEOpItMrg-2KMFne3Ve",
+      "fields": [
+        {
+          "startFieldId": "mb7UsKAQMu2cT1oUenYvT",
+          "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS"
+        }
+      ],
+      "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS",
+      "startFieldId": "mb7UsKAQMu2cT1oUenYvT",
+      "id": 4,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_fct_job_skills_published_date_dim_date",
+      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
+      "endTableId": "Dn1PYR_6VXwsbxCeNmYwE",
+      "fields": [
+        {
+          "startFieldId": "tXiX89i_fP2G94FUMcvJl",
+          "endFieldId": "A6rPkW1R1OabqdpnZoXxq"
+        }
+      ],
+      "endFieldId": "A6rPkW1R1OabqdpnZoXxq",
+      "startFieldId": "tXiX89i_fP2G94FUMcvJl",
+      "id": 5,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_fct_job_skills_company_key_dim_company",
+      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
+      "endTableId": "VbahXtkGmjuwxK4yH2MgY",
+      "fields": [
+        {
+          "startFieldId": "IXKB0HDdp7lHvfalAaSEJ",
+          "endFieldId": "WxHqS45PCImeBtwhMx6MP"
+        }
+      ],
+      "endFieldId": "WxHqS45PCImeBtwhMx6MP",
+      "startFieldId": "IXKB0HDdp7lHvfalAaSEJ",
+      "id": 6,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_fct_job_skills_seniority_dim_seniority",
+      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
+      "endTableId": "1Hko9IVKQjdiBdeyp-io-",
+      "fields": [
+        {
+          "startFieldId": "Kbg4a0LToJi2468yihErE",
+          "endFieldId": "uCIyKEanIw8sgTFTBl6Mu"
+        }
+      ],
+      "endFieldId": "uCIyKEanIw8sgTFTBl6Mu",
+      "startFieldId": "Kbg4a0LToJi2468yihErE",
+      "id": 7,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_bridge_job_industries_job_key_fct_job_postings",
+      "startTableId": "lOaSpd_1Xsm83rms4MqPO",
+      "endTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "fields": [
+        {
+          "startFieldId": "pKg4LGuhhBy4FfX4va0hy",
+          "endFieldId": "-0yq54TlCIm6aqr_CwG12"
+        }
+      ],
+      "endFieldId": "-0yq54TlCIm6aqr_CwG12",
+      "startFieldId": "pKg4LGuhhBy4FfX4va0hy",
+      "id": 8,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_bridge_job_industries_industry_dim_industry",
+      "startTableId": "lOaSpd_1Xsm83rms4MqPO",
+      "endTableId": "74Hwyx03CX9l1i66slQlT",
+      "fields": [
+        {
+          "startFieldId": "RC1Iufmt-7vE7f4cbhhJM",
+          "endFieldId": "8Z94dkkKhnPpng5SAD_1_"
+        }
+      ],
+      "endFieldId": "8Z94dkkKhnPpng5SAD_1_",
+      "startFieldId": "RC1Iufmt-7vE7f4cbhhJM",
+      "id": 9,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_bridge_job_locations_job_key_fct_job_postings",
+      "startTableId": "gw6vyVSSHhd_qyv95QbJd",
+      "endTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "fields": [
+        {
+          "startFieldId": "DilpF_0zDSB_92WMrF8g7",
+          "endFieldId": "-0yq54TlCIm6aqr_CwG12"
+        }
+      ],
+      "endFieldId": "-0yq54TlCIm6aqr_CwG12",
+      "startFieldId": "DilpF_0zDSB_92WMrF8g7",
+      "id": 10,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_bridge_job_locations_location_key_dim_location",
+      "startTableId": "gw6vyVSSHhd_qyv95QbJd",
+      "endTableId": "T-9EwEP9AHd2l6e6M6fQf",
+      "fields": [
+        {
+          "startFieldId": "w5LWn4OUZagtujwAh1O5H",
+          "endFieldId": "i1fJh7y7jekEShKVWFrbG"
+        }
+      ],
+      "endFieldId": "i1fJh7y7jekEShKVWFrbG",
+      "startFieldId": "w5LWn4OUZagtujwAh1O5H",
+      "id": 11,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_bridge_job_types_job_key_fct_job_postings",
+      "startTableId": "Gnsrq9T_CBlh2kUeHzUQI",
+      "endTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "fields": [
+        {
+          "startFieldId": "SYATvBvKX7OEY353XumT7",
+          "endFieldId": "-0yq54TlCIm6aqr_CwG12"
+        }
+      ],
+      "endFieldId": "-0yq54TlCIm6aqr_CwG12",
+      "startFieldId": "SYATvBvKX7OEY353XumT7",
+      "id": 12,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_agg_skill_co_occurrence_skill_dim_skill",
+      "startTableId": "sGBuccureoKYbjmizawJq",
+      "endTableId": "h7CEOpItMrg-2KMFne3Ve",
+      "fields": [
+        {
+          "startFieldId": "XbO639IiyJofy8iKl9Dw4",
+          "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS"
+        }
+      ],
+      "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS",
+      "startFieldId": "XbO639IiyJofy8iKl9Dw4",
+      "id": 13,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_agg_skill_co_occurrence_co_skill_dim_skill",
+      "startTableId": "sGBuccureoKYbjmizawJq",
+      "endTableId": "h7CEOpItMrg-2KMFne3Ve",
+      "fields": [
+        {
+          "startFieldId": "QctKhTwBfrd-aQIq4zN4x",
+          "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS"
+        }
+      ],
+      "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS",
+      "startFieldId": "QctKhTwBfrd-aQIq4zN4x",
+      "id": 14,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_agg_skill_weekly_trend_week_start_dim_date",
+      "startTableId": "a3aN6aYy4B8kORFnJGns2",
+      "endTableId": "Dn1PYR_6VXwsbxCeNmYwE",
+      "fields": [
+        {
+          "startFieldId": "a-IywN_4bOR3sCqhswo0k",
+          "endFieldId": "A6rPkW1R1OabqdpnZoXxq"
+        }
+      ],
+      "endFieldId": "A6rPkW1R1OabqdpnZoXxq",
+      "startFieldId": "a-IywN_4bOR3sCqhswo0k",
+      "id": 15,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_agg_skill_weekly_trend_skill_dim_skill",
+      "startTableId": "a3aN6aYy4B8kORFnJGns2",
+      "endTableId": "h7CEOpItMrg-2KMFne3Ve",
+      "fields": [
+        {
+          "startFieldId": "14nW3OeLj7eU2-G9borJJ",
+          "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS"
+        }
+      ],
+      "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS",
+      "startFieldId": "14nW3OeLj7eU2-G9borJJ",
+      "id": 16,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    }
+  ],
+  "notes": [],
+  "subjectAreas": [],
+  "views": [],
+  "database": "postgresql",
+  "types": [],
+  "enums": [],
+  "title": "Untitled diagram"
+}

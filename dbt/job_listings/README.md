@@ -50,7 +50,7 @@ tests). Count jobs across a bridge with `count(distinct job_key)`.
 | `test --select marts` | Only the tests of the models in `models/marts/`. |
 | `source freshness` | Warns when `silver.jobs` is more than a day old, fails after two. |
 | `show --inline "select ..." --limit 20` | Runs a query and prints the result. `dbt show` adds its own `limit`, so don't end the query with one. |
-| `docs generate`, then `docs serve` | Builds the documentation site with the lineage graph and serves it on http://localhost:8080. |
+| `docs generate`, then `docs serve --port 8081` | Builds the documentation site with the lineage graph and serves it on http://localhost:8081. The default port, 8080, is taken by the Airflow UI. |
 
 ## Tests
 
