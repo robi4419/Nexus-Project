@@ -624,3 +624,82 @@ models:
           - type: check
             name: chk_agg_skill_co_occurrence_lift
             expression: "lift > 0"
+
+  - name: agg_skill_weekly_trend
+    description: "One row per complete week x skill (every skill, 0 when not asked for), for rising-skill charts. Jobicy and Arbeitnow only: Himalayas deletes expired jobs, which would fake a decline (decision 3). Starts with the week of 2026-10-19, the first in which both sources are complete; a week is included once its Sunday is a day old. Dashboard filters don't apply."
+    constraints:
+      - type: primary_key
+        name: pk_agg_skill_weekly_trend
+        columns: [week_start, skill]
+        warn_unenforced: false
+      - type: check
+        name: chk_agg_skill_weekly_trend_jobs_in_week
+        expression: "jobs <= week_jobs"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["week_start", "skill"]
+    columns:
+      - name: week_start
+        data_type: date
+        description: "Monday of the week (dim_date)."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_agg_skill_weekly_trend_week_start
+            to: ref('dim_date')
+            to_columns: [date_day]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: skill
+        data_type: string
+        description: "The skill (dim_skill)."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_agg_skill_weekly_trend_skill
+            to: ref('dim_skill')
+            to_columns: [skill]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_skill')
+                field: skill
+      - name: jobs
+        data_type: bigint
+        description: "Jobicy and Arbeitnow jobs published that week asking for the skill; 0 when none."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_weekly_trend_jobs
+            expression: "jobs >= 0"
+      - name: week_jobs
+        data_type: bigint
+        description: "All Jobicy and Arbeitnow jobs published that week, with or without skills."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_weekly_trend_week_jobs
+            expression: "week_jobs > 0"
+      - name: share
+        data_type: double
+        description: "Share of the week's postings asking for the skill: jobs / week_jobs. Unlike jobs, it doesn't rise just because a week was busy."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_weekly_trend_share
+            expression: "share >= 0 and share <= 1"
+      - name: prev_jobs
+        data_type: bigint
+        description: "jobs in the previous week. NULL in the first week."
+      - name: prev_share
+        data_type: double
+        description: "share in the previous week. NULL in the first week."
+      - name: share_change
+        data_type: double
+        description: "share - prev_share, as a fraction (0.012 = +1.2 percentage points). Rising skills have the largest values; filter on jobs or prev_jobs to skip skills too rare to trust. NULL in the first week."

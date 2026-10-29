@@ -17,7 +17,7 @@
 - [x] 3.4 Intermediate models: job postings with the salary-plausibility flag, skill pairs
 - [x] 3.5 Dimensions: date, skill, country, company, industry, seniority (seed)
 - [x] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types; `dim_location` replaces `dim_country` (decision 12)
-- [ ] 3.7 Aggregates: skill co-occurrence and weekly skill trend tables (decisions 13 and 14)
+- [x] 3.7 Aggregates: skill co-occurrence and weekly skill trend tables (decisions 13 and 14)
 - [ ] 3.8 Tests and the salary warning; `dbt build` green
 - [ ] 3.9 Docs: descriptions, `dbt docs generate`, ER diagram in DrawDB
 - [ ] 3.10 Verify, commit, PR and merge
