@@ -183,6 +183,11 @@ models:
   # ---------- Facts ----------
   - name: fct_job_postings
     description: "One row per job posting, the centre of the star. Joins dim_company, dim_seniority and dim_date directly; locations, industries and types come through the bridges, skills through fct_job_skills. Count jobs with count(*) here, but with count(distinct job_key) after joining a bridge."
+    data_tests:
+      # Reconciliation: one row per silver job, none lost or duplicated.
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: source('silver', 'jobs')
     columns:
       - name: job_key
         data_type: string
@@ -335,6 +340,10 @@ models:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns: ["job_key", "skill"]
+      # Reconciliation: one row per silver job x skill; the inner join to the jobs drops none.
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: source('silver', 'job_skills')
     columns:
       - name: job_key
         data_type: string

@@ -18,7 +18,7 @@
 - [x] 3.5 Dimensions: date, skill, country, company, industry, seniority (seed)
 - [x] 3.6 Facts and bridges with contracts: job postings, job skills, job locations, industries and types; `dim_location` replaces `dim_country` (decision 12)
 - [x] 3.7 Aggregates: skill co-occurrence and weekly skill trend tables (decisions 13 and 14)
-- [ ] 3.8 Tests and the salary warning; `dbt build` green
+- [x] 3.8 Tests and the salary warning; `dbt build` green
 - [ ] 3.9 Docs: descriptions, `dbt docs generate`, ER diagram in DrawDB
 - [ ] 3.10 Verify, commit, PR and merge
 
@@ -118,8 +118,9 @@ The exact columns are settled model by model as they're written; the contracts t
 
 - **Sources:** unique and not-null keys, and freshness on `silver.jobs.built_at`: a warning after 1 day, an error after 2.
 - **Staging and marts:** `unique` and `not_null` keys, `dbt_utils.unique_combination_of_columns` on bridges, `relationships` from facts and bridges to dimensions, and `accepted_values` for `source`, `seniority` and `location_type`.
-- **Reconciliation:** one `fct_job_postings` row per silver job, one `fct_job_skills` row per silver job × skill.
-- **Salary:** a singular test that warns when more than 5% of salaried jobs are implausible (`severity: warn`).
+- **Reconciliation:** one `fct_job_postings` row per silver job, one `fct_job_skills` row per silver job × skill, with `dbt_utils.equal_rowcount` against the silver tables.
+- **Salary:** a singular test, `tests/assert_implausible_salary_share.sql`, that warns when more than 5% of salaried jobs are implausible (`severity: warn`). The limit is the project variable `max_implausible_salary_share` in `dbt_project.yml`; one run can override it with `--vars`. On 2026-10-29: 48 of 6,225 salaried jobs (0.77%), so it passes. With `--vars "{max_implausible_salary_share: 0.005}"` it warns, as it should.
+- **Result on 2026-10-29:** a full `dbt build` passed 108 of 108 steps with no warnings, and `dbt source freshness` passed.
 - **Contracts on the marts:** data types, `NOT NULL` and `CHECK`, which Databricks enforces, and primary and foreign keys, which are informational. They document the relationships and feed the ER diagram.
 
 ## Repo layout additions

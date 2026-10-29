@@ -1,0 +1,5 @@
+version: 2
+
+data_tests:
+  - name: assert_implausible_salary_share
+    description: "Warns (doesn't fail) when more than max_implausible_salary_share (dbt_project.yml, 5%) of the jobs with a yearly USD salary have an implausible one: outside 5,000 to 1,500,000, or a minimum above the maximum (decisions 7 and 9). Jobs without a salary don't count. Returns one row with the counts when it warns."

@@ -42,6 +42,10 @@ models:
       +contract: # every mart must declare each column's type; the build fails if the SQL differs
         enforced: true
 
+vars:
+  # Decision 7: warn when more than this share of salaried jobs has an implausible salary.
+  max_implausible_salary_share: 0.05
+
 seeds:
   job_listings:
     +schema: staging
