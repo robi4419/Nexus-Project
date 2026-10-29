@@ -159,6 +159,7 @@ docs/er-diagram.png, .json ← exported from DrawDB: the picture, and the layout
 
 ## Pitfalls
 - **Silver must be built before dbt.** Locally, run the Databricks Job first when silver is stale; Phase 4 chains it.
+- **Some employers list nearly every country.** On 2026-10-29, Himalayas' country rows jumped from about 15,000 to 40,000 with only about 3,000 new jobs. 156 of that day's jobs listed 50 or more countries (Canonical: 44 jobs, about 151 countries each) instead of "Worldwide"; older jobs were unchanged. Per-country job counts stay correct with `count(distinct job_key)`, but such jobs count in every listed country. To separate country-specific jobs, count each job's countries from the bridge (a Power BI column in Phase 5).
 - **Counting across bridges double-counts.** A job in two countries is two bridge rows, so "jobs" must be `count(distinct job_key)`. Also, totals over countries aren't the number of jobs.
 - **Contracts need exact types:** `string`, `bigint`, `int`, `double`, `date`, `timestamp`, `boolean`. Silver's `times_seen` is a `bigint` (shown as LONG), and `mentions` an `int`.
 - **Primary-key columns must be `NOT NULL`** before Databricks accepts the constraint.

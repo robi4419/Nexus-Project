@@ -87,11 +87,11 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] After Phase 2b: token-based skill matching, one pass over the text's tokens instead of a regex per skill (4.8× faster, same results; decision 27).
 
 ### Phase 3: dbt models
-- [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).
-- [ ] Tests (unique, not_null, relationships, accepted_values) and `dbt docs generate`; `dbt_utils` where useful.
-- [ ] Salary plausibility flag (yearly USD 5k–1.5M, min ≤ max) with a test and a "> 5% implausible" warning; salary charts use only plausible salaries.
-- [ ] Model contracts on the marts: column types plus constraints. On Databricks, `NOT NULL` and `CHECK` are enforced, and primary and foreign keys are informational: they document relationships and feed the ER diagram. Silver stays without constraints: `CREATE OR REPLACE` would drop them on every rebuild, and the Phase 2 checks enforce its keys instead.
-- [ ] ER diagram in DrawDB, saved to `docs/`.
+- [x] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, `bridge_*`, aggregates).
+- [x] Tests (unique, not_null, relationships, accepted_values, row-count reconciliation) and `dbt docs generate`; `dbt_utils` where useful. Every model and column documented, shared texts as doc blocks.
+- [x] Salary plausibility flag (yearly USD 5k–1.5M, min ≤ max) with a test and a "> 5% implausible" warning; salary charts use only plausible salaries.
+- [x] Model contracts on the marts: column types plus constraints. On Databricks, `NOT NULL` and `CHECK` are enforced, and primary and foreign keys are informational: they document relationships and feed the ER diagram. Silver stays without constraints: `CREATE OR REPLACE` would drop them on every rebuild, and the Phase 2 checks enforce its keys instead.
+- [x] ER diagram in DrawDB, saved to `docs/`.
 
 ### Phase 4: Orchestration end to end
 - [ ] Full DAG: extract → upload → Databricks job → `dbt build` (BashOperator with the dbt venv, or astronomer-cosmos for per-model tasks).
