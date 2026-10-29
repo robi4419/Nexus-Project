@@ -1,0 +1,165 @@
+version: 2
+
+# Column descriptions come from the doc blocks in models/_docs.md, shared with the intermediate and mart models.
+
+models:
+  - name: stg_silver__jobs
+    description: "One row per job posting from silver.jobs (Jobicy, Arbeitnow and Himalayas), with the surrogate key job_key. Leaves out the description text, raw levels and raw locations."
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }} Joins jobs to the skill, location, industry and type models."
+        data_tests: [unique, not_null]
+      - name: source
+        description: "{{ doc('source') }}"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["jobicy", "arbeitnow", "himalayas"]
+      - name: source_job_id
+        description: "{{ doc('source_job_id') }}"
+      - name: url
+        description: "{{ doc('url') }}"
+      - name: title
+        description: "{{ doc('title') }}"
+      - name: company_name
+        description: "{{ doc('company_name') }}"
+      - name: company_logo_url
+        description: "{{ doc('company_logo_url') }}"
+      - name: published_at
+        description: "{{ doc('published_at') }}"
+      - name: published_date
+        description: "{{ doc('published_date') }}"
+      - name: expires_at
+        description: "{{ doc('expires_at') }}"
+      - name: is_remote
+        description: "{{ doc('is_remote') }}"
+      - name: is_listed_now
+        description: "{{ doc('is_listed_now') }}"
+      - name: seniority
+        description: "{{ doc('seniority') }}"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  [
+                    "Intern",
+                    "Junior",
+                    "Mid",
+                    "Senior",
+                    "Lead",
+                    "Director",
+                    "Executive",
+                    "Unspecified",
+                  ]
+      - name: seniority_source
+        description: "{{ doc('seniority_source') }}"
+      - name: salary_min
+        description: "{{ doc('salary_min') }}"
+      - name: salary_max
+        description: "{{ doc('salary_max') }}"
+      - name: salary_currency
+        description: "{{ doc('salary_currency') }}"
+      - name: salary_period
+        description: "{{ doc('salary_period') }}"
+      - name: salary_min_usd_yearly
+        description: "{{ doc('salary_min_usd_yearly') }}"
+      - name: salary_max_usd_yearly
+        description: "{{ doc('salary_max_usd_yearly') }}"
+      - name: first_seen_at
+        description: "{{ doc('first_seen_at') }}"
+      - name: last_seen_at
+        description: "{{ doc('last_seen_at') }}"
+      - name: times_seen
+        description: "{{ doc('times_seen') }}"
+      - name: built_at
+        description: "{{ doc('built_at') }}"
+  - name: stg_silver__job_skills
+    description: "One row per job x skill from silver.job_skills, with the surrogate key job_key."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "skill"]
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
+      - name: skill
+        description: "{{ doc('skill') }}"
+      - name: category
+        description: "{{ doc('category') }}"
+      - name: mentions
+        description: "{{ doc('mentions') }}"
+      - name: in_title
+        description: "{{ doc('in_title') }}"
+      - name: taxonomy_version
+        description: "{{ doc('taxonomy_version') }}"
+  - name: stg_silver__job_locations
+    description: "One row per job x location from silver.job_locations, with the surrogate keys job_key and location_key."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "location_raw"]
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
+      - name: location_key
+        description: "{{ doc('location_key') }}"
+      - name: location_raw
+        description: "{{ doc('location_raw') }}"
+      - name: location_name
+        description: "{{ doc('location_name') }}"
+      - name: location_type
+        description: "{{ doc('location_type') }}"
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["city", "country", "region", "worldwide", "unknown"]
+      - name: country_code
+        description: "{{ doc('country_code') }}"
+      - name: region
+        description: "{{ doc('location_region') }}"
+  - name: stg_silver__job_industries
+    description: "One row per job x industry from silver.job_industries, with the surrogate key job_key."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "industry"]
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
+      - name: industry
+        description: "{{ doc('industry') }}"
+  - name: stg_silver__job_types
+    description: "One row per job x job_type from silver.job_types, with the surrogate key job_key."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "job_type"]
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
+      - name: job_type
+        description: "{{ doc('job_type') }}"
+  - name: stg_silver__ref_skills
+    description: "One row per skill from silver.ref_skills. Leaves out the aliases and case sensitive flag."
+    columns:
+      - name: skill
+        description: "{{ doc('skill') }}"
+        data_tests: [unique, not_null]
+      - name: category
+        description: "{{ doc('category') }}"
+      - name: taxonomy_version
+        description: "{{ doc('taxonomy_version') }}"
+  - name: stg_silver__ref_countries
+    description: "One row per country from silver.ref_countries."
+    columns:
+      - name: country_code
+        description: "Two-letter ISO country code."
+        data_tests: [unique, not_null]
+      - name: country_name
+        description: "{{ doc('country_name') }}"
+      - name: region
+        description: "{{ doc('country_region') }}"

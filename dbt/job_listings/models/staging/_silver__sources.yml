@@ -1,0 +1,97 @@
+version: 2
+
+sources:
+  - name: silver
+    schema: silver
+    description: "Cleaned tables built by the Databricks Job transform_jobs."
+    tables:
+      - name: jobs
+        description: "One row per job, latest version, from Jobicy, Arbeitnow and Himalayas."
+        config:
+          loaded_at_field: built_at
+          freshness:
+            warn_after: { count: 1, period: day }
+            error_after: { count: 2, period: day }
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [source, source_job_id]
+        columns:
+          - name: source
+            data_tests: [not_null]
+          - name: source_job_id
+            data_tests: [not_null]
+          - name: url
+            data_tests: [not_null]
+          - name: title
+            data_tests: [not_null]
+          - name: company_name
+            data_tests: [not_null]
+          - name: published_at
+            data_tests: [not_null]
+          - name: seniority
+            data_tests: [not_null]
+          - name: built_at
+            data_tests: [not_null]
+      - name: job_skills
+        description: "One row per job x skill found in the job's title and description (skills found in the company name are excluded)"
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [source, source_job_id, skill]
+        columns:
+          - name: source
+            data_tests: [not_null]
+          - name: source_job_id
+            data_tests: [not_null]
+          - name: skill
+            data_tests: [not_null]
+      - name: job_locations
+        description: "One row per job x location listed, mapped to reference locations"
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [source, source_job_id, location_raw]
+        columns:
+          - name: source
+            data_tests: [not_null]
+          - name: source_job_id
+            data_tests: [not_null]
+          - name: location_raw
+            data_tests: [not_null]
+      - name: job_industries
+        description: "One row per job x industry listed, mapped to reference industries"
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [source, source_job_id, industry]
+        columns:
+          - name: source
+            data_tests: [not_null]
+          - name: source_job_id
+            data_tests: [not_null]
+          - name: industry
+            data_tests: [not_null]
+      - name: job_types
+        description: "One row per job x job_type listed, mapped to reference job types"
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: [source, source_job_id, job_type]
+        columns:
+          - name: source
+            data_tests: [not_null]
+          - name: source_job_id
+            data_tests: [not_null]
+          - name: job_type
+            data_tests: [not_null]
+      - name: ref_skills
+        description: "One row per skill with its aliases/exclusions, category and case sensitive flag"
+        columns:
+          - name: skill
+            data_tests: [unique, not_null]
+      - name: ref_countries
+        description: "One row per country with its country code and region"
+        columns:
+          - name: country_code
+            data_tests: [unique, not_null]

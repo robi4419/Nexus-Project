@@ -2,7 +2,7 @@
 
 Pull remote job postings from the [Jobicy API](https://jobi.cy/apidocs), extract the skills and technologies each posting asks for, and build dashboards you can filter by country, industry, seniority and date.
 
-**Stack:** Apache Airflow (orchestration), Databricks (storage, cleaning, normalisation, dedup, skill extraction), dbt (analytical models), Databricks AI/BI dashboards, Docker (runs Airflow), GitHub and GitHub Actions (version control and CI), DrawDB (data-model diagram).
+**Stack:** Apache Airflow (orchestration), Databricks (storage, cleaning, normalisation, dedup, skill extraction), dbt (analytical models), Power BI dashboards, Docker (runs Airflow), GitHub and GitHub Actions (version control and CI), DrawDB (data-model diagram).
 
 ## Jobicy data
 
@@ -22,18 +22,18 @@ Things to handle:
  Unity Catalog Volume  /Volumes/<catalog>/bronze/landing/<source>/ingest_date=YYYY-MM-DD/run=<run id>/*.json
      │  (2) Databricks Job "transform_jobs": Auto Loader loads each new file once
      ▼
- BRONZE  jobicy_raw · frankfurter_raw   (append-only, one row per landed file, JSON kept as VARIANT)
+ BRONZE  jobicy_raw · arbeitnow_raw · himalayas_raw · frankfurter_raw   (append-only, one row per landed file, VARIANT)
      │  (3) same Job: rebuild silver (clean, normalise, dedup, skills, salaries in USD), then checks
      ▼
- SILVER  jobs · job_locations · job_industries · job_types · job_skills · fx_rates · ref_skills · ref_locations
+ SILVER  jobs · job_locations · job_industries · job_types · job_skills · fx_rates · ref_* (skills, countries, mappings)
      │  (4) Airflow runs dbt build: staging → intermediate → marts, plus tests
      ▼
- GOLD (dbt)  dim_skill · dim_geo · dim_industry · dim_company · dim_date
-             fct_job_postings · fct_job_skill
-             agg_skill_demand_by_country_month · skill_co_occurrence · salary_by_skill
-     │  (5)
+ GOLD (dbt)  dim_date · dim_skill · dim_location · dim_company · dim_industry · dim_seniority
+             fct_job_postings · fct_job_skills · bridge_job_locations · bridge_job_industries · bridge_job_types
+             agg_skill_co_occurrence · agg_skill_weekly_trend
+     │  (5) Power BI Desktop, Databricks connector (Import)
      ▼
- Databricks AI/BI dashboards (filters: country, industry, level, job type, date)
+ Power BI dashboards (filters: country, industry, level, job type, date), measures in DAX
 ```
 
 Design principles:
@@ -41,7 +41,7 @@ Design principles:
 2. **Fetch the whole feed window each run.** The feed only covers the last 7 days (~800 jobs, 4 pages of 200), so every run takes all of it. Silver is rebuilt from bronze on every run and keeps the latest version of each job, which removes the duplicates.
 3. **Do skill extraction in Databricks (PySpark).** Keep a version-controlled taxonomy (`skill, category, aliases/regex`, e.g. `k8s|kubernetes → Kubernetes`). Strip HTML, match with word boundaries, and treat ambiguous names ("Go", "R", "C", "C#", ".NET", "Node.js", "Excel") with case-sensitive patterns or context rules.
 4. **Use dbt for business logic only.** It reads Silver as sources, builds a star schema and aggregates, and runs tests.
-5. **Build dashboards in Databricks AI/BI** and export them as `.lvdash.json` into `dashboards/` so they're versioned.
+5. **Build dashboards in Power BI** on the gold star schema, and save them as a PBIP project (text files) in `dashboards/` so they're versioned. Changed from Databricks AI/BI on 2026-10-29 (Phase 3, decision 14).
 6. **Airflow runs the chain** on a schedule (daily; Jobicy asks for no more than one sync per hour).
 
 Dashboard ideas: top skills by country, industry and seniority; skill demand over time and rising skills (week-over-week); skill co-occurrence heatmap; median salary by skill; remote-geo coverage map; share of postings listing salary; top hiring companies per skill.
@@ -53,6 +53,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [Phase 1: Ingestion](phases/phase-1-ingestion.md)
 - [Phase 2: Bronze and Silver in Databricks](phases/phase-2-bronze-silver.md)
 - [Phase 2b: More sources and incremental silver](phases/phase-2b-sources-and-caching.md)
+- [Phase 3: dbt models](phases/phase-3-dbt-models.md)
 
 ### Phase 0: Fix the scaffolding
 - [x] `airflow/Dockerfile` extending `apache/airflow:3.3.2` with `apache-airflow-providers-databricks`; install dbt in a separate virtualenv inside the image (dbt and Airflow pin conflicting dependencies).
@@ -86,19 +87,21 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] After Phase 2b: token-based skill matching, one pass over the text's tokens instead of a regex per skill (4.8× faster, same results; decision 27).
 
 ### Phase 3: dbt models
-- [ ] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, aggregates).
-- [ ] Tests (unique, not_null, relationships, accepted_values) and `dbt docs generate`; `dbt_utils` where useful.
-- [ ] Salary plausibility flag (yearly USD 5k–1.5M, min ≤ max) with a test and a "> 5% implausible" warning; salary charts use only plausible salaries.
-- [ ] Model contracts on the marts: column types plus constraints. On Databricks, `NOT NULL` and `CHECK` are enforced, and primary and foreign keys are informational: they document relationships and feed the ER diagram. Silver stays without constraints: `CREATE OR REPLACE` would drop them on every rebuild, and the Phase 2 checks enforce its keys instead.
-- [ ] ER diagram in DrawDB, saved to `docs/`.
+- [x] `sources.yml` on silver; `stg_*` → `int_*` → marts (`dim_*`, `fct_*`, `bridge_*`, aggregates).
+- [x] Tests (unique, not_null, relationships, accepted_values, row-count reconciliation) and `dbt docs generate`; `dbt_utils` where useful. Every model and column documented, shared texts as doc blocks.
+- [x] Salary plausibility flag (yearly USD 5k–1.5M, min ≤ max) with a test and a "> 5% implausible" warning; salary charts use only plausible salaries.
+- [x] Model contracts on the marts: column types plus constraints. On Databricks, `NOT NULL` and `CHECK` are enforced, and primary and foreign keys are informational: they document relationships and feed the ER diagram. Silver stays without constraints: `CREATE OR REPLACE` would drop them on every rebuild, and the Phase 2 checks enforce its keys instead.
+- [x] ER diagram in DrawDB, saved to `docs/`.
 
 ### Phase 4: Orchestration end to end
 - [ ] Full DAG: extract → upload → Databricks job → `dbt build` (BashOperator with the dbt venv, or astronomer-cosmos for per-model tasks).
 - [ ] Retries, failure alerts, backfill support.
 
 ### Phase 5: Dashboards
-- [ ] 2–3 AI/BI dashboards on gold tables with global filters (country, industry, level, job type, date range).
-- [ ] Export to `dashboards/` and include in the bundle.
+- [ ] Power BI model on the gold tables: relationships from the primary and foreign keys (fact–bridge relationships filtering both ways), hierarchies from `dim_location` and `dim_date`, measures in DAX.
+- [ ] 2–3 report pages with filters for country, industry, level, job type and date range; `url` shown with every job list, with source attribution.
+- [ ] Save as a PBIP project in `dashboards/`.
+- [ ] Optional: Publish to web for a website, if a work or school Microsoft account allows it. The data becomes public, so check the sources' terms and refresh it regularly.
 
 ### Phase 6: GitHub and CI (can start alongside Phase 1)
 - [ ] Feature branches and PRs.

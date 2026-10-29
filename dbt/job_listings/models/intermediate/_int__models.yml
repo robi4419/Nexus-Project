@@ -1,0 +1,84 @@
+version: 2
+
+# Column descriptions come from the doc blocks in models/_docs.md, shared with the staging and mart models.
+
+models:
+  - name: int_job_postings
+    description: "One row per job: stg_silver__jobs plus company_key, published_month, a salary midpoint and a plausibility flag. Shared by fct_job_postings, fct_job_skills and dim_company."
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [unique, not_null]
+      - name: source
+        description: "{{ doc('source') }}"
+      - name: source_job_id
+        description: "{{ doc('source_job_id') }}"
+      - name: url
+        description: "{{ doc('url') }}"
+      - name: title
+        description: "{{ doc('title') }}"
+      - name: company_name
+        description: "{{ doc('company_name') }}"
+      - name: company_logo_url
+        description: "{{ doc('company_logo_url') }}"
+      - name: published_at
+        description: "{{ doc('published_at') }}"
+      - name: published_date
+        description: "{{ doc('published_date') }}"
+      - name: expires_at
+        description: "{{ doc('expires_at') }}"
+      - name: is_remote
+        description: "{{ doc('is_remote') }}"
+      - name: is_listed_now
+        description: "{{ doc('is_listed_now') }}"
+      - name: seniority
+        description: "{{ doc('seniority') }}"
+      - name: seniority_source
+        description: "{{ doc('seniority_source') }}"
+      - name: salary_min
+        description: "{{ doc('salary_min') }}"
+      - name: salary_max
+        description: "{{ doc('salary_max') }}"
+      - name: salary_currency
+        description: "{{ doc('salary_currency') }}"
+      - name: salary_period
+        description: "{{ doc('salary_period') }}"
+      - name: salary_min_usd_yearly
+        description: "{{ doc('salary_min_usd_yearly') }}"
+      - name: salary_max_usd_yearly
+        description: "{{ doc('salary_max_usd_yearly') }}"
+      - name: first_seen_at
+        description: "{{ doc('first_seen_at') }}"
+      - name: last_seen_at
+        description: "{{ doc('last_seen_at') }}"
+      - name: times_seen
+        description: "{{ doc('times_seen') }}"
+      - name: built_at
+        description: "{{ doc('built_at') }}"
+      - name: company_key
+        description: "{{ doc('company_key') }}"
+        data_tests: [not_null]
+      - name: published_month
+        description: "{{ doc('published_month') }}"
+        data_tests: [not_null]
+      - name: salary_mid_usd_yearly
+        description: "{{ doc('salary_mid_usd_yearly') }}"
+      - name: salary_is_plausible
+        description: "{{ doc('salary_is_plausible') }}"
+  - name: int_job_skill_pairs
+    description: "One row per job x pair of skills found in that job, each pair once and in alphabetical order (skill_a < skill_b). Feeds agg_skill_co_occurrence."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "skill_a", "skill_b"]
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "skill_a < skill_b"
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
+      - name: skill_a
+        description: "The alphabetically first skill of the pair."
+      - name: skill_b
+        description: "The alphabetically second skill of the pair."

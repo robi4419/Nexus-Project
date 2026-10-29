@@ -1,0 +1,715 @@
+version: 2
+
+# Every mart has an enforced contract (dbt_project.yml): each column lists its data_type.
+# Databricks enforces not_null and check constraints, so not_null tests aren't needed on those columns.
+# Primary and foreign keys are informational: the unique, unique_combination_of_columns and relationships tests check them.
+# Constraints are named (pk_, fk_, chk_) because an unnamed one makes dbt warn on every build.
+# Columns shared with staging and intermediate take their description from the doc blocks in models/_docs.md.
+
+models:
+  # ---------- Dimensions ----------
+  - name: dim_skill
+    description: "One row per skill in the skill taxonomy (silver.ref_skills), including skills no job mentions yet."
+    columns:
+      - name: skill
+        data_type: string
+        description: "{{ doc('skill') }} Primary key, referenced by fct_job_skills and the aggregates."
+        constraints:
+          - type: not_null
+          - type: primary_key
+            name: pk_dim_skill
+            warn_unenforced: false
+        data_tests: [unique]
+      - name: category
+        data_type: string
+        description: "{{ doc('category') }}"
+        constraints:
+          - type: not_null
+      - name: taxonomy_version
+        data_type: string
+        description: "{{ doc('taxonomy_version') }}"
+
+  - name: dim_location
+    description: "One row per place jobs are listed in: a city, country, region, Worldwide or an unknown place, from stg_silver__job_locations. region, country_name and city_name form a drill-down hierarchy and are always filled; a missing level gets a label in parentheses. Count jobs across bridge_job_locations with a distinct count of job_key."
+    columns:
+      - name: location_key
+        data_type: string
+        description: "{{ doc('location_key') }} Primary key, referenced by bridge_job_locations."
+        constraints:
+          - type: not_null
+          - type: primary_key
+            name: pk_dim_location
+            warn_unenforced: false
+        data_tests: [unique]
+      - name: location_name
+        data_type: string
+        description: "{{ doc('location_name') }}"
+      - name: location_type
+        data_type: string
+        description: "{{ doc('location_type') }}"
+        constraints:
+          - type: not_null
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["city", "country", "region", "worldwide", "unknown"]
+      - name: country_code
+        data_type: string
+        description: "{{ doc('country_code') }}"
+      - name: region
+        data_type: string
+        description: "Hierarchy level 1. North America, LATAM, Europe, Middle East & Africa, APAC or Antarctica (5 remote territories) for cities and countries; the region itself for region-level places (e.g. EMEA); Worldwide for Anywhere; (unknown) for unknown places."
+        constraints:
+          - type: not_null
+      - name: country_name
+        data_type: string
+        description: "Hierarchy level 2. Country name in English, from ref_countries, for cities and countries; the place's own name in parentheses for regions, e.g. (Benelux); (anywhere) for Worldwide and (unknown) for unknown places."
+        constraints:
+          - type: not_null
+      - name: city_name
+        data_type: string
+        description: "Hierarchy level 3. The city for cities; (whole country) for countries, the place's own name in parentheses for regions, e.g. (Benelux); (anywhere) for Worldwide and (unknown) for unknown places."
+        constraints:
+          - type: not_null
+
+  - name: dim_industry
+    description: "One row per industry used by at least one job, from silver.job_industries. The sources' industry names are mapped to one shared list (industries.csv)."
+    columns:
+      - name: industry
+        data_type: string
+        description: "{{ doc('industry') }} Primary key, referenced by bridge_job_industries."
+        constraints:
+          - type: not_null
+          - type: primary_key
+            name: pk_dim_industry
+            warn_unenforced: false
+        data_tests: [unique]
+
+  - name: dim_seniority
+    description: "One row per seniority level, from the seed seniority_levels.csv, with the order charts should sort by."
+    columns:
+      - name: seniority
+        data_type: string
+        description: "Seniority level: Intern, Junior, Mid, Senior, Lead, Director, Executive or Unspecified. Primary key, referenced by fct_job_postings and fct_job_skills."
+        constraints:
+          - type: not_null
+          - type: primary_key
+            name: pk_dim_seniority
+            warn_unenforced: false
+        data_tests: [unique]
+      - name: sort_order
+        data_type: int
+        description: "Position for sorting, from Intern (1) to Executive (7), with Unspecified last (8)."
+        constraints:
+          - type: not_null
+        data_tests: [unique]
+
+  - name: dim_company
+    description: "One row per company: int_job_postings grouped by company_key. The name and logo come from the company's latest posting."
+    columns:
+      - name: company_key
+        data_type: string
+        description: "{{ doc('company_key') }} Primary key, referenced by fct_job_postings and fct_job_skills."
+        constraints:
+          - type: not_null
+          - type: primary_key
+            name: pk_dim_company
+            warn_unenforced: false
+        data_tests: [unique]
+      - name: company_name
+        data_type: string
+        description: "Company name as written in the company's latest posting."
+        constraints:
+          - type: not_null
+      - name: company_logo_url
+        data_type: string
+        description: "Logo URL from the latest posting that has one. NULL when no posting has a logo; Arbeitnow never sends logos."
+      - name: first_published_at
+        data_type: timestamp
+        description: "When the company's earliest posting was published, in UTC."
+        constraints:
+          - type: not_null
+      - name: last_published_at
+        data_type: timestamp
+        description: "When the company's latest posting was published, in UTC."
+        constraints:
+          - type: not_null
+
+  - name: dim_date
+    description: "One row per day from 2026-10-01 to the day of the build, made with dbt_utils.date_spine. Join on published_date, or on month_start for monthly data. Drill-down hierarchy: year > year_quarter > year_month > date_day; weeks (week_start) are a separate path because a week can span two months. Sort month_name by month and day_name by day_of_week."
+    columns:
+      - name: date_day
+        data_type: date
+        description: "The calendar day. Primary key, referenced by fct_job_postings, fct_job_skills and agg_skill_weekly_trend."
+        constraints:
+          - type: not_null
+          - type: primary_key
+            name: pk_dim_date
+            warn_unenforced: false
+        data_tests: [unique]
+      - name: year
+        data_type: int
+        description: "Calendar year, e.g. 2026."
+      - name: quarter
+        data_type: int
+        description: "Quarter of the year, 1 to 4."
+      - name: year_quarter
+        data_type: string
+        description: "Year and quarter, e.g. 2026-Q4. Unique across years and sorts correctly as text."
+      - name: month
+        data_type: int
+        description: "Month number, 1 to 12."
+      - name: month_name
+        data_type: string
+        description: "Month name in English, e.g. October."
+      - name: year_month
+        data_type: string
+        description: "Year and month, e.g. 2026-10. Unique across years and sorts correctly as text."
+      - name: month_start
+        data_type: date
+        description: "First day of the month. Matches published_month in fct_job_postings."
+      - name: week_start
+        data_type: date
+        description: "Monday of the day's week."
+      - name: day_of_week
+        data_type: int
+        description: "Day of the week, 1 = Monday to 7 = Sunday."
+      - name: day_name
+        data_type: string
+        description: "Day name in English, e.g. Tuesday."
+      - name: is_weekend
+        data_type: boolean
+        description: "True on Saturday and Sunday."
+
+  # ---------- Facts ----------
+  - name: fct_job_postings
+    description: "One row per job posting, the centre of the star. Joins dim_company, dim_seniority and dim_date directly; locations, industries and types come through the bridges, skills through fct_job_skills. Count jobs with count(*) here, but with count(distinct job_key) after joining a bridge."
+    data_tests:
+      # Reconciliation: one row per silver job, none lost or duplicated.
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: source('silver', 'jobs')
+    columns:
+      - name: job_key
+        data_type: string
+        description: "{{ doc('job_key') }} Primary key, referenced by fct_job_skills and the bridges."
+        constraints:
+          - type: not_null
+          - type: primary_key
+            name: pk_fct_job_postings
+            warn_unenforced: false
+        data_tests: [unique]
+      - name: company_key
+        data_type: string
+        description: "{{ doc('company_key') }} Foreign key to dim_company."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_postings_company_key
+            to: ref('dim_company')
+            to_columns: [company_key]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_company')
+                field: company_key
+      - name: seniority
+        data_type: string
+        description: "{{ doc('seniority') }} Foreign key to dim_seniority."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_postings_seniority
+            to: ref('dim_seniority')
+            to_columns: [seniority]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_seniority')
+                field: seniority
+      - name: published_date
+        data_type: date
+        description: "{{ doc('published_date') }} Foreign key to dim_date."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_postings_published_date
+            to: ref('dim_date')
+            to_columns: [date_day]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: source
+        data_type: string
+        description: "{{ doc('source') }}"
+        constraints:
+          - type: not_null
+      - name: source_job_id
+        data_type: string
+        description: "{{ doc('source_job_id') }}"
+        constraints:
+          - type: not_null
+      - name: title
+        data_type: string
+        description: "{{ doc('title') }}"
+        constraints:
+          - type: not_null
+      - name: url
+        data_type: string
+        description: "{{ doc('url') }}"
+        constraints:
+          - type: not_null
+      - name: is_remote
+        data_type: boolean
+        description: "{{ doc('is_remote') }}"
+        constraints:
+          - type: not_null
+      - name: is_listed_now
+        data_type: boolean
+        description: "{{ doc('is_listed_now') }}"
+        constraints:
+          - type: not_null
+      - name: published_at
+        data_type: timestamp
+        description: "{{ doc('published_at') }}"
+        constraints:
+          - type: not_null
+      - name: published_month
+        data_type: date
+        description: "{{ doc('published_month') }}"
+        constraints:
+          - type: not_null
+      - name: expires_at
+        data_type: timestamp
+        description: "{{ doc('expires_at') }}"
+      - name: first_seen_at
+        data_type: timestamp
+        description: "{{ doc('first_seen_at') }}"
+        constraints:
+          - type: not_null
+      - name: last_seen_at
+        data_type: timestamp
+        description: "{{ doc('last_seen_at') }}"
+        constraints:
+          - type: not_null
+      - name: times_seen
+        data_type: bigint
+        description: "{{ doc('times_seen') }}"
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_fct_job_postings_times_seen
+            expression: "times_seen >= 1"
+      - name: salary_min
+        data_type: double
+        description: "{{ doc('salary_min') }}"
+      - name: salary_max
+        data_type: double
+        description: "{{ doc('salary_max') }}"
+      - name: salary_currency
+        data_type: string
+        description: "{{ doc('salary_currency') }}"
+      - name: salary_period
+        data_type: string
+        description: "{{ doc('salary_period') }}"
+      - name: salary_min_usd_yearly
+        data_type: double
+        description: "{{ doc('salary_min_usd_yearly') }}"
+      - name: salary_max_usd_yearly
+        data_type: double
+        description: "{{ doc('salary_max_usd_yearly') }}"
+      - name: salary_mid_usd_yearly
+        data_type: double
+        description: "{{ doc('salary_mid_usd_yearly') }}"
+      - name: salary_is_plausible
+        data_type: boolean
+        description: "{{ doc('salary_is_plausible') }}"
+
+  - name: fct_job_skills
+    description: "One row per job x skill found in its title or description. Carries the job's date, company and seniority keys and the filters source, is_listed_now and is_remote, so skill charts join the dimensions directly (decision 10)."
+    constraints:
+      - type: primary_key
+        name: pk_fct_job_skills
+        columns: [job_key, skill]
+        warn_unenforced: false
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "skill"]
+      # Reconciliation: one row per silver job x skill; the inner join to the jobs drops none.
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: source('silver', 'job_skills')
+    columns:
+      - name: job_key
+        data_type: string
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_skills_job_key
+            to: ref('fct_job_postings')
+            to_columns: [job_key]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fct_job_postings')
+                field: job_key
+      - name: skill
+        data_type: string
+        description: "{{ doc('skill') }} Foreign key to dim_skill."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_skills_skill
+            to: ref('dim_skill')
+            to_columns: [skill]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_skill')
+                field: skill
+      - name: mentions
+        data_type: int
+        description: "{{ doc('mentions') }}"
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_fct_job_skills_mentions
+            expression: "mentions >= 1"
+      - name: in_title
+        data_type: boolean
+        description: "{{ doc('in_title') }}"
+        constraints:
+          - type: not_null
+      - name: published_date
+        data_type: date
+        description: "{{ doc('published_date') }} Foreign key to dim_date; copied from fct_job_postings."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_skills_published_date
+            to: ref('dim_date')
+            to_columns: [date_day]
+            warn_unenforced: false
+      - name: company_key
+        data_type: string
+        description: "{{ doc('company_key') }} Foreign key to dim_company; copied from fct_job_postings."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_skills_company_key
+            to: ref('dim_company')
+            to_columns: [company_key]
+            warn_unenforced: false
+      - name: seniority
+        data_type: string
+        description: "{{ doc('seniority') }} Foreign key to dim_seniority; copied from fct_job_postings."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_skills_seniority
+            to: ref('dim_seniority')
+            to_columns: [seniority]
+            warn_unenforced: false
+      - name: source
+        data_type: string
+        description: "{{ doc('source') }} Copied so skill charts can leave out Himalayas (decision 3)."
+        constraints:
+          - type: not_null
+      - name: is_listed_now
+        data_type: boolean
+        description: "{{ doc('is_listed_now') }} Copied for current vs all-time skill demand."
+        constraints:
+          - type: not_null
+      - name: is_remote
+        data_type: boolean
+        description: "{{ doc('is_remote') }} Copied for remote vs on-site skill demand."
+        constraints:
+          - type: not_null
+
+  # ---------- Bridges ----------
+  - name: bridge_job_locations
+    description: "One row per job x place it's listed in. Joins fct_job_postings to dim_location; count jobs across it with count(distinct job_key)."
+    constraints:
+      - type: primary_key
+        name: pk_bridge_job_locations
+        columns: [job_key, location_key]
+        warn_unenforced: false
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "location_key"]
+    columns:
+      - name: job_key
+        data_type: string
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_bridge_job_locations_job_key
+            to: ref('fct_job_postings')
+            to_columns: [job_key]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fct_job_postings')
+                field: job_key
+      - name: location_key
+        data_type: string
+        description: "{{ doc('location_key') }} Foreign key to dim_location."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_bridge_job_locations_location_key
+            to: ref('dim_location')
+            to_columns: [location_key]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_key
+
+  - name: bridge_job_industries
+    description: "One row per job x industry. Joins fct_job_postings to dim_industry; count jobs across it with count(distinct job_key)."
+    constraints:
+      - type: primary_key
+        name: pk_bridge_job_industries
+        columns: [job_key, industry]
+        warn_unenforced: false
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "industry"]
+    columns:
+      - name: job_key
+        data_type: string
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_bridge_job_industries_job_key
+            to: ref('fct_job_postings')
+            to_columns: [job_key]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fct_job_postings')
+                field: job_key
+      - name: industry
+        data_type: string
+        description: "{{ doc('industry') }} Foreign key to dim_industry."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_bridge_job_industries_industry
+            to: ref('dim_industry')
+            to_columns: [industry]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_industry')
+                field: industry
+
+  - name: bridge_job_types
+    description: "One row per job x job type. The 5 types describe themselves, so there's no dimension; count jobs across it with count(distinct job_key)."
+    constraints:
+      - type: primary_key
+        name: pk_bridge_job_types
+        columns: [job_key, job_type]
+        warn_unenforced: false
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "job_type"]
+    columns:
+      - name: job_key
+        data_type: string
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_bridge_job_types_job_key
+            to: ref('fct_job_postings')
+            to_columns: [job_key]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fct_job_postings')
+                field: job_key
+      - name: job_type
+        data_type: string
+        description: "{{ doc('job_type') }}"
+        constraints:
+          - type: not_null
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["Full-Time", "Part-Time", "Contract", "Internship", "Temporary"]
+
+  # ---------- Aggregates ----------
+  - name: agg_skill_co_occurrence
+    description: "One row per ordered pair of skills asked for together in at least 5 jobs; each pair appears in both directions, so a heatmap fills both halves. Counted over all jobs with at least one skill: dashboard filters don't apply."
+    constraints:
+      - type: primary_key
+        name: pk_agg_skill_co_occurrence
+        columns: [skill, co_skill]
+        warn_unenforced: false
+      - type: check
+        name: chk_agg_skill_co_occurrence_distinct_skills
+        expression: "skill <> co_skill"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["skill", "co_skill"]
+    columns:
+      - name: skill
+        data_type: string
+        description: "The skill the row is about (dim_skill)."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_agg_skill_co_occurrence_skill
+            to: ref('dim_skill')
+            to_columns: [skill]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_skill')
+                field: skill
+      - name: co_skill
+        data_type: string
+        description: "The skill asked for together with it (dim_skill)."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_agg_skill_co_occurrence_co_skill
+            to: ref('dim_skill')
+            to_columns: [skill]
+            warn_unenforced: false
+      - name: jobs_both
+        data_type: bigint
+        description: "Jobs asking for both skills; at least 5."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_co_occurrence_jobs_both
+            expression: "jobs_both >= 5"
+      - name: skill_jobs
+        data_type: bigint
+        description: "Jobs asking for skill."
+        constraints:
+          - type: not_null
+      - name: co_skill_jobs
+        data_type: bigint
+        description: "Jobs asking for co_skill."
+        constraints:
+          - type: not_null
+      - name: share_of_skill_jobs
+        data_type: double
+        description: "Share of the skill's jobs that also ask for co_skill: jobs_both / skill_jobs. One-directional: Python -> SQL differs from SQL -> Python."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_co_occurrence_share
+            expression: "share_of_skill_jobs > 0 and share_of_skill_jobs <= 1"
+      - name: lift
+        data_type: double
+        description: "How many times more often the two skills appear together than if they were unrelated: jobs_both * N / (skill_jobs * co_skill_jobs), with N the jobs with at least one skill. Above 1 linked, 1 unrelated, below 1 avoiding each other. The same in both directions."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_co_occurrence_lift
+            expression: "lift > 0"
+
+  - name: agg_skill_weekly_trend
+    description: "One row per complete week x skill (every skill, 0 when not asked for), for rising-skill charts. Jobicy and Arbeitnow only: Himalayas deletes expired jobs, which would fake a decline (decision 3). Starts with the week of 2026-10-19, the first in which both sources are complete; a week is included once its Sunday is a day old. Dashboard filters don't apply."
+    constraints:
+      - type: primary_key
+        name: pk_agg_skill_weekly_trend
+        columns: [week_start, skill]
+        warn_unenforced: false
+      - type: check
+        name: chk_agg_skill_weekly_trend_jobs_in_week
+        expression: "jobs <= week_jobs"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["week_start", "skill"]
+    columns:
+      - name: week_start
+        data_type: date
+        description: "Monday of the week (dim_date)."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_agg_skill_weekly_trend_week_start
+            to: ref('dim_date')
+            to_columns: [date_day]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: skill
+        data_type: string
+        description: "{{ doc('skill') }} Foreign key to dim_skill."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_agg_skill_weekly_trend_skill
+            to: ref('dim_skill')
+            to_columns: [skill]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_skill')
+                field: skill
+      - name: jobs
+        data_type: bigint
+        description: "Jobicy and Arbeitnow jobs published that week asking for the skill; 0 when none."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_weekly_trend_jobs
+            expression: "jobs >= 0"
+      - name: week_jobs
+        data_type: bigint
+        description: "All Jobicy and Arbeitnow jobs published that week, with or without skills."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_weekly_trend_week_jobs
+            expression: "week_jobs > 0"
+      - name: share
+        data_type: double
+        description: "Share of the week's postings asking for the skill: jobs / week_jobs. Unlike jobs, it doesn't rise just because a week was busy."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_weekly_trend_share
+            expression: "share >= 0 and share <= 1"
+      - name: prev_jobs
+        data_type: bigint
+        description: "jobs in the previous week. NULL in the first week."
+      - name: prev_share
+        data_type: double
+        description: "share in the previous week. NULL in the first week."
+      - name: share_change
+        data_type: double
+        description: "share - prev_share, as a fraction (0.012 = +1.2 percentage points). Rising skills have the largest values; filter on jobs or prev_jobs to skip skills too rare to trust. NULL in the first week."
