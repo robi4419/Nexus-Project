@@ -4,6 +4,7 @@ version: 2
 # Databricks enforces not_null and check constraints, so not_null tests aren't needed on those columns.
 # Primary and foreign keys are informational: the unique, unique_combination_of_columns and relationships tests check them.
 # Constraints are named (pk_, fk_, chk_) because an unnamed one makes dbt warn on every build.
+# Columns shared with staging and intermediate take their description from the doc blocks in models/_docs.md.
 
 models:
   # ---------- Dimensions ----------
@@ -12,7 +13,7 @@ models:
     columns:
       - name: skill
         data_type: string
-        description: "Skill name as written in the taxonomy. Primary key, referenced by fct_job_skills."
+        description: "{{ doc('skill') }} Primary key, referenced by fct_job_skills and the aggregates."
         constraints:
           - type: not_null
           - type: primary_key
@@ -21,19 +22,19 @@ models:
         data_tests: [unique]
       - name: category
         data_type: string
-        description: "Taxonomy category, e.g. Programming Languages or CRM & Sales Tools."
+        description: "{{ doc('category') }}"
         constraints:
           - type: not_null
       - name: taxonomy_version
         data_type: string
-        description: "12-character fingerprint of the skill list's content. Changes whenever skills.csv changes."
+        description: "{{ doc('taxonomy_version') }}"
 
   - name: dim_location
     description: "One row per place jobs are listed in: a city, country, region, Worldwide or an unknown place, from stg_silver__job_locations. region, country_name and city_name form a drill-down hierarchy and are always filled; a missing level gets a label in parentheses. Count jobs across bridge_job_locations with a distinct count of job_key."
     columns:
       - name: location_key
         data_type: string
-        description: "Surrogate key: md5 hash of location_name, location_type and country_code. Primary key, referenced by bridge_job_locations."
+        description: "{{ doc('location_key') }} Primary key, referenced by bridge_job_locations."
         constraints:
           - type: not_null
           - type: primary_key
@@ -42,10 +43,10 @@ models:
         data_tests: [unique]
       - name: location_name
         data_type: string
-        description: "The place's name: a city, country or region, Anywhere for Worldwide, or the cleaned text of an unknown place. NULL for an empty location."
+        description: "{{ doc('location_name') }}"
       - name: location_type
         data_type: string
-        description: "city, country, region, worldwide or unknown."
+        description: "{{ doc('location_type') }}"
         constraints:
           - type: not_null
         data_tests:
@@ -54,7 +55,7 @@ models:
                 values: ["city", "country", "region", "worldwide", "unknown"]
       - name: country_code
         data_type: string
-        description: "Two-letter ISO country code, shared by a country and its cities; use it for map charts. NULL for regions, Worldwide and unknown places."
+        description: "{{ doc('country_code') }}"
       - name: region
         data_type: string
         description: "Hierarchy level 1. North America, LATAM, Europe, Middle East & Africa, APAC or Antarctica (5 remote territories) for cities and countries; the region itself for region-level places (e.g. EMEA); Worldwide for Anywhere; (unknown) for unknown places."
@@ -76,7 +77,7 @@ models:
     columns:
       - name: industry
         data_type: string
-        description: "Industry name. Primary key, referenced by bridge_job_industries."
+        description: "{{ doc('industry') }} Primary key, referenced by bridge_job_industries."
         constraints:
           - type: not_null
           - type: primary_key
@@ -108,7 +109,7 @@ models:
     columns:
       - name: company_key
         data_type: string
-        description: "Surrogate key of the company: md5 hash of the lower-cased, trimmed company name. Primary key, referenced by fct_job_postings and fct_job_skills."
+        description: "{{ doc('company_key') }} Primary key, referenced by fct_job_postings and fct_job_skills."
         constraints:
           - type: not_null
           - type: primary_key
@@ -139,7 +140,7 @@ models:
     columns:
       - name: date_day
         data_type: date
-        description: "The calendar day. Primary key, referenced by fct_job_postings and fct_job_skills."
+        description: "The calendar day. Primary key, referenced by fct_job_postings, fct_job_skills and agg_skill_weekly_trend."
         constraints:
           - type: not_null
           - type: primary_key
@@ -191,7 +192,7 @@ models:
     columns:
       - name: job_key
         data_type: string
-        description: "Surrogate key: md5 hash of source and source_job_id. Primary key, referenced by fct_job_skills and the bridges."
+        description: "{{ doc('job_key') }} Primary key, referenced by fct_job_skills and the bridges."
         constraints:
           - type: not_null
           - type: primary_key
@@ -200,7 +201,7 @@ models:
         data_tests: [unique]
       - name: company_key
         data_type: string
-        description: "The company that posted the job (dim_company)."
+        description: "{{ doc('company_key') }} Foreign key to dim_company."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -215,7 +216,7 @@ models:
                 field: company_key
       - name: seniority
         data_type: string
-        description: "Seniority from the job title, else from the source's level, else Unspecified (dim_seniority)."
+        description: "{{ doc('seniority') }} Foreign key to dim_seniority."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -230,7 +231,7 @@ models:
                 field: seniority
       - name: published_date
         data_type: date
-        description: "Day the job was published, in UTC (dim_date)."
+        description: "{{ doc('published_date') }} Foreign key to dim_date."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -245,60 +246,60 @@ models:
                 field: date_day
       - name: source
         data_type: string
-        description: "The API the job came from: jobicy, arbeitnow or himalayas."
+        description: "{{ doc('source') }}"
         constraints:
           - type: not_null
       - name: source_job_id
         data_type: string
-        description: "The job's ID at its source."
+        description: "{{ doc('source_job_id') }}"
         constraints:
           - type: not_null
       - name: title
         data_type: string
-        description: "Job title as posted."
+        description: "{{ doc('title') }}"
         constraints:
           - type: not_null
       - name: url
         data_type: string
-        description: "Link to the posting; Himalayas' applicationLink. Show it with every job listed: Jobicy asks for a link back and Himalayas' terms require its application link for every Apply."
+        description: "{{ doc('url') }}"
         constraints:
           - type: not_null
       - name: is_remote
         data_type: boolean
-        description: "True for remote jobs. Always true for Jobicy and Himalayas; all on-site jobs come from Arbeitnow."
+        description: "{{ doc('is_remote') }}"
         constraints:
           - type: not_null
       - name: is_listed_now
         data_type: boolean
-        description: "True when the job appeared in its source's latest run, i.e. it's still open."
+        description: "{{ doc('is_listed_now') }}"
         constraints:
           - type: not_null
       - name: published_at
         data_type: timestamp
-        description: "When the job was published, in UTC."
+        description: "{{ doc('published_at') }}"
         constraints:
           - type: not_null
       - name: published_month
         data_type: date
-        description: "First day of the month the job was published, in UTC. Matches month_start in dim_date."
+        description: "{{ doc('published_month') }}"
         constraints:
           - type: not_null
       - name: expires_at
         data_type: timestamp
-        description: "When the source says the job expires, in UTC. NULL when the source gives no date."
+        description: "{{ doc('expires_at') }}"
       - name: first_seen_at
         data_type: timestamp
-        description: "When ingestion first saw the job."
+        description: "{{ doc('first_seen_at') }}"
         constraints:
           - type: not_null
       - name: last_seen_at
         data_type: timestamp
-        description: "When ingestion last saw the job."
+        description: "{{ doc('last_seen_at') }}"
         constraints:
           - type: not_null
       - name: times_seen
         data_type: bigint
-        description: "Number of ingestion runs the job appeared in; at least 1."
+        description: "{{ doc('times_seen') }}"
         constraints:
           - type: not_null
           - type: check
@@ -306,28 +307,28 @@ models:
             expression: "times_seen >= 1"
       - name: salary_min
         data_type: double
-        description: "Minimum salary as posted, in salary_currency per salary_period. NULL when not given."
+        description: "{{ doc('salary_min') }}"
       - name: salary_max
         data_type: double
-        description: "Maximum salary as posted, in salary_currency per salary_period. NULL when not given."
+        description: "{{ doc('salary_max') }}"
       - name: salary_currency
         data_type: string
-        description: "Currency of the posted salary, e.g. USD or EUR."
+        description: "{{ doc('salary_currency') }}"
       - name: salary_period
         data_type: string
-        description: "Period of the posted salary, e.g. yearly, monthly or hourly."
+        description: "{{ doc('salary_period') }}"
       - name: salary_min_usd_yearly
         data_type: double
-        description: "Minimum salary converted to yearly USD with the exchange rate on or before the publish date."
+        description: "{{ doc('salary_min_usd_yearly') }}"
       - name: salary_max_usd_yearly
         data_type: double
-        description: "Maximum salary converted to yearly USD with the exchange rate on or before the publish date."
+        description: "{{ doc('salary_max_usd_yearly') }}"
       - name: salary_mid_usd_yearly
         data_type: double
-        description: "Midpoint of the yearly USD salary range. A range with only one bound uses that bound. NULL when the job has no yearly USD salary."
+        description: "{{ doc('salary_mid_usd_yearly') }}"
       - name: salary_is_plausible
         data_type: boolean
-        description: "True when both yearly USD bounds are between 5,000 and 1,500,000 and the minimum doesn't exceed the maximum. NULL when the job has no yearly USD salary. Salary charts use plausible salaries only."
+        description: "{{ doc('salary_is_plausible') }}"
 
   - name: fct_job_skills
     description: "One row per job x skill found in its title or description. Carries the job's date, company and seniority keys and the filters source, is_listed_now and is_remote, so skill charts join the dimensions directly (decision 10)."
@@ -347,7 +348,7 @@ models:
     columns:
       - name: job_key
         data_type: string
-        description: "The job (fct_job_postings)."
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -362,7 +363,7 @@ models:
                 field: job_key
       - name: skill
         data_type: string
-        description: "The skill (dim_skill)."
+        description: "{{ doc('skill') }} Foreign key to dim_skill."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -377,7 +378,7 @@ models:
                 field: skill
       - name: mentions
         data_type: int
-        description: "How many times the skill is mentioned in the title and description; at least 1."
+        description: "{{ doc('mentions') }}"
         constraints:
           - type: not_null
           - type: check
@@ -385,12 +386,12 @@ models:
             expression: "mentions >= 1"
       - name: in_title
         data_type: boolean
-        description: "True when the skill appears in the job title."
+        description: "{{ doc('in_title') }}"
         constraints:
           - type: not_null
       - name: published_date
         data_type: date
-        description: "Day the job was published, in UTC (dim_date). Copied from fct_job_postings."
+        description: "{{ doc('published_date') }} Foreign key to dim_date; copied from fct_job_postings."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -400,7 +401,7 @@ models:
             warn_unenforced: false
       - name: company_key
         data_type: string
-        description: "The company that posted the job (dim_company). Copied from fct_job_postings."
+        description: "{{ doc('company_key') }} Foreign key to dim_company; copied from fct_job_postings."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -410,7 +411,7 @@ models:
             warn_unenforced: false
       - name: seniority
         data_type: string
-        description: "The job's seniority (dim_seniority). Copied from fct_job_postings."
+        description: "{{ doc('seniority') }} Foreign key to dim_seniority; copied from fct_job_postings."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -420,17 +421,17 @@ models:
             warn_unenforced: false
       - name: source
         data_type: string
-        description: "The API the job came from: jobicy, arbeitnow or himalayas. Copied so skill trends can leave out Himalayas (decision 3)."
+        description: "{{ doc('source') }} Copied so skill charts can leave out Himalayas (decision 3)."
         constraints:
           - type: not_null
       - name: is_listed_now
         data_type: boolean
-        description: "True when the job is still open. Copied for current vs all-time skill demand."
+        description: "{{ doc('is_listed_now') }} Copied for current vs all-time skill demand."
         constraints:
           - type: not_null
       - name: is_remote
         data_type: boolean
-        description: "True for remote jobs. Copied for remote vs on-site skill demand; all on-site jobs come from Arbeitnow."
+        description: "{{ doc('is_remote') }} Copied for remote vs on-site skill demand."
         constraints:
           - type: not_null
 
@@ -449,7 +450,7 @@ models:
     columns:
       - name: job_key
         data_type: string
-        description: "The job (fct_job_postings)."
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -464,7 +465,7 @@ models:
                 field: job_key
       - name: location_key
         data_type: string
-        description: "The place (dim_location)."
+        description: "{{ doc('location_key') }} Foreign key to dim_location."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -492,7 +493,7 @@ models:
     columns:
       - name: job_key
         data_type: string
-        description: "The job (fct_job_postings)."
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -507,7 +508,7 @@ models:
                 field: job_key
       - name: industry
         data_type: string
-        description: "The industry (dim_industry)."
+        description: "{{ doc('industry') }} Foreign key to dim_industry."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -535,7 +536,7 @@ models:
     columns:
       - name: job_key
         data_type: string
-        description: "The job (fct_job_postings)."
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
         constraints:
           - type: not_null
           - type: foreign_key
@@ -550,7 +551,7 @@ models:
                 field: job_key
       - name: job_type
         data_type: string
-        description: "Full-Time, Part-Time, Contract, Internship or Temporary."
+        description: "{{ doc('job_type') }}"
         constraints:
           - type: not_null
         data_tests:
@@ -666,7 +667,7 @@ models:
                 field: date_day
       - name: skill
         data_type: string
-        description: "The skill (dim_skill)."
+        description: "{{ doc('skill') }} Foreign key to dim_skill."
         constraints:
           - type: not_null
           - type: foreign_key

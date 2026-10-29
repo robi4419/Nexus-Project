@@ -49,6 +49,9 @@ vars:
 seeds:
   job_listings:
     +schema: staging
+    +persist_docs:
+      relation: true
+      columns: true
     seniority_levels:
       +column_types:
         sort_order: int

@@ -1,0 +1,10 @@
+version: 2
+
+seeds:
+  - name: seniority_levels
+    description: "The seniority scale with its sort order, which exists only in transform/seniority.py otherwise. Loaded into gold_staging; dim_seniority reads it."
+    columns:
+      - name: seniority
+        description: "Seniority level: Intern, Junior, Mid, Senior, Lead, Director, Executive or Unspecified."
+      - name: sort_order
+        description: "Position for sorting, from Intern (1) to Executive (7), with Unspecified last (8)."
