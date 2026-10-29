@@ -548,3 +548,79 @@ models:
           - accepted_values:
               arguments:
                 values: ["Full-Time", "Part-Time", "Contract", "Internship", "Temporary"]
+
+  # ---------- Aggregates ----------
+  - name: agg_skill_co_occurrence
+    description: "One row per ordered pair of skills asked for together in at least 5 jobs; each pair appears in both directions, so a heatmap fills both halves. Counted over all jobs with at least one skill: dashboard filters don't apply."
+    constraints:
+      - type: primary_key
+        name: pk_agg_skill_co_occurrence
+        columns: [skill, co_skill]
+        warn_unenforced: false
+      - type: check
+        name: chk_agg_skill_co_occurrence_distinct_skills
+        expression: "skill <> co_skill"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["skill", "co_skill"]
+    columns:
+      - name: skill
+        data_type: string
+        description: "The skill the row is about (dim_skill)."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_agg_skill_co_occurrence_skill
+            to: ref('dim_skill')
+            to_columns: [skill]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_skill')
+                field: skill
+      - name: co_skill
+        data_type: string
+        description: "The skill asked for together with it (dim_skill)."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_agg_skill_co_occurrence_co_skill
+            to: ref('dim_skill')
+            to_columns: [skill]
+            warn_unenforced: false
+      - name: jobs_both
+        data_type: bigint
+        description: "Jobs asking for both skills; at least 5."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_co_occurrence_jobs_both
+            expression: "jobs_both >= 5"
+      - name: skill_jobs
+        data_type: bigint
+        description: "Jobs asking for skill."
+        constraints:
+          - type: not_null
+      - name: co_skill_jobs
+        data_type: bigint
+        description: "Jobs asking for co_skill."
+        constraints:
+          - type: not_null
+      - name: share_of_skill_jobs
+        data_type: double
+        description: "Share of the skill's jobs that also ask for co_skill: jobs_both / skill_jobs. One-directional: Python -> SQL differs from SQL -> Python."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_co_occurrence_share
+            expression: "share_of_skill_jobs > 0 and share_of_skill_jobs <= 1"
+      - name: lift
+        data_type: double
+        description: "How many times more often the two skills appear together than if they were unrelated: jobs_both * N / (skill_jobs * co_skill_jobs), with N the jobs with at least one skill. Above 1 linked, 1 unrelated, below 1 avoiding each other. The same in both directions."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_skill_co_occurrence_lift
+            expression: "lift > 0"
