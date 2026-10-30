@@ -42,7 +42,7 @@ def ingest_himalayas():
 
         return ensure_volume(WorkspaceClient(), LandingVolume.from_env())
 
-    @task(outlets=[LANDING_ASSET])
+    @task
     def fetch_and_land() -> dict:
         """Fetch the jobs updated since the cutoff and write the Tech ones, then the manifest, to this run's folder."""
         from databricks.sdk import WorkspaceClient
@@ -84,7 +84,8 @@ def ingest_himalayas():
         log.info("Purge: %s", summary)
         return summary
 
-    @task(retries=0)  # re-checking the same summary can't change the result
+    # The Asset is updated only once the run is checked, so transform_and_build never starts on a bad landing.
+    @task(outlets=[LANDING_ASSET], retries=0)  # re-checking the same summary can't change the result
     def check_run(summary: dict) -> None:
         """Fail the run if the feed returned nothing, or no Tech jobs: the cutoff always covers at least a day, so
         zero Tech jobs would mean Himalayas renamed its categories."""

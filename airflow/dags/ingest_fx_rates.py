@@ -39,7 +39,7 @@ def ingest_fx_rates():
 
         return ensure_volume(WorkspaceClient(), LandingVolume.from_env())
 
-    @task(outlets=[LANDING_ASSET])
+    @task
     def fetch_and_land() -> dict:
         """Fetch the rates for this run's date and write them to this run's folder in the Volume."""
         from databricks.sdk import WorkspaceClient
@@ -65,7 +65,8 @@ def ingest_fx_rates():
         )
         return summary
 
-    @task(retries=0)  # re-checking the same summary can't change the result
+    # The Asset is updated only once the run is checked.
+    @task(outlets=[LANDING_ASSET], retries=0)  # re-checking the same summary can't change the result
     def check_run(summary: dict) -> None:
         """Fail the run if the rates look incomplete."""
         currencies = summary["currencies"]

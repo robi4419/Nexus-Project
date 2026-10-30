@@ -12,7 +12,7 @@
 ## Progress
 - [x] 4.1 Branch, plan doc, `PLAN.md`
 - [x] 4.2 Settings: Airflow connections for Databricks and Gmail built from `.env`, the Job's name, dbt's working folders in the containers
-- [ ] 4.3 Ingestion DAGs update their Asset only after their run's check passes
+- [x] 4.3 Ingestion DAGs update their Asset only after their run's check passes
 - [ ] 4.4 New DAG `transform_and_build`: Databricks Job, then dbt (deps, source freshness, build)
 - [ ] 4.5 Failure emails for every DAG, plus a manual `alert_test` DAG
 - [ ] 4.6 Retries and time limits

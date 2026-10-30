@@ -36,7 +36,7 @@ def ingest_arbeitnow():
 
         return ensure_volume(WorkspaceClient(), LandingVolume.from_env())
 
-    @task(outlets=[LANDING_ASSET])
+    @task
     def fetch_and_land() -> dict:
         """Fetch every page of the feed and write it to this run's folder in the Volume."""
         from databricks.sdk import WorkspaceClient
@@ -56,7 +56,8 @@ def ingest_arbeitnow():
         log.info("Landed %s jobs in %s pages to %s", summary["jobs"], summary["pages"], summary["folder"])
         return summary
 
-    @task(retries=0)  # re-checking the same summary can't change the result
+    # The Asset is updated only once the run is checked, so transform_and_build never starts on a bad landing.
+    @task(outlets=[LANDING_ASSET], retries=0)  # re-checking the same summary can't change the result
     def check_run(summary: dict) -> None:
         """Fail the run if nothing was landed."""
         if summary["jobs"] == 0:
