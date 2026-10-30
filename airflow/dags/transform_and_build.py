@@ -16,6 +16,8 @@ from datetime import datetime, timedelta, timezone
 from airflow.providers.databricks.operators.databricks import DatabricksRunNowOperator
 from airflow.sdk import Asset, dag, task
 
+from pipeline_alerts import failure_email  # airflow/plugins/pipeline_alerts.py
+
 # The development-mode Job name carries the user name, so it comes from .env (decision 7 in the Phase 4 plan).
 TRANSFORM_JOB_NAME = os.environ.get("DATABRICKS_TRANSFORM_JOB_NAME")
 if not TRANSFORM_JOB_NAME:
@@ -32,6 +34,7 @@ DBT = "/opt/dbt-venv/bin/dbt --no-use-colors"
     start_date=datetime(2026, 10, 1, tzinfo=timezone.utc),
     max_active_runs=1,
     default_args={"retries": 1, "retry_delay": timedelta(minutes=5)},
+    on_failure_callback=failure_email(),
     tags=["databricks", "dbt", "transform"],
     doc_md=__doc__,
 )

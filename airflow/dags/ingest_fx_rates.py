@@ -13,6 +13,8 @@ from datetime import datetime, timedelta, timezone
 from airflow.sdk import Asset, dag, get_current_context, task
 from airflow.timetables.trigger import CronTriggerTimetable
 
+from pipeline_alerts import failure_email  # airflow/plugins/pipeline_alerts.py
+
 log = logging.getLogger(__name__)
 
 LANDING_ASSET = Asset("landing/frankfurter")
@@ -26,6 +28,7 @@ MIN_CURRENCIES = 20
     catchup=True,
     max_active_runs=1,
     default_args={"retries": 2, "retry_delay": timedelta(minutes=10)},
+    on_failure_callback=failure_email(),
     tags=["fx", "ingestion"],
     doc_md=__doc__,
 )

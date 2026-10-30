@@ -14,7 +14,7 @@
 - [x] 4.2 Settings: Airflow connections for Databricks and Gmail built from `.env`, the Job's name, dbt's working folders in the containers
 - [x] 4.3 Ingestion DAGs update their Asset only after their run's check passes
 - [x] 4.4 New DAG `transform_and_build`: Databricks Job, then dbt (deps, source freshness, build)
-- [ ] 4.5 Failure emails for every DAG, plus a manual `alert_test` DAG
+- [x] 4.5 Failure emails for every DAG, plus a manual `alert_test` DAG (test email received 2026-10-30)
 - [x] 4.6 Retries and time limits (written into `transform_and_build` in 4.4)
 - [ ] 4.7 Verify: import check, `airflow dags test`, a real daily cycle, a forced failure, a rerun
 - [ ] 4.8 Docs, commit, PR and merge
@@ -77,7 +77,7 @@ In `ingest_jobicy`, `ingest_arbeitnow`, `ingest_himalayas` and `ingest_fx_rates`
 - **First run, `airflow dags test transform_and_build` on 2026-10-30:** succeeded in 7.5 minutes. The Databricks task deferred for about 4 minutes while the Job ran, then freshness passed and `dbt build` passed 108 of 108.
 
 ### 4.5 Failure emails
-- A shared helper returns an `SmtpNotifier` with the DAG, the run and a link to it in the UI. Every DAG sets `on_failure_callback` to it, so there's one email per failed run, after retries.
+- `airflow/plugins/pipeline_alerts.py` returns an `SmtpNotifier` with the DAG, the run, the reason and a link to the run in the UI. Every DAG sets `on_failure_callback=failure_email()`, so there's one email per failed run, after retries.
 - `alert_test`: a manual DAG with no schedule whose only task fails on purpose, to check emails arrive (useful again after changing the app password).
 
 ### 4.6 Retries and time limits
@@ -113,6 +113,8 @@ Classic Airflow backfill (re-running past dates) mostly doesn't apply here, and 
 - **A Gmail app password works only with 2-step verification on,** and Google revokes it when the account password changes. It can read and send mail, so it stays in `.env` and can be revoked any time in the Google account.
 - **Port 465 is encrypted from the start, so the SMTP connection needs `"disable_tls": true`.** Otherwise the hook also tries STARTTLS (meant for plain connections on port 587), and Gmail answers "STARTTLS extension not supported by server".
 - **Save `.env` before `docker compose up -d`.** Containers read it only when they're created; a value added later needs another `up -d`.
+- **Airflow 3 puts `plugins/` and `config/` on Python's import path, not `dags/`.** A helper package inside the DAG folder fails with `ModuleNotFoundError`; code shared by DAGs goes in `airflow/plugins/`.
+- **A new DAG file shows up only after the DAG processor's next scan** (every few minutes). `airflow dags reserialize` registers it at once.
 - **DAG-level callbacks run in the DAG processor,** not on the worker, so the SMTP connection must reach every Airflow container (it does, through the shared environment).
 - **The Job's name follows the bundle target.** Deploying another target (or a different user deploying) changes it; update `DATABRICKS_TRANSFORM_JOB_NAME`.
 - **The Asset condition waits for all three sources.** One source down for days holds back silver and gold; its failure emails are the signal.
@@ -126,7 +128,8 @@ Classic Airflow backfill (re-running past dates) mostly doesn't apply here, and 
 airflow/dags/
     transform_and_build.py     ← Databricks Job, then dbt
     alert_test.py              ← manual DAG that fails on purpose
-    common/alerts.py           ← the shared failure notifier (folder name may change in 4.5)
+airflow/plugins/
+    pipeline_alerts.py         ← the shared failure notifier (plugins/ is importable from every DAG)
 docker-compose.yaml            ← connections and dbt paths in the shared environment
 .env.example                   ← new placeholders
 ```
