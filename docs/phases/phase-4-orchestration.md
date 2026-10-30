@@ -17,7 +17,7 @@
 - [x] 4.4 New DAG `transform_and_build`: Databricks Job, then dbt (deps, source freshness, build)
 - [x] 4.5 Failure emails for every DAG, plus a manual `alert_test` DAG (test email received 2026-10-30)
 - [x] 4.6 Retries and time limits (written into `transform_and_build` in 4.4)
-- [ ] 4.7 Verify: import check, `airflow dags test`, a real daily cycle, a forced failure, a rerun
+- [x] 4.7 Verify: import check, `airflow dags test`, a forced failure, and the first nightly cycle (2026-10-30)
 - [ ] 4.8 Himalayas jobs without a parent category kept when their title is clearly Tech, with an industry from the same rules in silver
 - [ ] 4.9 Docs, commit, PR and merge
 
@@ -97,7 +97,7 @@ In `ingest_jobicy`, `ingest_arbeitnow`, `ingest_himalayas` and `ingest_fx_rates`
 1. `airflow dags list-import-errors` is empty, and all five DAGs are listed.
 2. `airflow dags test transform_and_build` runs the chain once, outside the scheduler.
 3. Trigger `alert_test`: an email arrives.
-4. Unpause `transform_and_build`. After 18:00 UTC it starts by itself once the three ingestions finish, and everything is green, with more jobs in silver and gold than before. Before that night's run: silver and `fct_job_postings` 28,133 jobs, `fct_job_skills` 148,700 rows.
+4. Unpause `transform_and_build`. After 18:00 UTC it starts by itself once the three ingestions finish, and everything is green, with more jobs in silver and gold than before. Before that night's run: silver and `fct_job_postings` 28,133 jobs, `fct_job_skills` 148,700 rows. **On 2026-10-30** it started at 18:22 UTC (run `asset_triggered__…`), as soon as the last ingestion had passed its check, and was green 7 minutes 51 seconds later. After it: silver and `fct_job_postings` 31,618 jobs, `fct_job_skills` 168,648 rows.
 5. `pytest` passes.
 
 ### 4.8 Himalayas title fallback (decision 8)
