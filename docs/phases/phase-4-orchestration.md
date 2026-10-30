@@ -13,9 +13,9 @@
 - [x] 4.1 Branch, plan doc, `PLAN.md`
 - [x] 4.2 Settings: Airflow connections for Databricks and Gmail built from `.env`, the Job's name, dbt's working folders in the containers
 - [x] 4.3 Ingestion DAGs update their Asset only after their run's check passes
-- [ ] 4.4 New DAG `transform_and_build`: Databricks Job, then dbt (deps, source freshness, build)
+- [x] 4.4 New DAG `transform_and_build`: Databricks Job, then dbt (deps, source freshness, build)
 - [ ] 4.5 Failure emails for every DAG, plus a manual `alert_test` DAG
-- [ ] 4.6 Retries and time limits
+- [x] 4.6 Retries and time limits (written into `transform_and_build` in 4.4)
 - [ ] 4.7 Verify: import check, `airflow dags test`, a real daily cycle, a forced failure, a rerun
 - [ ] 4.8 Docs, commit, PR and merge
 
@@ -74,6 +74,7 @@ In `ingest_jobicy`, `ingest_arbeitnow`, `ingest_himalayas` and `ingest_fx_rates`
 - `schedule=(Asset("landing/jobicy") & Asset("landing/arbeitnow") & Asset("landing/himalayas"))`, `max_active_runs=1`.
 - `run_transform_job`: `DatabricksRunNowOperator(job_name=…, deferrable=True)`.
 - `dbt_deps`, `dbt_source_freshness`, `dbt_build`: Bash tasks with `/opt/dbt-venv/bin/dbt`. Freshness guards against a Job that "succeeded" without rebuilding silver.
+- **First run, `airflow dags test transform_and_build` on 2026-10-30:** succeeded in 7.5 minutes. The Databricks task deferred for about 4 minutes while the Job ran, then freshness passed and `dbt build` passed 108 of 108.
 
 ### 4.5 Failure emails
 - A shared helper returns an `SmtpNotifier` with the DAG, the run and a link to it in the UI. Every DAG sets `on_failure_callback` to it, so there's one email per failed run, after retries.
