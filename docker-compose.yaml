@@ -95,6 +95,8 @@ x-airflow-common: &airflow-common
     - ${AIRFLOW_PROJ_DIR:-./airflow}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-./airflow}/plugins:/opt/airflow/plugins
     - ./ingestion:/opt/project/ingestion
+    # the Himalayas title rules, shared by landing (ingestion/) and silver (Databricks)
+    - ./transform:/opt/project/transform
     - ./dbt:/opt/project/dbt
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on: &airflow-common-depends-on

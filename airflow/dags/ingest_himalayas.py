@@ -1,7 +1,7 @@
 """Daily ingestion of new and updated Tech jobs from the Himalayas remote jobs feed.
 
 Walks the feed newest first back to the previous run's newest job minus a day (2 days on the first run), keeps the
-Tech categories, and writes them, one file per expiry day, to
+Tech jobs (a Tech parent category, or none but a clearly Tech title), and writes them, one file per expiry day, to
 `/Volumes/<catalog>/bronze/landing/himalayas/ingest_date=YYYY-MM-DD/run=<run id>/expires_YYYY-MM-DD.json`, plus a
 `manifest.json` that tells the next run where to stop. Needs `HIMALAYAS_API_KEY` in the root `.env`.
 
@@ -69,9 +69,9 @@ def ingest_himalayas():
             run_date=dag_run.run_after,
         )
         log.info(
-            "Landed %s Tech jobs of %s seen (%s pages, cutoff %s from %s) to %s",
-            summary["tech_jobs"], summary["jobs_seen"], summary["pages"], summary["cutoff"], summary["cutoff_from"],
-            summary["folder"],
+            "Landed %s Tech jobs (%s by title) of %s seen (%s pages, cutoff %s from %s) to %s",
+            summary["tech_jobs"], summary["tech_by_title"], summary["jobs_seen"], summary["pages"], summary["cutoff"],
+            summary["cutoff_from"], summary["folder"],
         )
         return summary
 
@@ -90,12 +90,15 @@ def ingest_himalayas():
     # The Asset is updated only once the run is checked, so transform_and_build never starts on a bad landing.
     @task(outlets=[LANDING_ASSET], retries=0)  # re-checking the same summary can't change the result
     def check_run(summary: dict) -> None:
-        """Fail the run if the feed returned nothing, or no Tech jobs: the cutoff always covers at least a day, so
-        zero Tech jobs would mean Himalayas renamed its categories."""
+        """Fail the run if the feed returned nothing, or no jobs in a Tech parent category: the cutoff always covers at
+        least a day, so none would mean Himalayas renamed its categories. Jobs kept for their title alone don't count
+        here, or they would hide the rename."""
         if summary["jobs_seen"] == 0:
             raise ValueError(f"The feed returned no jobs (cutoff {summary['cutoff']})")
-        if summary["tech_jobs"] == 0:
-            raise ValueError(f"No Tech jobs among {summary['jobs_seen']}: have the parentCategories changed?")
+        if summary["tech_jobs"] == summary["tech_by_title"]:
+            raise ValueError(
+                f"No jobs in a Tech parent category among {summary['jobs_seen']}: have the parentCategories changed?"
+            )
         log.info("Run OK: %s", summary)
 
     volume = ensure_landing_volume()

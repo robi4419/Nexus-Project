@@ -53,7 +53,7 @@
    - landing files and bronze rows whose jobs have all expired are purged;
    - `url` is the API's `applicationLink`;
    - dashboards (Phase 5) credit Himalayas with a visible link.
-5. **Himalayas, Tech categories only:** Developer, Data Science, Product, Design, Hardware Engineer, Research & Development. That's about 33% of jobs, roughly 600 a day. The API can't filter by category, so the filter is applied before landing. It saves storage and processing, not requests.
+5. **Himalayas, Tech categories only:** Developer, Data Science, Product, Design, Hardware Engineer, Research & Development. That's about 33% of jobs, roughly 600 a day. The API can't filter by category, so the filter is applied before landing. It saves storage and processing, not requests. Jobs without any parent category: see [Phase 4, decision 8](phase-4-orchestration.md).
 6. **Himalayas is fetched incrementally:** newest first, until reaching jobs older than the previous run's newest one (with a 1-day overlap). The first run covers the last 7 days (changed to 2 days by decision 21). It needs a free API key, `HIMALAYAS_API_KEY` in the root `.env` (you add it; the compose file already loads `.env` into Airflow).
 7. **Arbeitnow is downloaded in full every day** (about 28 polite requests), as with Jobicy, so `times_seen` and `is_listed_now` keep the same meaning. **All jobs are kept**, including on-site ones, with a new `is_remote` column in `silver.jobs`.
 8. **Arbeitnow's cities map to countries through GeoNames**: the cities list with population over 15,000 (geonames.org, CC BY 4.0, credited in the docs). "City, Region, Country" strings are parsed, and an ambiguous city name takes the most populous match. Locations left unmatched stay `unknown`. That's an **error** for Jobicy and Himalayas, and a **warning** with the unknown share for Arbeitnow.
@@ -239,7 +239,7 @@ The page sizes and date ranges were identical, so the feed didn't change between
 
 A run that fails midway writes no manifest, so the next run ignores it.
 
-The `ingest_himalayas` DAG runs daily at 18:00 UTC: `ensure_landing_volume`, then `fetch_and_land` → `check_run`, with `purge_expired` running alongside so a failed fetch doesn't block deleting. It needs `HIMALAYAS_API_KEY` in the root `.env`. `check_run` fails when no Tech jobs were found: the cutoff always covers at least a day, so zero would mean the categories changed.
+The `ingest_himalayas` DAG runs daily at 18:00 UTC: `ensure_landing_volume`, then `fetch_and_land` → `check_run`, with `purge_expired` running alongside so a failed fetch doesn't block deleting. It needs `HIMALAYAS_API_KEY` in the root `.env`. `check_run` fails when no Tech jobs were found: the cutoff always covers at least a day, so zero would mean the categories changed. Since Phase 4 it counts only jobs in a Tech parent category, not those kept for their title.
 
 **Expected size (measured 2026-10-21, decision 21):** about 3,300 updated jobs a day, of which about 29% (~960) are Tech. A page takes about 1.9 s.
 
@@ -255,7 +255,7 @@ The `ingest_himalayas` DAG runs daily at 18:00 UTC: `ensure_landing_volume`, the
   - three files (expiring 2026-12-18, -19 and -20) hold about 95% of the jobs;
   - twelve small files of 1 to ~50 jobs expire between 2026-10-23 and 12-16. Those are jobs updated without their expiry being reset, so they go sooner. The earliest is purged by the next run.
 
-**Known limit:** 19% of jobs have no parent category and are left out. Their free-form `categories` show that a few of them are tech roles ("IT SAP Analyst", "Zoho Developer"), about 3–4% of all jobs.
+**Known limit:** 19% of jobs have no parent category and are left out. Their free-form `categories` show that a few of them are tech roles ("IT SAP Analyst", "Zoho Developer"), about 3–4% of all jobs. Since Phase 4 ([decision 8](phase-4-orchestration.md)), those with a clearly Tech title are kept.
 
 **For 2b.7 and 2b.9:**
 - The manifest sits next to the job files, so `bronze_himalayas` must load only `expires_*.json`.

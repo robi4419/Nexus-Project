@@ -106,6 +106,11 @@ In `ingest_jobicy`, `ingest_arbeitnow`, `ingest_himalayas` and `ingest_fx_rates`
 - `docker-compose.yaml`: mount `./transform` at `/opt/project/transform`, then `docker compose up -d` between runs.
 - Silver, `04_silver_jobs.py`: `title_tech_category(title)` gives Himalayas jobs without a parent category their `industries_raw`, mapped through `industries.csv` as usual. You deploy the bundle.
 - Check: `pytest`; the rules on a fresh day of titles, compared with the reviewed sort (in the scratch folder only, deleted afterwards); the next run's `tech_by_title`, and those jobs' industries in silver.
+- **Done on 2026-10-30:**
+  - On a fresh day of the feed (6,696 jobs, 1,647 without a parent category), the final rules keep 293 of those (17.8%), 13% more than the 2,265 kept by category.
+  - Compared with the sort reviewed title by title, they differ on 15 titles, all on purpose: a title starting with "Data" no longer counts for that alone ("Data Protection & AI Governance Consultant"), a platform name needs a systems role (three SAP lead and manager titles are lost), and S/4HANA, Dynamics 365 and identity-and-access titles are new. The comparison also led to three fixes: titles cut at 80 characters ("… Sri Lanka) langu"), testers on a platform, and clinical data programming.
+  - `transform/` is mounted and the containers recreated. Inside the worker, `land.py` loads the rules from `/opt/project/transform`, and all DAGs import.
+- **Still to do:** you deploy the bundle (`databricks bundle deploy`), and the 2026-10-31 nightly run is the first with the fallback. Check `tech_by_title` in the `fetch_and_land` log of `ingest_himalayas`, and that those jobs have an industry in silver.
 
 ## Backfill and reruns
 

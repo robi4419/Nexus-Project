@@ -1,6 +1,8 @@
 import json
 from datetime import datetime, timezone
 
+import pytest
+
 from ingestion.common.landing import LandingVolume
 from ingestion.sources.himalayas import land as himalayas_land
 from ingestion.sources.himalayas.land import land, purge_expired
@@ -15,8 +17,8 @@ YESTERDAY = f"{ROOT}/ingest_date=2026-10-20/run=scheduled__2026-10-20T18-00-00-0
 T = int(NOW.timestamp())  # NOW in Unix seconds
 HOUR, DAY = 3600, 86400
 
-# The fixture's jobs, repeated in this order: Tech, Sales, Tech, no parent category. Unless a test says otherwise,
-# each job expires 60 days after its pubDate.
+# The fixture's jobs, repeated in this order: Tech, Sales, Tech, and one without a parent category whose title is Tech
+# ("IT Support Specialist"). Unless a test says otherwise, each job expires 60 days after its pubDate.
 
 
 def iso(seconds: int) -> str:
@@ -59,10 +61,10 @@ def test_first_run_goes_back_2_days_and_lands_only_tech_jobs_since_then(himalaya
 
     summary = run(session, ws)
 
-    # Tech jobs only (1st and 3rd of each four), not the one older than 2 days, in one file per expiry day
+    # Tech jobs only (all but the Sales one of each four), not those older than 2 days, in one file per expiry day
     assert landed(ws) == {
         "expires_2026-12-19.json": [T - 1 * DAY],
-        "expires_2026-12-20.json": [T - 1 * HOUR, T - 3 * HOUR],
+        "expires_2026-12-20.json": [T - 1 * HOUR, T - 3 * HOUR, T - 4 * HOUR],
     }
     assert summary == {
         "source": "himalayas",
@@ -71,7 +73,8 @@ def test_first_run_goes_back_2_days_and_lands_only_tech_jobs_since_then(himalaya
         "cutoff_from": "first run",
         "pages": 2,
         "jobs_seen": 8,
-        "tech_jobs": 3,
+        "tech_jobs": 4,
+        "tech_by_title": 1,
         "skipped_expiring": 0,
         "files": 2,
         "removed_files": 0,
@@ -91,6 +94,27 @@ def test_jobs_expiring_by_tomorrow_are_not_landed(himalayas_page):
 
     assert landed(ws) == {"expires_2026-10-23.json": [T - HOUR]}
     assert (summary["tech_jobs"], summary["skipped_expiring"]) == (1, 1)
+
+
+@pytest.mark.parametrize(
+    ("title", "tech_jobs", "tech_by_title"), [("IT Support Specialist", 3, 1), ("Bookkeeper", 2, 0)]
+)
+def test_a_job_without_a_parent_category_lands_only_with_a_tech_title(himalayas_page, title, tech_jobs, tech_by_title):
+    body = himalayas_body(himalayas_page, pub_dates=[T - HOUR] * 4)  # Tech, Sales, Tech, no parent category
+    body["jobs"][3]["title"] = title
+
+    summary = run(FakeSession([FakeResponse(body)]), FakeWorkspaceClient())
+
+    assert (summary["tech_jobs"], summary["tech_by_title"]) == (tech_jobs, tech_by_title)
+
+
+def test_a_tech_title_doesnt_count_with_a_non_tech_parent_category(himalayas_page):
+    body = himalayas_body(himalayas_page, pub_dates=[T - HOUR] * 2)  # Tech, Sales
+    body["jobs"][1]["title"] = "Senior Software Engineer"
+
+    summary = run(FakeSession([FakeResponse(body)]), FakeWorkspaceClient())
+
+    assert (summary["tech_jobs"], summary["tech_by_title"]) == (1, 0)
 
 
 def test_the_landed_files_keep_the_jobs_as_the_api_gave_them(himalayas_page):

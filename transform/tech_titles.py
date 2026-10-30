@@ -28,11 +28,12 @@ _LEFT_OUT = re.compile(
             r"|\bai (?:training|evaluation)\b(?!\s+(?:engineer|scientist|researcher|infrastructure|platform))"
             r"|annotat|\blabel(?:l)?ing\b|training data|evaluator|\brater\b|code evaluation"
             r"|(?:teaching|industry|engineering|programming) experts?",
-            # non-Tech jobs: legal, teaching, language, sales, and the design of physical things
+            # non-Tech jobs: legal, teaching, language, sales, and the design of physical things. Himalayas cuts titles
+            # at 80 characters, so "language" can arrive as "langu".
             r"patent|attorney|counsel|lawyer|paralegal|\blegal\b"
             r"|faculty|professor|lecturer|instructor|teacher|\btutor|grader|facilitat|adjunct"
             r"|interpreter|interpreting|(?<!machine )translat(?:ors?|ions?)\b|linguist|voice (?:actor|talent|over)"
-            r"|(?<!large )(?<!natural )(?<!programming )\blanguages?\b(?!\s+models?)"
+            r"|(?<!large )(?<!natural )(?<!programming )\blangu(?!ages?\s+models?)"
             r"|business develop|(?<!pre-)(?<!pre )\bsales\b(?!\s*(?:engineer|force))"
             r"|account (?:executive|manager|director|representative)|r&d tax|tax credit|\bgas\b|autocad|civil 3d"
             r"|substation|\b(?:civil|structural|mechanical|electrical|mep|piping|hvac|plumbing|landscape|interior"
@@ -66,7 +67,7 @@ _PLATFORMS = (
 )
 _SYSTEMS_ROLES = (
     r"consultant|consulting|berater(?:in)?|developer|programmer|architect|engineer|administrator|admin|analyst"
-    r"|functional|technical|techno|integrations?|implementation|support|configuration|expert|experte"
+    r"|tester|functional|technical|techno|integrations?|implementation|support|configuration|expert|experte"
 )
 _PLATFORM_AND_ROLE = rf"^(?=.*\b(?:{_PLATFORMS})\b)(?=.*\b(?:{_SYSTEMS_ROLES})\b)"
 
@@ -120,7 +121,8 @@ _RULES = [
         (
             "Developer",
             # software, and engineering leadership
-            r"software|programmer|computer science|devops|devsecops|\bsre\b|reliability engineer|back[- ]?end"
+            r"software|programmer|(?:clinical|data|sas|statistical) programming|computer science|devops|devsecops"
+            r"|\bsre\b|reliability engineer|back[- ]?end"
             r"|front[- ]?end|full[- ]?stack|\bcuda\b|kernel|\bedi\b|endpoint|webmaster|" + _DEVELOPER
             + r"|\b(?:web|mobile|ios|android|cloud|platform|infrastructure|systems?|network|security|application"
             r"|integrations?|qa|test|automation|database|game(?:play)?|graphics|rendering|forward[- ]deployed"

@@ -44,7 +44,11 @@ INDUSTRIES_CSV = Path(__file__).parent.parent / "databricks" / "reference" / "in
         ("Epic Ambulatory Application Analyst", "Developer"),
         ("Salesforce Administrator", "Developer"),
         ("Senior HRIS Specialist", "Developer"),
+        ("Salesforce Quality Assurance Tester", "Developer"),
         ("Payroll Specialist with SAP experience", None),
+        ("Senior Consultant, Clinical Data Programming", "Developer"),
+        # language work, also when Himalayas has cut the title at 80 characters
+        ("Quality Control Specialist for AI/ML Models with Tagalog (Philippines) Langu", None),
         # the first match wins
         ("Data Platform Architect", "Data Science"),
         ("Product Designer", "Design"),
