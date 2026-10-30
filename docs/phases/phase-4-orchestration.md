@@ -7,6 +7,7 @@
 - A failed run of any DAG sends an email to the alert address, tested on purpose.
 - The DAGs import without errors, and `airflow dags test transform_and_build` passes.
 - A rerun is safe. Every step is a full rebuild: Phase 2.11 showed silver is idempotent, and dbt's reconciliation tests check gold against silver on every build. No extra manual rerun, because without new data it would only repeat the test run and use Databricks compute.
+- Himalayas jobs without a parent category are landed when their title is clearly Tech, and silver gives them an industry.
 - `pytest` still passes.
 
 ## Progress
@@ -17,7 +18,8 @@
 - [x] 4.5 Failure emails for every DAG, plus a manual `alert_test` DAG (test email received 2026-10-30)
 - [x] 4.6 Retries and time limits (written into `transform_and_build` in 4.4)
 - [ ] 4.7 Verify: import check, `airflow dags test`, a real daily cycle, a forced failure, a rerun
-- [ ] 4.8 Docs, commit, PR and merge
+- [ ] 4.8 Himalayas jobs without a parent category kept when their title is clearly Tech, with an industry from the same rules in silver
+- [ ] 4.9 Docs, commit, PR and merge
 
 ---
 
@@ -42,6 +44,12 @@
 5. **Assets are updated only after a run's checks pass.** The `outlets` move from `fetch_and_land` to `check_run` in the ingestion DAGs, so a run that landed nothing usable never starts the transform.
 6. **Connections come from `.env` through docker-compose,** as `AIRFLOW_CONN_DATABRICKS_DEFAULT` and `AIRFLOW_CONN_SMTP_DEFAULT` environment variables built from values already there. Nothing is typed into the UI, and rotating the Databricks token stays one `.env` change plus `docker compose up -d`.
 7. **The Job is found by name,** from `DATABRICKS_TRANSFORM_JOB_NAME` in `.env`. The development-mode name carries the user name, so it stays out of the code; a name also survives a redeploy that changes the ID.
+8. **Himalayas jobs without a parent category are kept when their title is clearly Tech.**
+   - A day of the feed (7,553 jobs) had 2,051 (27%) without any parent category, up from 19% in Phase 2b. About 400 of them have clearly Tech titles: 16% more than the 2,513 kept by category. Half are enterprise-systems roles (SAP, Workday, Oracle, Epic); the rest are software, security, IT support, data, product, design, hardware and research jobs.
+   - The rules are in `transform/tech_titles.py`. They follow how Himalayas sorts similar titles it did categorise: project managers under Product; security, QA and IT support under Developer.
+   - Left out: AI-training gigs ("Chemist - Fully Remote | Upto $70/hr"), non-Tech jobs with a Tech word ("Patent Attorney, Electrical Engineering"), and Tech-adjacent roles the title alone can't settle (AI strategy, clinical data management, IT audit).
+   - Silver gives these jobs an industry from the same rules, so the landed files still hold the jobs exactly as the API sent them. `transform/` is mounted into the Airflow containers, so landing and silver read the same file.
+   - Rejected: leaving them without an industry (about 1 in 7 Himalayas jobs), and writing our category into the landed files.
 
 ## How the pipeline runs (from 4.4)
 
@@ -92,6 +100,13 @@ In `ingest_jobicy`, `ingest_arbeitnow`, `ingest_himalayas` and `ingest_fx_rates`
 4. Unpause `transform_and_build`. After 18:00 UTC it starts by itself once the three ingestions finish, and everything is green, with more jobs in silver and gold than before. Before that night's run: silver and `fct_job_postings` 28,133 jobs, `fct_job_skills` 148,700 rows.
 5. `pytest` passes.
 
+### 4.8 Himalayas title fallback (decision 8)
+- `transform/tech_titles.py`: `tech_category(title)` returns one of the six Tech parent categories, or None. Tests with made-up titles in `tests/test_tech_titles.py`.
+- `ingestion/sources/himalayas/land.py`: a job without any parent category is kept when its title has a category, and the manifest counts these in `tech_by_title`. `check_run` fails when no job came by category, so renamed categories can't hide behind title matches.
+- `docker-compose.yaml`: mount `./transform` at `/opt/project/transform`, then `docker compose up -d` between runs.
+- Silver, `04_silver_jobs.py`: `title_tech_category(title)` gives Himalayas jobs without a parent category their `industries_raw`, mapped through `industries.csv` as usual. You deploy the bundle.
+- Check: `pytest`; the rules on a fresh day of titles, compared with the reviewed sort (in the scratch folder only, deleted afterwards); the next run's `tech_by_title`, and those jobs' industries in silver.
+
 ## Backfill and reruns
 
 Classic Airflow backfill (re-running past dates) mostly doesn't apply here, and nothing is lost when the PC is off:
@@ -120,6 +135,8 @@ Classic Airflow backfill (re-running past dates) mostly doesn't apply here, and 
 - **Rotating the Databricks token** now also updates the Airflow connection, through the same `docker compose up -d`.
 - **Airflow only runs while the PC and Docker are on.** Missed 18:00 runs start when Airflow comes back.
 - **Free Edition limits:** one Databricks run a day stays well within them; avoid triggering the chain many times in a row.
+- **The mounted folders are live.** A change to `ingestion/` or `transform/` reaches the next Airflow task at once, so don't edit them while an ingestion runs. A new volume needs `docker compose up -d`, which recreates the containers and stops any running task: do it between runs.
+- **The title rules run in two places.** Airflow reads `transform/tech_titles.py` from the mount, Databricks only after `databricks bundle deploy`. After changing the rules, deploy too, or silver's industries follow the old ones.
 
 ## Repo layout additions
 
@@ -129,6 +146,10 @@ airflow/dags/
     alert_test.py              ← manual DAG that fails on purpose
 airflow/plugins/
     pipeline_alerts.py         ← the shared failure notifier (plugins/ is importable from every DAG)
-docker-compose.yaml            ← connections and dbt paths in the shared environment
+transform/
+    tech_titles.py             ← title rules for Himalayas jobs without a parent category (landing and silver)
+tests/
+    test_tech_titles.py
+docker-compose.yaml            ← connections and dbt paths in the shared environment; transform/ mounted
 .env.example                   ← new placeholders
 ```

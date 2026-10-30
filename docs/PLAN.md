@@ -99,6 +99,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [ ] Assets updated only after an ingestion run's checks pass.
 - [ ] Retries and time limits; failure emails through Gmail for every DAG.
 - [ ] Backfill: job sources catch up by themselves, exchange rates use catchup, and transform and dbt are full rebuilds, so a rerun is the backfill.
+- [ ] Himalayas jobs without a parent category kept when their title is clearly Tech (about 400 a day), with an industry from the same rules in silver.
 
 ### Phase 5: Dashboards
 - [ ] Power BI model on the gold tables: relationships from the primary and foreign keys (fact–bridge relationships filtering both ways), hierarchies from `dim_location` and `dim_date`, measures in DAX.
