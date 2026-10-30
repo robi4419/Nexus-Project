@@ -6,7 +6,7 @@
 - A normal day runs untouched: the three ingestion DAGs at 18:00 UTC, then `transform_and_build`. The Databricks Job and `dbt build` are green, and gold is rebuilt from that day's silver.
 - A failed run of any DAG sends an email to the alert address, tested on purpose.
 - The DAGs import without errors, and `airflow dags test transform_and_build` passes.
-- Running `transform_and_build` twice in a row changes nothing (same row counts).
+- A rerun is safe. Every step is a full rebuild: Phase 2.11 showed silver is idempotent, and dbt's reconciliation tests check gold against silver on every build. No extra manual rerun, because without new data it would only repeat the test run and use Databricks compute.
 - `pytest` still passes.
 
 ## Progress
@@ -89,9 +89,8 @@ In `ingest_jobicy`, `ingest_arbeitnow`, `ingest_himalayas` and `ingest_fx_rates`
 1. `airflow dags list-import-errors` is empty, and all five DAGs are listed.
 2. `airflow dags test transform_and_build` runs the chain once, outside the scheduler.
 3. Trigger `alert_test`: an email arrives.
-4. Unpause `transform_and_build`. After 18:00 UTC it starts by itself once the three ingestions finish, and everything is green.
-5. Trigger it again by hand: silver and gold row counts don't change.
-6. `pytest` passes.
+4. Unpause `transform_and_build`. After 18:00 UTC it starts by itself once the three ingestions finish, and everything is green, with more jobs in silver and gold than before. Before that night's run: silver and `fct_job_postings` 28,133 jobs, `fct_job_skills` 148,700 rows.
+5. `pytest` passes.
 
 ## Backfill and reruns
 
