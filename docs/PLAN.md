@@ -54,6 +54,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [Phase 2: Bronze and Silver in Databricks](phases/phase-2-bronze-silver.md)
 - [Phase 2b: More sources and incremental silver](phases/phase-2b-sources-and-caching.md)
 - [Phase 3: dbt models](phases/phase-3-dbt-models.md)
+- [Phase 4: Orchestration end to end](phases/phase-4-orchestration.md)
 
 ### Phase 0: Fix the scaffolding
 - [x] `airflow/Dockerfile` extending `apache/airflow:3.3.2` with `apache-airflow-providers-databricks`; install dbt in a separate virtualenv inside the image (dbt and Airflow pin conflicting dependencies).
@@ -94,8 +95,10 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] ER diagram in DrawDB, saved to `docs/`.
 
 ### Phase 4: Orchestration end to end
-- [ ] Full DAG: extract → upload → Databricks job → `dbt build` (BashOperator with the dbt venv, or astronomer-cosmos for per-model tasks).
-- [ ] Retries, failure alerts, backfill support.
+- [ ] `transform_and_build` DAG, scheduled on the three job Assets: the Databricks Job (deferrable `DatabricksRunNowOperator`), then `dbt deps`, `source freshness` and `build` from the dbt virtualenv.
+- [ ] Assets updated only after an ingestion run's checks pass.
+- [ ] Retries and time limits; failure emails through Gmail for every DAG.
+- [ ] Backfill: job sources catch up by themselves, exchange rates use catchup, and transform and dbt are full rebuilds, so a rerun is the backfill.
 
 ### Phase 5: Dashboards
 - [ ] Power BI model on the gold tables: relationships from the primary and foreign keys (fact–bridge relationships filtering both ways), hierarchies from `dim_location` and `dim_date`, measures in DAX.
