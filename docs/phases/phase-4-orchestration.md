@@ -11,7 +11,7 @@
 
 ## Progress
 - [x] 4.1 Branch, plan doc, `PLAN.md`
-- [ ] 4.2 Settings: Airflow connections for Databricks and Gmail built from `.env`, the Job's name, dbt's working folders in the containers
+- [x] 4.2 Settings: Airflow connections for Databricks and Gmail built from `.env`, the Job's name, dbt's working folders in the containers
 - [ ] 4.3 Ingestion DAGs update their Asset only after their run's check passes
 - [ ] 4.4 New DAG `transform_and_build`: Databricks Job, then dbt (deps, source freshness, build)
 - [ ] 4.5 Failure emails for every DAG, plus a manual `alert_test` DAG
@@ -63,9 +63,9 @@ any DAG fails ─► email to ALERT_EMAIL
   - `SMTP_USER` (the Gmail address), `SMTP_PASSWORD` (the 16-character app password), `ALERT_EMAIL` (where alerts go).
 - **`docker-compose.yaml`, in the environment shared by every Airflow container:**
   - `AIRFLOW_CONN_DATABRICKS_DEFAULT`: JSON with `conn_type` databricks, the host, and the token as password;
-  - `AIRFLOW_CONN_SMTP_DEFAULT`: JSON with `smtp.gmail.com`, port 465 (SSL), the user and the app password;
+  - `AIRFLOW_CONN_SMTP_DEFAULT`: JSON with `smtp.gmail.com`, port 465 (SSL), the user and the app password, and `disable_tls`;
   - `DBT_TARGET_PATH` and `DBT_LOG_PATH` under `/tmp`, so container runs don't overwrite the `target/` and `logs/` folders that local runs use (the `dbt/` folder is shared with Windows).
-- Recreate the containers with `docker compose up -d`, and check both connections with `airflow connections test`.
+- Recreate the containers with `docker compose up -d`, and check both connections from the worker with the provider hooks: `DatabricksHook().find_job_id_by_name(…)` and `SmtpHook()` (login only). On 2026-10-30 the Job resolved to ID 486383826742084 and the Gmail login succeeded.
 
 ### 4.3 Assets after checks
 In `ingest_jobicy`, `ingest_arbeitnow`, `ingest_himalayas` and `ingest_fx_rates`, move `outlets=[LANDING_ASSET]` from `fetch_and_land` to `check_run`.
@@ -110,6 +110,8 @@ Classic Airflow backfill (re-running past dates) mostly doesn't apply here, and 
 
 ## Pitfalls
 - **A Gmail app password works only with 2-step verification on,** and Google revokes it when the account password changes. It can read and send mail, so it stays in `.env` and can be revoked any time in the Google account.
+- **Port 465 is encrypted from the start, so the SMTP connection needs `"disable_tls": true`.** Otherwise the hook also tries STARTTLS (meant for plain connections on port 587), and Gmail answers "STARTTLS extension not supported by server".
+- **Save `.env` before `docker compose up -d`.** Containers read it only when they're created; a value added later needs another `up -d`.
 - **DAG-level callbacks run in the DAG processor,** not on the worker, so the SMTP connection must reach every Airflow container (it does, through the shared environment).
 - **The Job's name follows the bundle target.** Deploying another target (or a different user deploying) changes it; update `DATABRICKS_TRANSFORM_JOB_NAME`.
 - **The Asset condition waits for all three sources.** One source down for days holds back silver and gold; its failure emails are the signal.
