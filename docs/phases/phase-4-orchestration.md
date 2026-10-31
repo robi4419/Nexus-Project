@@ -19,7 +19,7 @@
 - [x] 4.6 Retries and time limits (written into `transform_and_build` in 4.4)
 - [x] 4.7 Verify: import check, `airflow dags test`, a forced failure, and the first nightly cycle (2026-10-30)
 - [x] 4.8 Himalayas jobs without a parent category kept when their title is clearly Tech, with an industry from the same rules in silver
-- [ ] 4.9 Docs, commit, PR and merge
+- [x] 4.9 Docs, commit, PR and merge
 
 ---
 
