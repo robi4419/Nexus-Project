@@ -18,7 +18,7 @@
 - [x] 4.5 Failure emails for every DAG, plus a manual `alert_test` DAG (test email received 2026-10-30)
 - [x] 4.6 Retries and time limits (written into `transform_and_build` in 4.4)
 - [x] 4.7 Verify: import check, `airflow dags test`, a forced failure, and the first nightly cycle (2026-10-30)
-- [ ] 4.8 Himalayas jobs without a parent category kept when their title is clearly Tech, with an industry from the same rules in silver
+- [x] 4.8 Himalayas jobs without a parent category kept when their title is clearly Tech, with an industry from the same rules in silver
 - [ ] 4.9 Docs, commit, PR and merge
 
 ---
@@ -110,7 +110,10 @@ In `ingest_jobicy`, `ingest_arbeitnow`, `ingest_himalayas` and `ingest_fx_rates`
   - On a fresh day of the feed (6,696 jobs, 1,647 without a parent category), the final rules keep 293 of those (17.8%), 13% more than the 2,265 kept by category.
   - Compared with the sort reviewed title by title, they differ on 15 titles, all on purpose: a title starting with "Data" no longer counts for that alone ("Data Protection & AI Governance Consultant"), a platform name needs a systems role (three SAP lead and manager titles are lost), and S/4HANA, Dynamics 365 and identity-and-access titles are new. The comparison also led to three fixes: titles cut at 80 characters ("… Sri Lanka) langu"), testers on a platform, and clinical data programming.
   - `transform/` is mounted and the containers recreated. Inside the worker, `land.py` loads the rules from `/opt/project/transform`, and all DAGs import.
-- **Still to do:** you deploy the bundle (`databricks bundle deploy`), and the 2026-10-31 nightly run is the first with the fallback. Check `tech_by_title` in the `fetch_and_land` log of `ingest_himalayas`, and that those jobs have an industry in silver.
+- **First nightly run with the fallback, 2026-10-31** (bundle deployed the day before):
+  - `ingest_himalayas` saw 12,880 jobs and landed 4,848 Tech jobs, 639 of them by title (`tech_by_title`).
+  - In silver all 639 have an industry: Software Engineering 390, Data Science & Analytics 140, Product & Operations 39, Web, UI & UX Design 34, Research & Science 20, Hardware & Electronics 16.
+  - `transform_and_build` started at 18:13 UTC and was green 7 minutes 46 seconds later. Silver and `fct_job_postings` 34,764 jobs, `fct_job_skills` 186,618 rows.
 
 ## Backfill and reruns
 
