@@ -38,10 +38,11 @@ print(f"Building {catalog}.silver job tables, using transform/ from {bundle_root
 # MAGIC %md
 # MAGIC ## Python functions for SQL
 # MAGIC
-# MAGIC `clean_html(html)` and `derive_seniority(title, fallback_level)` wrap the tested functions in `transform/`, so
-# MAGIC the SQL below can call them like built-in functions. `fallback_level` is the highest of the source's own levels,
-# MAGIC mapped to ours through `silver.ref_levels`. `derive_seniority` returns a struct: read its fields with
-# MAGIC `.seniority` and `.seniority_source`.
+# MAGIC `clean_html(html)`, `derive_seniority(title, fallback_level)` and `title_tech_category(title)` wrap the tested
+# MAGIC functions in `transform/`, so the SQL below can call them like built-in functions. `fallback_level` is the highest
+# MAGIC of the source's own levels, mapped to ours through `silver.ref_levels`. `derive_seniority` returns a struct: read
+# MAGIC its fields with `.seniority` and `.seniority_source`. `title_tech_category` returns the Himalayas Tech category a
+# MAGIC title clearly belongs to, or NULL: the same rules that keep a job without a parent category at landing.
 
 # COMMAND ----------
 
@@ -50,6 +51,7 @@ from pyspark.sql.types import StringType, StructField, StructType
 
 import transform
 from transform.seniority import LEVELS, seniority
+from transform.tech_titles import tech_category
 from transform.text import html_to_text
 
 # Spark runs Python functions on worker processes that don't have our sys.path change, so `import transform` would
@@ -71,6 +73,7 @@ def derive_seniority(title, fallback_level):
 
 spark.udf.register("clean_html", html_to_text, StringType())
 spark.udf.register("derive_seniority", derive_seniority, SENIORITY_TYPE)
+spark.udf.register("title_tech_category", tech_category, StringType())
 
 # Our levels lowest to highest, as a SQL array: array_position() gives each level's rank, so SQL can pick the highest.
 LEVELS_SQL = "array(" + ", ".join(f"'{level}'" for level in LEVELS) + ")"
@@ -81,7 +84,8 @@ NO_STRINGS = "cast(array() AS ARRAY<STRING>)"
 display(spark.sql("""
     SELECT clean_html('<p>Python &amp; SQL</p><ul><li>dbt</li></ul>') AS cleaned,
            derive_seniority('Sr. Data Engineer', NULL) AS from_title,
-           derive_seniority('Data Analyst', 'Mid') AS from_source_level
+           derive_seniority('Data Analyst', 'Mid') AS from_source_level,
+           title_tech_category('SAP FICO Consultant') AS tech_category
 """))
 
 # COMMAND ----------
@@ -100,7 +104,7 @@ display(spark.sql("""
 # MAGIC | `is_remote` | true | `remote` | true |
 # MAGIC | `levels_raw` | `[jobLevel]` | `job_types` + `tags` | `seniority` |
 # MAGIC | `locations_raw` | `jobGeo` split at `,` | `location` split at `;` | `locationRestrictions`, empty = `['Worldwide']` |
-# MAGIC | `industries_raw` | `jobIndustry` | `tags` | `parentCategories` |
+# MAGIC | `industries_raw` | `jobIndustry` | `tags` | `parentCategories`; without any, the title's Tech category |
 # MAGIC | `job_types_raw` | `jobType` | `job_types` | `[employmentType]` |
 # MAGIC
 # MAGIC Plus `run_id`, `landed_at`, `title`, `company_name`, `company_logo_url`, `excerpt`, `description_html` and the
@@ -124,7 +128,8 @@ spark.sql(f"""
         )
     ),
     himalayas AS (
-        SELECT run_id, landed_at, job, cast(job:locationRestrictions AS ARRAY<STRING>) AS countries
+        SELECT run_id, landed_at, job, cast(job:locationRestrictions AS ARRAY<STRING>) AS countries,
+            coalesce(cast(job:parentCategories AS ARRAY<STRING>), {NO_STRINGS}) AS parents
         FROM (
             SELECT run_id, landed_at, explode(cast(body:jobs AS ARRAY<VARIANT>)) AS job
             FROM {catalog}.bronze.himalayas_raw
@@ -196,7 +201,10 @@ spark.sql(f"""
         coalesce(cast(job:seniority AS ARRAY<STRING>), {NO_STRINGS}) AS levels_raw,
         -- country names; no restriction means the job can be done from anywhere
         CASE WHEN array_size(countries) > 0 THEN countries ELSE array('Worldwide') END AS locations_raw,
-        cast(job:parentCategories AS ARRAY<STRING>) AS industries_raw,
+        -- a job landed for its title alone has no parent category: the same title rules give it one (Phase 4, decision 8)
+        CASE WHEN array_size(parents) > 0 THEN parents
+            ELSE array_compact(array(title_tech_category(job:title::STRING)))
+        END AS industries_raw,
         array(job:employmentType::STRING) AS job_types_raw,
         job:excerpt::STRING AS excerpt,
         job:description::STRING AS description_html,

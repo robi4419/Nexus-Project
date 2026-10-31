@@ -13,6 +13,8 @@ from datetime import datetime, timedelta, timezone
 from airflow.sdk import Asset, dag, get_current_context, task
 from airflow.timetables.trigger import CronTriggerTimetable
 
+from pipeline_alerts import failure_email  # airflow/plugins/pipeline_alerts.py
+
 log = logging.getLogger(__name__)
 
 LANDING_ASSET = Asset("landing/frankfurter")
@@ -26,6 +28,7 @@ MIN_CURRENCIES = 20
     catchup=True,
     max_active_runs=1,
     default_args={"retries": 2, "retry_delay": timedelta(minutes=10)},
+    on_failure_callback=failure_email(),
     tags=["fx", "ingestion"],
     doc_md=__doc__,
 )
@@ -39,7 +42,7 @@ def ingest_fx_rates():
 
         return ensure_volume(WorkspaceClient(), LandingVolume.from_env())
 
-    @task(outlets=[LANDING_ASSET])
+    @task
     def fetch_and_land() -> dict:
         """Fetch the rates for this run's date and write them to this run's folder in the Volume."""
         from databricks.sdk import WorkspaceClient
@@ -65,7 +68,8 @@ def ingest_fx_rates():
         )
         return summary
 
-    @task(retries=0)  # re-checking the same summary can't change the result
+    # The Asset is updated only once the run is checked.
+    @task(outlets=[LANDING_ASSET], retries=0)  # re-checking the same summary can't change the result
     def check_run(summary: dict) -> None:
         """Fail the run if the rates look incomplete."""
         currencies = summary["currencies"]

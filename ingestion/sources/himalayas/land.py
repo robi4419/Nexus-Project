@@ -1,10 +1,11 @@
 """Land new and updated Tech jobs from the Himalayas feed in the landing Volume, and delete them once they expire.
 
 Unlike Jobicy and Arbeitnow, a run doesn't download the whole feed (about 128,000 jobs). It walks the feed newest
-first back to a cutoff and keeps only the Tech categories. The jobs are written in one file per UTC day on which
-they expire (`expires_2026-12-19.json`, …), so the files aren't the API's pages byte for byte. Deleting a file then
-removes exactly the jobs that expire that day, as the API terms require. A `manifest.json`, written last, records the
-cutoff and the newest job seen; the next run starts from there.
+first back to a cutoff and keeps only the Tech jobs: those in a Tech parent category, and those without any parent
+category whose title is clearly Tech (`transform/tech_titles.py`). The jobs are written in one file per UTC day on
+which they expire (`expires_2026-12-19.json`, …), so the files aren't the API's pages byte for byte. Deleting a file
+then removes exactly the jobs that expire that day, as the API terms require. A `manifest.json`, written last, records
+the cutoff and the newest job seen; the next run starts from there.
 """
 
 import json
@@ -17,13 +18,10 @@ from databricks.sdk import WorkspaceClient
 
 from ingestion.common import landing
 from ingestion.sources.himalayas.client import REQUEST_DELAY, SOURCE, fetch_pages
+from transform.tech_titles import TECH_CATEGORIES, tech_category
 
 log = logging.getLogger(__name__)
 
-# The parentCategories kept (decision 5). A job without any parent category is left out.
-TECH_CATEGORIES = frozenset(
-    {"Developer", "Data Science", "Product", "Design", "Hardware Engineer", "Research & Development"}
-)
 # About 3,300 jobs are updated a day, so each day back is about 165 pages, or 5 minutes.
 FIRST_RUN = timedelta(days=2)  # how far back the very first run goes
 # Each run re-reads the day before the previous run's newest job, in case the feed's daily refresh adds jobs whose
@@ -53,7 +51,7 @@ def land(
     removed = landing.reset_folder(ws, folder)
     last_purged_day = _last_purged_day(now)
 
-    pages = tech_jobs = skipped = 0
+    pages = tech_jobs = tech_by_title = skipped = 0
     pub_dates: list[int] = []
     by_expiry_day: dict[date, list[dict]] = {}
     for page in fetch_pages(session, api_key, stop_before=cutoff, delay=delay):
@@ -62,7 +60,8 @@ def land(
             log.info("page %s: reached %s (cutoff %s)", pages, _iso(page.oldest_pub_date), _iso(cutoff))
         pub_dates += [job["pubDate"] for job in page.jobs]
         for job in page.jobs:
-            if job["pubDate"] < cutoff or not _is_tech(job):
+            kept_by = _kept_by(job)
+            if job["pubDate"] < cutoff or kept_by is None:
                 continue
             day = _expiry_day(job)
             if day <= last_purged_day:  # the purge would delete it straight away
@@ -70,6 +69,8 @@ def land(
                 continue
             by_expiry_day.setdefault(day, []).append(job)
             tech_jobs += 1
+            if kept_by == "title":
+                tech_by_title += 1
     for day, jobs in sorted(by_expiry_day.items()):
         landing.write_file(ws, f"{folder}/expires_{day.isoformat()}.json", _to_json(jobs))
 
@@ -81,6 +82,7 @@ def land(
         "pages": pages,
         "jobs_seen": len(pub_dates),
         "tech_jobs": tech_jobs,
+        "tech_by_title": tech_by_title,  # of those, kept for their title alone
         "skipped_expiring": skipped,
         "files": len(by_expiry_day),
         "removed_files": removed,
@@ -156,8 +158,15 @@ def _read_manifest(ws: WorkspaceClient, folder: str) -> dict | None:
     return json.loads(data) if data else None
 
 
-def _is_tech(job: dict) -> bool:
-    return not TECH_CATEGORIES.isdisjoint(job.get("parentCategories") or [])
+def _kept_by(job: dict) -> str | None:
+    """Why a job counts as Tech: "category" for a Tech parent category, "title" for a job without any parent category
+    whose title is clearly Tech (Phase 4, decision 8), or None when it doesn't count."""
+    parents = job.get("parentCategories") or []
+    if not TECH_CATEGORIES.isdisjoint(parents):
+        return "category"
+    if not parents and tech_category(job.get("title")):
+        return "title"
+    return None
 
 
 def _to_json(jobs: list[dict]) -> bytes:

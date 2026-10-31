@@ -1,7 +1,7 @@
 """Daily ingestion of new and updated Tech jobs from the Himalayas remote jobs feed.
 
 Walks the feed newest first back to the previous run's newest job minus a day (2 days on the first run), keeps the
-Tech categories, and writes them, one file per expiry day, to
+Tech jobs (a Tech parent category, or none but a clearly Tech title), and writes them, one file per expiry day, to
 `/Volumes/<catalog>/bronze/landing/himalayas/ingest_date=YYYY-MM-DD/run=<run id>/expires_YYYY-MM-DD.json`, plus a
 `manifest.json` that tells the next run where to stop. Needs `HIMALAYAS_API_KEY` in the root `.env`.
 
@@ -17,6 +17,8 @@ from datetime import datetime, timedelta, timezone
 from airflow.sdk import Asset, dag, get_current_context, task
 from airflow.timetables.trigger import CronTriggerTimetable
 
+from pipeline_alerts import failure_email  # airflow/plugins/pipeline_alerts.py
+
 log = logging.getLogger(__name__)
 
 LANDING_ASSET = Asset("landing/himalayas")
@@ -29,6 +31,7 @@ LANDING_ASSET = Asset("landing/himalayas")
     catchup=False,
     max_active_runs=1,
     default_args={"retries": 2, "retry_delay": timedelta(minutes=10)},
+    on_failure_callback=failure_email(),
     tags=["himalayas", "ingestion"],
     doc_md=__doc__,
 )
@@ -42,7 +45,7 @@ def ingest_himalayas():
 
         return ensure_volume(WorkspaceClient(), LandingVolume.from_env())
 
-    @task(outlets=[LANDING_ASSET])
+    @task
     def fetch_and_land() -> dict:
         """Fetch the jobs updated since the cutoff and write the Tech ones, then the manifest, to this run's folder."""
         from databricks.sdk import WorkspaceClient
@@ -66,9 +69,9 @@ def ingest_himalayas():
             run_date=dag_run.run_after,
         )
         log.info(
-            "Landed %s Tech jobs of %s seen (%s pages, cutoff %s from %s) to %s",
-            summary["tech_jobs"], summary["jobs_seen"], summary["pages"], summary["cutoff"], summary["cutoff_from"],
-            summary["folder"],
+            "Landed %s Tech jobs (%s by title) of %s seen (%s pages, cutoff %s from %s) to %s",
+            summary["tech_jobs"], summary["tech_by_title"], summary["jobs_seen"], summary["pages"], summary["cutoff"],
+            summary["cutoff_from"], summary["folder"],
         )
         return summary
 
@@ -84,14 +87,18 @@ def ingest_himalayas():
         log.info("Purge: %s", summary)
         return summary
 
-    @task(retries=0)  # re-checking the same summary can't change the result
+    # The Asset is updated only once the run is checked, so transform_and_build never starts on a bad landing.
+    @task(outlets=[LANDING_ASSET], retries=0)  # re-checking the same summary can't change the result
     def check_run(summary: dict) -> None:
-        """Fail the run if the feed returned nothing, or no Tech jobs: the cutoff always covers at least a day, so
-        zero Tech jobs would mean Himalayas renamed its categories."""
+        """Fail the run if the feed returned nothing, or no jobs in a Tech parent category: the cutoff always covers at
+        least a day, so none would mean Himalayas renamed its categories. Jobs kept for their title alone don't count
+        here, or they would hide the rename."""
         if summary["jobs_seen"] == 0:
             raise ValueError(f"The feed returned no jobs (cutoff {summary['cutoff']})")
-        if summary["tech_jobs"] == 0:
-            raise ValueError(f"No Tech jobs among {summary['jobs_seen']}: have the parentCategories changed?")
+        if summary["tech_jobs"] == summary["tech_by_title"]:
+            raise ValueError(
+                f"No jobs in a Tech parent category among {summary['jobs_seen']}: have the parentCategories changed?"
+            )
         log.info("Run OK: %s", summary)
 
     volume = ensure_landing_volume()

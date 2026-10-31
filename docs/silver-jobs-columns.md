@@ -96,7 +96,7 @@ Three more fields are unified per source in the same step, but they feed other t
 | Field | Jobicy | Arbeitnow | Himalayas | Feeds |
 |---|---|---|---|---|
 | `levels_raw` | `[jobLevel]` | `job_types` + `tags` | `seniority` | `source_levels` and `seniority` (above) |
-| `industries_raw` | `jobIndustry` | `tags` | `parentCategories` | `silver.job_industries`, mapped through `industries.csv` |
+| `industries_raw` | `jobIndustry` | `tags` | `parentCategories`; without any, the title's Tech category (`transform/tech_titles.py`) | `silver.job_industries`, mapped through `industries.csv` |
 | `job_types_raw` | `jobType` | `job_types` | `[employmentType]` | `silver.job_types`, mapped through `job_types.csv` |
 
 ## Which columns can be NULL

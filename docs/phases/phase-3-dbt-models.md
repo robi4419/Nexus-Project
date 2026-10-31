@@ -20,7 +20,7 @@
 - [x] 3.7 Aggregates: skill co-occurrence and weekly skill trend tables (decisions 13 and 14)
 - [x] 3.8 Tests and the salary warning; `dbt build` green
 - [x] 3.9 Docs: descriptions, `dbt docs generate`, ER diagram in DrawDB
-- [ ] 3.10 Verify, commit, PR and merge
+- [x] 3.10 Verify, commit, PR and merge (PR #6, merged 2026-10-29)
 
 ---
 

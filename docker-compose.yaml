@@ -58,6 +58,16 @@ x-airflow-common: &airflow-common
     PYTHONPATH: /opt/project
     DBT_PROJECT_DIR: /opt/project/dbt/job_listings
     DBT_PROFILES_DIR: /opt/project/dbt/job_listings
+    # dbt's build artifacts and logs stay inside the container, so they don't overwrite those of local runs
+    # in the dbt/ folder shared with the host.
+    DBT_TARGET_PATH: /tmp/dbt/target
+    DBT_LOG_PATH: /tmp/dbt/logs
+    # Airflow connections, filled in from .env when the containers are created (docker compose up -d after a change).
+    # databricks_default: transform_and_build starts the Databricks Job with it.
+    AIRFLOW_CONN_DATABRICKS_DEFAULT: '{"conn_type": "databricks", "host": "${DATABRICKS_HOST}", "password": "${DATABRICKS_TOKEN}"}'
+    # smtp_default: failure emails, through Gmail over SSL (port 465) with an app password. The connection is
+    # encrypted from the start, so STARTTLS (for plain connections on port 587) is turned off.
+    AIRFLOW_CONN_SMTP_DEFAULT: '{"conn_type": "smtp", "host": "smtp.gmail.com", "port": 465, "login": "${SMTP_USER}", "password": "${SMTP_PASSWORD}", "extra": {"from_email": "${SMTP_USER}", "disable_tls": true}}'
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -85,6 +95,8 @@ x-airflow-common: &airflow-common
     - ${AIRFLOW_PROJ_DIR:-./airflow}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-./airflow}/plugins:/opt/airflow/plugins
     - ./ingestion:/opt/project/ingestion
+    # the Himalayas title rules, shared by landing (ingestion/) and silver (Databricks)
+    - ./transform:/opt/project/transform
     - ./dbt:/opt/project/dbt
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on: &airflow-common-depends-on

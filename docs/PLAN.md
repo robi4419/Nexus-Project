@@ -1,6 +1,6 @@
 # Nexus-Project: Plan
 
-Pull remote job postings from the [Jobicy API](https://jobi.cy/apidocs), extract the skills and technologies each posting asks for, and build dashboards you can filter by country, industry, seniority and date.
+Pull remote job postings from [Jobicy](https://jobi.cy/apidocs), [Arbeitnow](https://www.arbeitnow.com) and [Himalayas](https://himalayas.app/docs/remote-jobs-api), extract the skills and technologies each posting asks for, and build dashboards you can filter by country, industry, seniority and date.
 
 **Stack:** Apache Airflow (orchestration), Databricks (storage, cleaning, normalisation, dedup, skill extraction), dbt (analytical models), Power BI dashboards, Docker (runs Airflow), GitHub and GitHub Actions (version control and CI), DrawDB (data-model diagram).
 
@@ -16,11 +16,12 @@ Things to handle:
 ## Flow
 
 ```
- Jobicy API (job postings)              Frankfurter API (daily ECB exchange rates)
-     │  (1) ingest_jobicy, daily             │  (1b) ingest_fx_rates, weekdays (backfills)
+ Job APIs: Jobicy, Arbeitnow, Himalayas Frankfurter API (daily ECB exchange rates)
+     │  (1) ingest_<source>, 18:00 UTC       │  (1b) ingest_fx_rates, weekdays (backfills)
      ▼                                       ▼
  Unity Catalog Volume  /Volumes/<catalog>/bronze/landing/<source>/ingest_date=YYYY-MM-DD/run=<run id>/*.json
-     │  (2) Databricks Job "transform_jobs": Auto Loader loads each new file once
+     │  (2) once all three job sources have landed, Airflow starts the Databricks Job "transform_jobs":
+     │      Auto Loader loads each new file once
      ▼
  BRONZE  jobicy_raw · arbeitnow_raw · himalayas_raw · frankfurter_raw   (append-only, one row per landed file, VARIANT)
      │  (3) same Job: rebuild silver (clean, normalise, dedup, skills, salaries in USD), then checks
@@ -54,6 +55,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [Phase 2: Bronze and Silver in Databricks](phases/phase-2-bronze-silver.md)
 - [Phase 2b: More sources and incremental silver](phases/phase-2b-sources-and-caching.md)
 - [Phase 3: dbt models](phases/phase-3-dbt-models.md)
+- [Phase 4: Orchestration end to end](phases/phase-4-orchestration.md)
 
 ### Phase 0: Fix the scaffolding
 - [x] `airflow/Dockerfile` extending `apache/airflow:3.3.2` with `apache-airflow-providers-databricks`; install dbt in a separate virtualenv inside the image (dbt and Airflow pin conflicting dependencies).
@@ -94,8 +96,11 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] ER diagram in DrawDB, saved to `docs/`.
 
 ### Phase 4: Orchestration end to end
-- [ ] Full DAG: extract → upload → Databricks job → `dbt build` (BashOperator with the dbt venv, or astronomer-cosmos for per-model tasks).
-- [ ] Retries, failure alerts, backfill support.
+- [x] `transform_and_build` DAG, scheduled on the three job Assets: the Databricks Job (deferrable `DatabricksRunNowOperator`), then `dbt deps`, `source freshness` and `build` from the dbt virtualenv.
+- [x] Assets updated only after an ingestion run's checks pass.
+- [x] Retries and time limits; failure emails through Gmail for every DAG.
+- [x] Backfill: job sources catch up by themselves, exchange rates use catchup, and transform and dbt are full rebuilds, so a rerun is the backfill.
+- [x] Himalayas jobs without a parent category kept when their title is clearly Tech (about 400 a day), with an industry from the same rules in silver.
 
 ### Phase 5: Dashboards
 - [ ] Power BI model on the gold tables: relationships from the primary and foreign keys (fact–bridge relationships filtering both ways), hierarchies from `dim_location` and `dim_date`, measures in DAX.

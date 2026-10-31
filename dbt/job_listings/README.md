@@ -37,6 +37,9 @@ tests). Count jobs across a bridge with `count(distinct job_key)`.
 
 ## Running it
 
+Every evening Airflow runs `deps`, `source freshness` and `build` by itself (the `transform_and_build` DAG), with
+the dbt in its own image. Running dbt by hand, as below, is for development.
+
 `dotenv run` loads `.env` into one command. From the repo root in PowerShell (in Git Bash, use forward slashes):
 
 ```
