@@ -1,0 +1,12 @@
+/// The Databricks workspace's server hostname, without https:// (SQL Warehouses → Connection details).
+expression DatabricksHost = "dbc-cbd11ba4-b1ef.cloud.databricks.com" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 921aafbd-b383-4492-961e-543a3c714fc3
+
+	annotation PBI_ResultType = Text
+
+/// The SQL warehouse's HTTP path (SQL Warehouses → Connection details). The token is never stored in the project.
+expression DatabricksHttpPath = "/sql/1.0/warehouses/a30a19bc0d901cce" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: e6b8654e-9b45-48c3-827c-f65bba618062
+
+	annotation PBI_ResultType = Text
+

@@ -1,0 +1,32 @@
+/// One row per seniority level, sorted from Intern to Executive (gold.dim_seniority).
+table Seniority
+	lineageTag: 40820fa4-9586-42d6-8796-eecf2093ef81
+
+	column Seniority
+		dataType: string
+		lineageTag: a0f52e1f-85dd-4f05-91ba-62f981dd6aa9
+		summarizeBy: none
+		sourceColumn: seniority
+		sortByColumn: 'Sort order'
+
+	column 'Sort order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4038f0b5-c021-4768-842e-bacc28eef52f
+		summarizeBy: none
+		sourceColumn: sort_order
+
+	partition Seniority = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "dim_seniority", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"seniority", "sort_order"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

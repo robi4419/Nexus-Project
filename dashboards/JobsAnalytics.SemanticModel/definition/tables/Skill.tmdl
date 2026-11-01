@@ -1,0 +1,29 @@
+/// One row per skill in the taxonomy (gold.dim_skill).
+table Skill
+	lineageTag: 6e2c323d-17ba-4889-8e7f-f3b13fc66fe2
+
+	column Skill
+		dataType: string
+		lineageTag: db4c90c9-8f23-4a83-8df3-fa733c3725c0
+		summarizeBy: none
+		sourceColumn: skill
+
+	column Category
+		dataType: string
+		lineageTag: 13cb6027-3c09-4f79-a13f-070efdc119ef
+		summarizeBy: none
+		sourceColumn: category
+
+	partition Skill = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "dim_skill", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"skill", "category"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

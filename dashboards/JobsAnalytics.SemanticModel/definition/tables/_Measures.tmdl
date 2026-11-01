@@ -1,0 +1,160 @@
+/// All measures, in display folders. Jobs and Salaries follow every job filter; Trend and Skill pairs read the two
+/// gold aggregate tables, which only Skill, Source and the week filter. ("Measures" itself is a reserved table name.)
+table _Measures
+	lineageTag: 26068e48-5b7b-4e4b-bbc7-d0bade6cd7cc
+
+	/// Job postings in the current filters.
+	measure Jobs = COUNTROWS ( 'Job postings' )
+		formatString: #,0
+		displayFolder: Jobs
+		lineageTag: 6872d96e-530c-425c-8ba3-0b4fc65241f5
+
+	/// Job postings asking for the selected skills; with no skill selected, jobs asking for at least one skill.
+	measure 'Jobs with skill' = DISTINCTCOUNT ( 'Job skills'[job_key] )
+		formatString: #,0
+		displayFolder: Jobs
+		lineageTag: 38028d27-e2cc-401b-88ba-7e8047e928ae
+
+	/// Jobs with skill as a share of all jobs in the same filters, ignoring the skill filter.
+	measure 'Share of jobs' = DIVIDE ( [Jobs with skill], CALCULATE ( [Jobs], REMOVEFILTERS ( Skill ) ) )
+		formatString: 0.0%
+		displayFolder: Jobs
+		lineageTag: 632aa8a2-92d1-4d09-8d4f-98a32a26e5ae
+
+	/// Jobs with a plausible yearly salary (5,000 to 1,500,000 USD). Skill filters reach the jobs through CROSSFILTER.
+	measure 'Jobs with salary' =
+			CALCULATE (
+			    [Jobs],
+			    'Job postings'[Plausible salary] = TRUE (),
+			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
+			)
+		formatString: #,0
+		displayFolder: Salaries
+		lineageTag: 85cf73f0-4767-4c57-bcc6-c2c3a9e2babf
+
+	/// Share of the jobs in the current filters (skill included) that list a plausible salary.
+	measure 'Share with salary' =
+			DIVIDE (
+			    [Jobs with salary],
+			    CALCULATE ( [Jobs], CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH ) )
+			)
+		formatString: 0.0%
+		displayFolder: Salaries
+		lineageTag: 407daa52-add3-477d-8c66-7bca08be2207
+
+	/// Median yearly salary in USD over the plausible salaries in the current filters (skill included).
+	measure 'Median salary' =
+			CALCULATE (
+			    MEDIAN ( 'Job postings'[Salary (USD)] ),
+			    'Job postings'[Plausible salary] = TRUE (),
+			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
+			)
+		formatString: \$#,0
+		displayFolder: Salaries
+		lineageTag: a2c48b4a-89fd-48f5-a20b-1c84fb9267b3
+
+	/// The salary a quarter of the plausible salaries are below.
+	measure 'Salary 25th percentile' =
+			CALCULATE (
+			    PERCENTILE.INC ( 'Job postings'[Salary (USD)], 0.25 ),
+			    'Job postings'[Plausible salary] = TRUE (),
+			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
+			)
+		formatString: \$#,0
+		displayFolder: Salaries
+		lineageTag: 907d0bed-5c0b-4400-8dd8-15e67243bf58
+
+	/// The salary three quarters of the plausible salaries are below.
+	measure 'Salary 75th percentile' =
+			CALCULATE (
+			    PERCENTILE.INC ( 'Job postings'[Salary (USD)], 0.75 ),
+			    'Job postings'[Plausible salary] = TRUE (),
+			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
+			)
+		formatString: \$#,0
+		displayFolder: Salaries
+		lineageTag: d751b14f-d240-4255-a44b-484b15c23186
+
+	/// Jobs asking for the skill in the week, summed over the selected sources.
+	measure 'Trend jobs with skill' = SUM ( 'Weekly skill trend'[skill_jobs] )
+		formatString: #,0
+		displayFolder: Trend
+		lineageTag: 13b7c886-9835-4160-b9df-a3559dd4c296
+
+	/// All jobs in the week, summed over the selected sources, whatever the skill filter.
+	measure 'Trend jobs' =
+			CALCULATE (
+			    SUMX (
+			        SUMMARIZE ( 'Weekly skill trend', 'Weekly skill trend'[Week], 'Weekly skill trend'[source] ),
+			        CALCULATE ( MAX ( 'Weekly skill trend'[week_jobs] ) )
+			    ),
+			    REMOVEFILTERS ( Skill )
+			)
+		formatString: #,0
+		displayFolder: Trend
+		lineageTag: 5068cfc8-aa20-4ac6-9e99-11809edc7da4
+
+	/// Share of the week's jobs asking for the skill, over the selected sources.
+	measure 'Week share' = DIVIDE ( [Trend jobs with skill], [Trend jobs] )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 2da8fc77-4574-4f64-8a93-32108ae38827
+
+	/// Week share in the week before.
+	measure 'Previous week share' =
+			VAR ThisWeek = MAX ( 'Weekly skill trend'[Week] )
+			RETURN
+			    CALCULATE ( [Week share], 'Weekly skill trend'[Week] = ThisWeek - 7 )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 0ea87e5f-e036-4995-afef-a239f75ec5ac
+
+	/// Week share minus the previous week's, in percentage points (+1.2% = 1.2 points more). Blank in the first week.
+	measure 'Share change' =
+			VAR Previous = [Previous week share]
+			RETURN
+			    IF ( NOT ISBLANK ( Previous ), [Week share] - Previous )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Trend
+		lineageTag: e94b5cc8-e562-4733-9af2-34ad9e254e66
+
+	/// Share change in the latest complete week, for ranking the biggest risers and fallers.
+	measure 'Share change latest week' =
+			VAR Latest = CALCULATE ( MAX ( 'Weekly skill trend'[Week] ), REMOVEFILTERS ( 'Weekly skill trend' ) )
+			RETURN
+			    CALCULATE ( [Share change], 'Weekly skill trend'[Week] = Latest )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Trend
+		lineageTag: 8e4feefa-1ef0-472e-8826-e42a0f8496a6
+
+	/// How many times more often the two skills are asked for together than if they were unrelated: above 1 linked.
+	measure 'Pair lift' = MAX ( 'Skill pairs'[lift] )
+		formatString: 0.00
+		displayFolder: Skill pairs
+		lineageTag: beb40d37-02bf-4e6e-b56e-721f4e03a459
+
+	/// Jobs asking for both skills.
+	measure 'Jobs with both' = SUM ( 'Skill pairs'[jobs_both] )
+		formatString: #,0
+		displayFolder: Skill pairs
+		lineageTag: d607d67d-be7a-4d57-83ad-0d0a1d2ea1f1
+
+	/// Share of the row skill's jobs that also ask for the column skill (one-directional).
+	measure 'Share asking for both' = MAX ( 'Skill pairs'[share_of_skill_jobs] )
+		formatString: 0.0%
+		displayFolder: Skill pairs
+		lineageTag: 6722cc22-aea4-493e-8352-7ded30ec39b1
+
+	column Value
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6a543b1a-8f7c-40a4-802e-16ab4f88c419
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+	partition _Measures = calculated
+		mode: import
+		source = ROW ( "Value", 0 )
+

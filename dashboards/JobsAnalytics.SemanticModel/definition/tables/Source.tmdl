@@ -1,0 +1,26 @@
+/// The three job sources, so one slicer filters both the jobs and the weekly trend.
+table Source
+	lineageTag: 3332c90f-2cf6-497d-af21-b40db30e3f60
+
+	column 'Source key'
+		dataType: string
+		isHidden
+		lineageTag: 8347df9b-0985-4a0e-a894-09164e4c3bcc
+		summarizeBy: none
+		sourceColumn: [source]
+
+	column Source
+		dataType: string
+		lineageTag: adcecc4f-6f73-4486-a6ed-ee760e3e8bb3
+		summarizeBy: none
+		sourceColumn: [source_name]
+
+	partition Source = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "source", STRING,
+				    "source_name", STRING,
+				    { { "jobicy", "Jobicy" }, { "arbeitnow", "Arbeitnow" }, { "himalayas", "Himalayas" } }
+				)
+

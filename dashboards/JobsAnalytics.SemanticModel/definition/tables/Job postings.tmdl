@@ -1,0 +1,77 @@
+/// One row per job posting (gold.fct_job_postings), without titles, links, IDs, companies or raw salaries: the
+/// report shows aggregates only, and Publish to web exposes the whole model.
+table 'Job postings'
+	lineageTag: 3f3dc495-7cae-4282-8419-4d21d27476f5
+
+	column job_key
+		dataType: string
+		isHidden
+		lineageTag: 6232cded-0b51-47c3-bfdf-6ec68cdf7d43
+		summarizeBy: none
+		sourceColumn: job_key
+
+	column seniority
+		dataType: string
+		isHidden
+		lineageTag: 25881821-49ca-496e-9150-31560c9ace94
+		summarizeBy: none
+		sourceColumn: seniority
+
+	column published_date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 20e919e2-8c1a-48d3-b584-1d2f229fa192
+		summarizeBy: none
+		sourceColumn: published_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column source
+		dataType: string
+		isHidden
+		lineageTag: 0d4aad2c-e65d-47a5-bd90-90665158363a
+		summarizeBy: none
+		sourceColumn: source
+
+	column Remote
+		dataType: boolean
+		lineageTag: 806202ce-8a5c-4d77-852f-2d64dbabd738
+		summarizeBy: none
+		sourceColumn: is_remote
+
+	/// Still listed at its source: in Jobicy's latest run, Arbeitnow's last two runs, or before its Himalayas expiry.
+	column 'Listed now'
+		dataType: boolean
+		lineageTag: 9290bbdc-3ff6-4215-87e9-731a49781999
+		summarizeBy: none
+		sourceColumn: is_listed_now
+
+	/// Yearly salary in USD, the midpoint of the posted range. Use the Salaries measures, which keep plausible ones only.
+	column 'Salary (USD)'
+		dataType: double
+		formatString: \$#,0
+		lineageTag: d83c0529-7bc5-4727-b518-d48c76ed4ebf
+		summarizeBy: none
+		sourceColumn: salary_mid_usd_yearly
+
+	column 'Plausible salary'
+		dataType: boolean
+		isHidden
+		lineageTag: 6c7a0c15-4862-4da8-937a-18175f6fcb29
+		summarizeBy: none
+		sourceColumn: salary_is_plausible
+
+	partition 'Job postings' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "fct_job_postings", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"job_key", "seniority", "published_date", "source", "is_remote", "is_listed_now", "salary_mid_usd_yearly", "salary_is_plausible"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

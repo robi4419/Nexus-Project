@@ -1,0 +1,23 @@
+/// One row per industry used by at least one job (gold.dim_industry).
+table Industry
+	lineageTag: 7a89acc6-6b74-470f-b982-5d12b4504e35
+
+	column Industry
+		dataType: string
+		lineageTag: ba3e63f7-2acc-4b2c-885c-8c1432e24c03
+		summarizeBy: none
+		sourceColumn: industry
+
+	partition Industry = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "dim_industry", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"industry"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

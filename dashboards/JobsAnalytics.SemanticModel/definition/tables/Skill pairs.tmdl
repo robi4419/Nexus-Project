@@ -1,0 +1,69 @@
+/// One row per ordered pair of skills asked for together in at least 5 jobs (gold.agg_skill_co_occurrence). Counted
+/// over all jobs: the job filters don't apply. Rows: Skill[Skill]; columns: Asked with; values: the Skill pairs measures.
+table 'Skill pairs'
+	lineageTag: 1c10e54a-3506-4d75-8e66-093b4e15da69
+
+	column skill
+		dataType: string
+		isHidden
+		lineageTag: b41a6629-a89f-486e-ad4d-8c825efb53d9
+		summarizeBy: none
+		sourceColumn: skill
+
+	column 'Asked with'
+		dataType: string
+		lineageTag: ded2c340-b73d-4b4d-8376-ab7880729d65
+		summarizeBy: none
+		sourceColumn: co_skill
+
+	column jobs_both
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 6eed3590-c99d-4f79-8611-47131ffbd0c9
+		summarizeBy: none
+		sourceColumn: jobs_both
+
+	column skill_jobs
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 0a88dd8c-2c70-4366-9613-6d2cb55ae54d
+		summarizeBy: none
+		sourceColumn: skill_jobs
+
+	column co_skill_jobs
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: e44be9e8-2ba0-461b-9983-8e58bcac2350
+		summarizeBy: none
+		sourceColumn: co_skill_jobs
+
+	column share_of_skill_jobs
+		dataType: double
+		isHidden
+		lineageTag: 643982ca-b6c3-4384-82d8-1a8557be7360
+		summarizeBy: none
+		sourceColumn: share_of_skill_jobs
+
+	column lift
+		dataType: double
+		isHidden
+		lineageTag: 71f62aa4-bfc8-4ae8-a7b6-478d11a6729b
+		summarizeBy: none
+		sourceColumn: lift
+
+	partition 'Skill pairs' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "agg_skill_co_occurrence", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"skill", "co_skill", "jobs_both", "skill_jobs", "co_skill_jobs", "share_of_skill_jobs", "lift"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

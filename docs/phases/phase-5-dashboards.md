@@ -13,8 +13,8 @@
 ## Progress
 - [x] 5.1 Branch, plan doc, `PLAN.md`
 - [x] 5.2 Himalayas history: frozen daily counts in dbt, and a weekly trend for all three sources
-- [ ] 5.3 You: Power BI Desktop, a Databricks token for Power BI, and an empty PBIP project in `dashboards/`
-- [ ] 5.4 Semantic model in TMDL: tables, relationships, hierarchies, DAX measures; refreshed and checked against gold
+- [x] 5.3 You: Power BI Desktop, a Databricks token for Power BI, and an empty PBIP project in `dashboards/`
+- [x] 5.4 Semantic model in TMDL: tables, relationships, hierarchies, DAX measures; refreshed and checked against gold
 - [ ] 5.5 Report pages (you build them, I guide): skills overview, rising skills, salaries, skills asked together
 - [ ] 5.6 Account and publishing: tenant, Pro trial, Publish to web, daily refresh
 - [ ] 5.7 Make the repository public: made-up fixtures, history scan, author email, licence
@@ -100,7 +100,7 @@ nightly chain (18:00–18:30 UTC) ─► gold, incl. the new Himalayas history t
 ### 5.3 Your setup (any time)
 1. Install Power BI Desktop from the Microsoft Store.
 2. Create a Databricks access token named `power-bi`.
-3. In Desktop, use File → Save as → Power BI project (`.pbip`) to create `dashboards/NexusJobs.pbip`. Turn on the TMDL format if Desktop asks.
+3. In Desktop, use File → Save as → Power BI project (`.pbip`) to create `dashboards/JobsAnalytics.pbip`. Turn on the TMDL format if Desktop asks.
 4. Connect once with Get data → Azure Databricks to one gold table, so I can copy the exact query pattern Desktop writes.
 
 ### 5.4 Semantic model (TMDL)
@@ -128,6 +128,16 @@ nightly chain (18:00–18:30 UTC) ─► gold, incl. the new Himalayas history t
   - Week share and Share change;
   - Lift.
 - **Check:** after a refresh, row counts and a few measures match SQL on gold.
+- **Done on 2026-11-01:**
+  - **Connection:** the Azure Databricks connector, authenticating with Account key (Desktop's name for an access token).
+  - **The model:** written in TMDL. Desktop flagged two things on opening, both now fixed:
+    - descriptions (`///`) aren't allowed on relationships;
+    - "Measures" is a reserved table name, so the table is `_Measures`.
+  - **The check** is `DAXQueries/Query 1.dax`. All 10 values match SQL on gold exactly:
+    - Jobs 34,764; Jobs with skill 27,643; Python share 21.8%;
+    - Jobs with salary 9,162; Median salary $132,500; Python median salary $135,000;
+    - Europe jobs 16,598 (through the location bridge); Listed now 24,464;
+    - Python week share 24.1% (all three sources, week of 19 October); Skill pairs 37,342 rows.
 
 ### 5.5 Report pages
 You build the pages from decision 7 with my step-by-step guidance. Every page gets a footer that says:
@@ -188,6 +198,13 @@ Pages use Fit to page, at a 16:9 ratio.
 - **Heavy use of a public report is throttled** for a while; the placeholder image covers it.
 - **An expired Databricks token breaks the refresh.** Power BI emails you; renew the token in the model's settings.
 - **Measures must live in the model.** Publish to web doesn't support measures defined only in a report.
+- **TMDL written by hand:**
+  - descriptions (`///`) work on tables, columns, measures and parameters, but not on relationships;
+  - "Measures" is a reserved table name;
+  - Desktop adds a `lineageTag` to every object on its next save.
+
+  Close Desktop before editing the files.
+- **Two routes from one dimension to a table are ambiguous** in Power BI. So `Job skills` takes only `job_key` and `skill`, and every job filter reaches it through `Job postings`. Its copies of the job columns in gold are for SQL.
 
 ## Repo layout additions
 
@@ -197,9 +214,10 @@ dbt/job_listings/models/history/
     hist_himalayas_skills_by_day.sql      ← … per day first seen × skill
     _history__models.yml
 dashboards/
-    NexusJobs.pbip
-    NexusJobs.SemanticModel/definition/   ← TMDL: tables, relationships, measures
-    NexusJobs.Report/                     ← the pages
+    JobsAnalytics.pbip
+    JobsAnalytics.SemanticModel/definition/   ← TMDL: tables, relationships, measures
+    JobsAnalytics.SemanticModel/DAXQueries/   ← the check against gold
+    JobsAnalytics.Report/                     ← the pages
 site/
     index.html                            ← public page with the iframe and credits
 .github/workflows/pages.yml               ← deploys site/ to GitHub Pages

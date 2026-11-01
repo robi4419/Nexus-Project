@@ -1,0 +1,32 @@
+/// One row per job x skill (gold.fct_job_skills). Hidden: the Jobs and Salaries measures use it.
+table 'Job skills'
+	isHidden
+	lineageTag: b620c362-4988-4742-aa83-1a3a04f3daf8
+
+	column job_key
+		dataType: string
+		isHidden
+		lineageTag: 0db38df2-edba-47d6-8c08-cf477497a1c1
+		summarizeBy: none
+		sourceColumn: job_key
+
+	column skill
+		dataType: string
+		isHidden
+		lineageTag: 53c6b983-e15e-4327-b5fc-603fe6126a8e
+		summarizeBy: none
+		sourceColumn: skill
+
+	partition 'Job skills' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "fct_job_skills", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"job_key", "skill"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

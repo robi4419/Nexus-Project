@@ -1,0 +1,194 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 21.258731999999984,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1971.9476841084133,
+            "y": 438.77502977302356
+          },
+          "nodeIndex": "_Measures",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 876.65119955239788,
+            "y": 827.55005954604712
+          },
+          "nodeIndex": "Date",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1737.9476841084133,
+            "y": 799.28978955791376
+          },
+          "nodeIndex": "Industry",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1450.8640798722745,
+            "y": 645.20769332287614
+          },
+          "nodeIndex": "Job industries",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1392.6697077952581,
+            "y": 298.836889685307
+          },
+          "nodeIndex": "Job locations",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1163.6896721230275,
+            "y": 479.5981680470253
+          },
+          "nodeIndex": "Job postings",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 994.09281230372562,
+            "y": 299.64761857666429
+          },
+          "nodeIndex": "Job skills",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1231.1265800891274,
+            "y": 869.59936375982363
+          },
+          "nodeIndex": "Job types",
+          "nodeLineageTag": "030cbc32-eea8-44a0-bc15-83fe44466fdb",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1653.34938987938,
+            "y": 0
+          },
+          "nodeIndex": "Location",
+          "nodeLineageTag": "c5bda1fa-e8a9-40d6-8ba0-afae06d53d1b",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1283.8436089563352,
+            "y": 119.62334638977973
+          },
+          "nodeIndex": "Seniority",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 534.08048275668432
+          },
+          "nodeIndex": "Skill",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 572.46430865065008,
+            "y": 842.21165213893448
+          },
+          "nodeIndex": "Skill pairs",
+          "nodeLineageTag": "1c10e54a-3506-4d75-8e66-093b4e15da69",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 876.59505606268681,
+            "y": 647.35505366582322
+          },
+          "nodeIndex": "Source",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 305.80877759350807,
+            "y": 712.61200025840458
+          },
+          "nodeIndex": "Weekly skill trend",
+          "nodeLineageTag": "9620112e-6589-4d8b-b3aa-32fcfff36ff7",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 56.447393005377791,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}
