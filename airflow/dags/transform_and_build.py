@@ -24,8 +24,9 @@ if not TRANSFORM_JOB_NAME:
     raise RuntimeError("DATABRICKS_TRANSFORM_JOB_NAME is not set: add it to the root .env and recreate the containers")
 
 # dbt has its own virtualenv in the image (airflow/Dockerfile); DBT_PROJECT_DIR, DBT_PROFILES_DIR and the /tmp target
-# and log paths come from docker-compose. --no-use-colors keeps colour codes out of the task logs.
-DBT = "/opt/dbt-venv/bin/dbt --no-use-colors"
+# and log paths come from docker-compose. --no-use-colors keeps colour codes out of the task logs. --no-partial-parse
+# re-reads every file each run: a reused parse can miss a new YAML file, and the new model then fails its contract.
+DBT = "/opt/dbt-venv/bin/dbt --no-use-colors --no-partial-parse"
 
 
 @dag(
