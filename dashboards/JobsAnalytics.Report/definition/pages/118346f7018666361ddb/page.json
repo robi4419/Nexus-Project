@@ -1,8 +1,30 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
   "name": "118346f7018666361ddb",
-  "displayName": "Page 1",
+  "displayName": "Skills overview",
   "displayOption": "FitToPage",
   "height": 1080,
-  "width": 1920
+  "width": 1920,
+  "objects": {
+    "outspacePane": [
+      {
+        "properties": {
+          "width": {
+            "expr": {
+              "Literal": {
+                "Value": "181L"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "a2a5092c8c4e72592318",
+      "target": "4f0d44dd17232dc06148",
+      "type": "DataFilter"
+    }
+  ]
 }

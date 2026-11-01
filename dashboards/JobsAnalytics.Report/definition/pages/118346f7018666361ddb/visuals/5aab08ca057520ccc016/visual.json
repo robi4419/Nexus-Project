@@ -1,0 +1,295 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "5aab08ca057520ccc016",
+  "position": {
+    "x": 0,
+    "y": 441.06024096385545,
+    "z": 3000,
+    "height": 84.819277108433738,
+    "width": 373.20481927710841,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Location"
+                        }
+                      },
+                      "Hierarchy": "Place"
+                    }
+                  },
+                  "Level": "Region"
+                }
+              },
+              "queryRef": "Location.Place.Region",
+              "nativeQueryRef": "Place Region",
+              "active": true
+            },
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Location"
+                        }
+                      },
+                      "Hierarchy": "Place"
+                    }
+                  },
+                  "Level": "Country"
+                }
+              },
+              "queryRef": "Location.Place.Country",
+              "nativeQueryRef": "Place Country",
+              "active": false
+            },
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Location"
+                        }
+                      },
+                      "Hierarchy": "Place"
+                    }
+                  },
+                  "Level": "City"
+                }
+              },
+              "queryRef": "Location.Place.City",
+              "nativeQueryRef": "Place City",
+              "active": false
+            }
+          ]
+        }
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Values"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "Location.Place.Region"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Location"
+                    }
+                  },
+                  "Property": "Region"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Location.Place.Country"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Location"
+                    }
+                  },
+                  "Property": "Country"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Location.Place.City"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {}
+      }
+    ],
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
+        }
+      ],
+      "dropdown": [
+        {
+          "properties": {
+            "borderRadius": {
+              "expr": {
+                "Literal": {
+                  "Value": "4L"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "items": [
+        {
+          "properties": {
+            "textSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "14D"
+                }
+              }
+            },
+            "padding": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "header": [
+        {
+          "properties": {
+            "textSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "16D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "padding": [
+        {
+          "properties": {
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "12e6c151885ab270d38b",
+        "field": {
+          "HierarchyLevel": {
+            "Expression": {
+              "Hierarchy": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Location"
+                  }
+                },
+                "Hierarchy": "Place"
+              }
+            },
+            "Level": "Region"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "fadbc03f5dd4a29c5d40",
+        "field": {
+          "HierarchyLevel": {
+            "Expression": {
+              "Hierarchy": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Location"
+                  }
+                },
+                "Hierarchy": "Place"
+              }
+            },
+            "Level": "Country"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "35be0ef30a8e41a0d007",
+        "field": {
+          "HierarchyLevel": {
+            "Expression": {
+              "Hierarchy": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Location"
+                  }
+                },
+                "Hierarchy": "Place"
+              }
+            },
+            "Level": "City"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

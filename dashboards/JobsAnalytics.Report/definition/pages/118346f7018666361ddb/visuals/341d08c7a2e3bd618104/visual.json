@@ -1,0 +1,63 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "341d08c7a2e3bd618104",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 129.75060337892197,
+    "width": 1920.0000000000002,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Which skills do jobs ask for?",
+                    "textStyle": {
+                      "fontSize": "32pt"
+                    }
+                  }
+                ],
+                "indent": 1
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Share of job postings mentioning each skill, from Jobicy, Arbeitnow and Himalayas, updated daily",
+                    "textStyle": {
+                      "fontSize": "20pt"
+                    }
+                  }
+                ],
+                "indent": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
