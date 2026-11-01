@@ -636,11 +636,11 @@ models:
             expression: "lift > 0"
 
   - name: agg_skill_weekly_trend
-    description: "One row per complete week x skill (every skill, 0 when not asked for), for rising-skill charts. Jobicy and Arbeitnow only: Himalayas deletes expired jobs, which would fake a decline (decision 3). Starts with the week of 2026-10-19, the first in which both sources are complete; a week is included once its Sunday is a day old. Dashboard filters don't apply."
+    description: "One row per complete week x source x skill (every skill, 0 when not asked for), for rising-skill charts. Jobicy and Arbeitnow are counted by publish week, from silver. Himalayas is counted by the week each job was first seen, from the frozen counts in hist_himalayas_*: it deletes expired jobs, which would fake a decline, and its pubDate is the last update (Phase 5, decisions 4 and 5). Starts with the week of 2026-10-19; a week is included once its Sunday is a day old. Dashboard filters don't apply. For several sources together, divide summed jobs by summed week_jobs."
     constraints:
       - type: primary_key
         name: pk_agg_skill_weekly_trend
-        columns: [week_start, skill]
+        columns: [week_start, source, skill]
         warn_unenforced: false
       - type: check
         name: chk_agg_skill_weekly_trend_jobs_in_week
@@ -648,7 +648,7 @@ models:
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
-            combination_of_columns: ["week_start", "skill"]
+            combination_of_columns: ["week_start", "source", "skill"]
     columns:
       - name: week_start
         data_type: date
@@ -665,6 +665,15 @@ models:
               arguments:
                 to: ref('dim_date')
                 field: date_day
+      - name: source
+        data_type: string
+        description: "{{ doc('source') }}"
+        constraints:
+          - type: not_null
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["jobicy", "arbeitnow", "himalayas"]
       - name: skill
         data_type: string
         description: "{{ doc('skill') }} Foreign key to dim_skill."
@@ -682,7 +691,7 @@ models:
                 field: skill
       - name: jobs
         data_type: bigint
-        description: "Jobicy and Arbeitnow jobs published that week asking for the skill; 0 when none."
+        description: "The source's jobs that week asking for the skill (published that week; for Himalayas, first seen that week); 0 when none."
         constraints:
           - type: not_null
           - type: check
@@ -690,7 +699,7 @@ models:
             expression: "jobs >= 0"
       - name: week_jobs
         data_type: bigint
-        description: "All Jobicy and Arbeitnow jobs published that week, with or without skills."
+        description: "All the source's jobs that week, with or without skills."
         constraints:
           - type: not_null
           - type: check
@@ -698,7 +707,7 @@ models:
             expression: "week_jobs > 0"
       - name: share
         data_type: double
-        description: "Share of the week's postings asking for the skill: jobs / week_jobs. Unlike jobs, it doesn't rise just because a week was busy."
+        description: "Share of the source's jobs that week asking for the skill: jobs / week_jobs. Unlike jobs, it doesn't rise just because a week was busy."
         constraints:
           - type: not_null
           - type: check
@@ -706,10 +715,10 @@ models:
             expression: "share >= 0 and share <= 1"
       - name: prev_jobs
         data_type: bigint
-        description: "jobs in the previous week. NULL in the first week."
+        description: "jobs in the source's previous week. NULL in the first week."
       - name: prev_share
         data_type: double
-        description: "share in the previous week. NULL in the first week."
+        description: "share in the source's previous week. NULL in the first week."
       - name: share_change
         data_type: double
         description: "share - prev_share, as a fraction (0.012 = +1.2 percentage points). Rising skills have the largest values; filter on jobs or prev_jobs to skip skills too rare to trust. NULL in the first week."

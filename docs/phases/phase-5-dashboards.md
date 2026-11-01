@@ -12,7 +12,7 @@
 
 ## Progress
 - [x] 5.1 Branch, plan doc, `PLAN.md`
-- [ ] 5.2 Himalayas history: frozen daily counts in dbt, and a weekly trend for all three sources
+- [x] 5.2 Himalayas history: frozen daily counts in dbt, and a weekly trend for all three sources
 - [ ] 5.3 You: Power BI Desktop, a Databricks token for Power BI, and an empty PBIP project in `dashboards/`
 - [ ] 5.4 Semantic model in TMDL: tables, relationships, hierarchies, DAX measures; refreshed and checked against gold
 - [ ] 5.5 Report pages (you build them, I guide): skills overview, rising skills, salaries, skills asked together
@@ -90,6 +90,12 @@ nightly chain (18:00–18:30 UTC) ─► gold, incl. the new Himalayas history t
   - a second `dbt build` the same day appends nothing;
   - `dbt build --full-refresh` leaves the history alone;
   - Himalayas' first complete week is chosen from the data.
+- **Done on 2026-11-01:**
+  - **The backfill** counted 18,118 Himalayas jobs first seen from 21 to 31 October, and 128,530 job × skill rows. Both equal silver exactly, day by day.
+  - **The weekly trend** starts with the week of 19 October for all three sources: Jobicy 1,467 jobs, Arbeitnow 4,555 and Himalayas 9,061. Himalayas' first run was on 21 October, but it caught up two days, so the week is kept; shares don't depend on a week's length.
+  - **A second build** appended 0 rows. **`--full-refresh`** also appended 0 rows instead of replacing the tables: the Delta log shows a single `CREATE OR REPLACE`, the backfill.
+  - **The new test `assert_himalayas_history_covers_silver`** fails the build if a day has more Himalayas jobs in silver than in the history, that is, jobs the history missed.
+  - **Partial parsing:** the first `dbt build` reused a stale parse that missed the new YAML, so both models failed their contracts. `transform_and_build` now runs dbt with `--no-partial-parse`, which costs about 5 seconds a night.
 
 ### 5.3 Your setup (any time)
 1. Install Power BI Desktop from the Microsoft Store.

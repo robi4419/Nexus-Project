@@ -1,0 +1,96 @@
+version: 2
+
+# Counts of Himalayas jobs that stay after the jobs are deleted at expiry (Phase 5, decision 4). Each build appends
+# only the jobs first seen since the previous build, so every job is counted once, before it can expire. The tables
+# can't be rebuilt once the jobs are gone: full_refresh is off (dbt_project.yml), and they must never be dropped.
+
+models:
+  - name: hist_himalayas_jobs_by_day
+    description: "Himalayas jobs per UTC day first seen, kept as counts after the jobs expire. One row per day x build that saw new jobs: sum jobs over a day's or week's rows. Appended to by every build, never rebuilt (Phase 5, decision 4)."
+    constraints:
+      - type: primary_key
+        name: pk_hist_himalayas_jobs_by_day
+        columns: [first_seen_date, counted_through]
+        warn_unenforced: false
+      - type: check
+        name: chk_hist_himalayas_jobs_by_day_watermark
+        expression: "to_date(counted_through) >= first_seen_date"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["first_seen_date", "counted_through"]
+    columns:
+      - name: first_seen_date
+        data_type: date
+        description: "UTC day the jobs were first landed (the date of first_seen_at)."
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: jobs
+        data_type: bigint
+        description: "Himalayas jobs first seen that day and counted by this build."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_hist_himalayas_jobs_by_day_jobs
+            expression: "jobs > 0"
+      - name: counted_through
+        data_type: timestamp
+        description: "The latest first_seen_at counted by the build that added the row. The next build counts only jobs first seen after it."
+        constraints:
+          - type: not_null
+
+  - name: hist_himalayas_skills_by_day
+    description: "Himalayas jobs per UTC day first seen x skill, kept as counts after the jobs expire. One row per day x skill x build that saw new jobs: sum jobs over a day's or week's rows. Skills are those found when the job was first seen. Appended to by every build, never rebuilt (Phase 5, decision 4)."
+    constraints:
+      - type: primary_key
+        name: pk_hist_himalayas_skills_by_day
+        columns: [first_seen_date, skill, counted_through]
+        warn_unenforced: false
+      - type: check
+        name: chk_hist_himalayas_skills_by_day_watermark
+        expression: "to_date(counted_through) >= first_seen_date"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["first_seen_date", "skill", "counted_through"]
+    columns:
+      - name: first_seen_date
+        data_type: date
+        description: "UTC day the jobs were first landed (the date of first_seen_at)."
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: skill
+        data_type: string
+        description: "{{ doc('skill') }} A skill later renamed or removed from the taxonomy keeps its old name here."
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_skill')
+                field: skill
+              config:
+                severity: warn # old rows keep skills the taxonomy may drop later
+      - name: jobs
+        data_type: bigint
+        description: "Himalayas jobs first seen that day, asking for the skill, counted by this build."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_hist_himalayas_skills_by_day_jobs
+            expression: "jobs > 0"
+      - name: counted_through
+        data_type: timestamp
+        description: "The latest first_seen_at counted by the build that added the row, over all the jobs it counted (with or without skills)."
+        constraints:
+          - type: not_null

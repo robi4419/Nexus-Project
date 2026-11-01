@@ -11,6 +11,7 @@ reasons are in [`docs/phases/phase-3-dbt-models.md`](../../docs/phases/phase-3-d
 | staging | `models/staging/` | views | `gold_staging` | `stg_silver__*`: one per silver table, plus surrogate keys |
 | intermediate | `models/intermediate/` | views | `gold_staging` | `int_job_postings` (salary midpoint and plausibility), `int_job_skill_pairs` |
 | marts | `models/marts/` | tables with enforced contracts | `gold` | `dim_*`, `fct_*`, `bridge_*`, `agg_*` |
+| history | `models/history/` | incremental tables, appended to and never rebuilt | `gold` | `hist_himalayas_*`: Himalayas counts per day first seen, kept after the jobs expire |
 | seed | `seeds/` | table | `gold_staging` | `seniority_levels`: the seniority scale and its sort order |
 
 The marts form a star: `fct_job_postings` (one row per job) and `fct_job_skills` (job × skill) in the centre;
@@ -75,5 +76,8 @@ Catalog as table and column comments on every build.
 - **Run a full `build` after silver changes.** Staging and intermediate are views that read silver live, while marts
   are tables from their last build; rebuilding one mart alone can mix the two moments.
 - **dbt never drops the table of a deleted or renamed model.** Drop the old table by hand.
+- **Never drop the `hist_himalayas_*` tables.** They hold counts of Himalayas jobs that have since been deleted, so
+  they can't be rebuilt. `full_refresh: false` makes `--full-refresh` leave them alone; each build only appends the
+  jobs first seen since the previous one.
 - **A model or test missing from a run?** dbt reuses its last parse; add `--no-partial-parse` once.
 - **Dates are UTC.**
