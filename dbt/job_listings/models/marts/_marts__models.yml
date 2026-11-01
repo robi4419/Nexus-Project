@@ -636,7 +636,7 @@ models:
             expression: "lift > 0"
 
   - name: agg_skill_weekly_trend
-    description: "One row per complete week x source x skill (every skill, 0 when not asked for), for rising-skill charts. Jobicy and Arbeitnow are counted by publish week, from silver. Himalayas is counted by the week each job was first seen, from the frozen counts in hist_himalayas_*: it deletes expired jobs, which would fake a decline, and its pubDate is the last update (Phase 5, decisions 4 and 5). Starts with the week of 2026-10-19; a week is included once its Sunday is a day old. Dashboard filters don't apply. For several sources together, divide summed jobs by summed week_jobs."
+    description: "One row per complete week x source x skill (every skill, 0 when not asked for), for rising-skill charts. Jobicy and Arbeitnow are counted by publish week, from silver. Himalayas is counted by the week each job was first seen, from the frozen counts in hist_himalayas_*: it deletes expired jobs, which would fake a decline, and its pubDate is the last update (Phase 5, decisions 4 and 5). Starts with the week of 2026-10-19; a week is included once its Sunday is two days old, a margin for jobs a feed lists a day late. Dashboard filters don't apply. For several sources together, divide summed jobs by summed week_jobs."
     constraints:
       - type: primary_key
         name: pk_agg_skill_weekly_trend

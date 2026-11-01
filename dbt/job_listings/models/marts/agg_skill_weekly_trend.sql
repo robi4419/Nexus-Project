@@ -43,7 +43,7 @@ skill_counts as (
   union all
   select source, week_start, skill, jobs from himalayas_skill_counts
 ),
--- complete weeks only: a week counts once its Sunday is a day old
+-- complete weeks only: a week counts once its Sunday is two days old, a margin for jobs a feed lists a day late
 grid as (
   select wt.week_start, wt.source, s.skill, wt.week_jobs
   from week_totals as wt

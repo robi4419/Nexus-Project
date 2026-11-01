@@ -96,6 +96,11 @@ nightly chain (18:00–18:30 UTC) ─► gold, incl. the new Himalayas history t
   - **A second build** appended 0 rows. **`--full-refresh`** also appended 0 rows instead of replacing the tables: the Delta log shows a single `CREATE OR REPLACE`, the backfill.
   - **The new test `assert_himalayas_history_covers_silver`** fails the build if a day has more Himalayas jobs in silver than in the history, that is, jobs the history missed.
   - **Partial parsing:** the first `dbt build` reused a stale parse that missed the new YAML, so both models failed their contracts. `transform_and_build` now runs dbt with `--no-partial-parse`, which costs about 5 seconds a night.
+- **First nightly append, 2026-11-01:**
+  - the chain appended 1 day row (5,828 Himalayas jobs first seen that day) and 370 day × skill rows;
+  - the history now counts 23,946 jobs, while silver has 23,937. The 9 missing from silver are early expiries from 21, 29 and 31 October, deleted overnight; the history kept their counts, as designed;
+  - `assert_himalayas_history_covers_silver` passed.
+- **Correction:** a week joins the trend once its Sunday is **two** days old (`week_start <= today - 8`), not one as first written. The week of 26 October appears with the 3 November build.
 
 ### 5.3 Your setup (any time)
 1. Install Power BI Desktop from the Microsoft Store.
