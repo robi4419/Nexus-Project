@@ -4,10 +4,10 @@
   "position": {
     "x": 0,
     "y": 818.89156626506019,
-    "z": 6000,
+    "z": 5000,
     "height": 75.566265060240966,
     "width": 373.20481927710841,
-    "tabOrder": 6000
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "slicer",
@@ -88,6 +88,13 @@
               "expr": {
                 "Literal": {
                   "Value": "16D"
+                }
+              }
+            },
+            "showRestatement": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -342,26 +349,26 @@
             }
           }
         }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
+    "syncGroup": {
+      "groupName": "Industry",
+      "fieldChanges": true,
+      "filterChanges": true
+    },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "2f5ccab07e196a0ec779",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Industry"
-              }
-            },
-            "Property": "Industry"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

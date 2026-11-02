@@ -4,10 +4,10 @@
   "position": {
     "x": 0,
     "y": 276.04819277108436,
-    "z": 7001,
+    "z": 7000,
     "height": 165.01204819277109,
     "width": 373.20481927710841,
-    "tabOrder": 7001
+    "tabOrder": 7000
   },
   "visual": {
     "visualType": "slicer",
@@ -56,13 +56,6 @@
       "data": [
         {
           "properties": {
-            "startDate": {
-              "expr": {
-                "Literal": {
-                  "Value": "datetime'2026-10-01T00:00:00'"
-                }
-              }
-            },
             "mode": {
               "expr": {
                 "Literal": {
@@ -115,6 +108,13 @@
                   "Value": "16D"
                 }
               }
+            },
+            "showRestatement": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -134,44 +134,7 @@
       ],
       "general": [
         {
-          "properties": {
-            "filter": {
-              "filter": {
-                "Version": 2,
-                "From": [
-                  {
-                    "Name": "d",
-                    "Entity": "Date",
-                    "Type": 0
-                  }
-                ],
-                "Where": [
-                  {
-                    "Condition": {
-                      "Comparison": {
-                        "ComparisonKind": 2,
-                        "Left": {
-                          "Column": {
-                            "Expression": {
-                              "SourceRef": {
-                                "Source": "d"
-                              }
-                            },
-                            "Property": "Date"
-                          }
-                        },
-                        "Right": {
-                          "Literal": {
-                            "Value": "datetime'2026-10-01T00:00:00'"
-                          }
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
+          "properties": {}
         }
       ]
     },
@@ -202,26 +165,39 @@
             }
           }
         }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
+    "syncGroup": {
+      "groupName": "Date",
+      "fieldChanges": true,
+      "filterChanges": true
+    },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "aa3aa493e0208e0e9dc9",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Date"
-              }
-            },
-            "Property": "Date"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

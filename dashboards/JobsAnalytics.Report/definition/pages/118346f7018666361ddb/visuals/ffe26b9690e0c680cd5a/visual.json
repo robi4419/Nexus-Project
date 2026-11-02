@@ -3,11 +3,11 @@
   "name": "ffe26b9690e0c680cd5a",
   "position": {
     "x": 0,
-    "y": 894.45783132530119,
-    "z": 5000,
-    "height": 148.04819277108433,
-    "width": 373.20481927710841,
-    "tabOrder": 5000
+    "y": 894.561797752809,
+    "z": 4000,
+    "height": 148.13483146067415,
+    "width": 372.49438202247188,
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "slicer",
@@ -57,6 +57,13 @@
                   "Value": "1D"
                 }
               }
+            },
+            "outlineWeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
             }
           }
         }
@@ -87,7 +94,14 @@
             "padding": {
               "expr": {
                 "Literal": {
-                  "Value": "8D"
+                  "Value": "6D"
+                }
+              }
+            },
+            "outlineStyle": {
+              "expr": {
+                "Literal": {
+                  "Value": "15D"
                 }
               }
             }
@@ -100,7 +114,28 @@
             "textSize": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "24D"
+                }
+              }
+            },
+            "showRestatement": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "outlineStyle": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }
@@ -135,26 +170,39 @@
             }
           }
         }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
+    "syncGroup": {
+      "groupName": "Source",
+      "fieldChanges": true,
+      "filterChanges": true
+    },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "a985e590bbb527267597",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Source"
-              }
-            },
-            "Property": "Source"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

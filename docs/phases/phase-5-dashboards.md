@@ -152,6 +152,18 @@ You build the pages from decision 7 with my step-by-step guidance. Every page ge
 
 Pages use Fit to page, at a 16:9 ratio.
 
+- **Skills overview, done on 2026-11-01:** cards for Jobs and Jobs with skill, the top 30 skills and the categories by share of jobs (clicking a category filters the skills), and seven slicers: listed now, date, place, seniority, job type, industry and source.
+- **Salaries, done on 2026-11-02:**
+  - cards for the median, the 25th and 75th percentiles, jobs with salary and share with salary;
+  - **best-paid skills:** the 20 highest medians, with whiskers from the 25th to the 75th percentile (error bars);
+  - **pay vs demand:** a scatter of the 30 skills with the most salaried jobs;
+  - **salary ladder:** the median by seniority as a line with a 25th–75th percentile band, and jobs with salary on a second axis;
+  - **jobs open to candidates in each region:** the median by region, drilling down to countries, without Antarctica.
+
+  A new measure, `Median salary (enough jobs)`, is blank below 30 salaried jobs, so a handful of salaries can't top a chart. The slicers are synced with the Skills overview's. Arbeitnow lists no salaries (0 of 4,827 listed jobs), and the page says so.
+- **No salary map:** 195 of the 202 countries with at least 30 salaried jobs get most of them from the same 348 jobs, each listing more than 40 countries. A map would paint most of the world with those jobs' median ($87,000). A job's countries are where candidates may live, hence the region chart's title.
+- **Checked against SQL on gold** (listed now): the 20 best-paid skills, the ladder (Intern $46,800 to Executive $219,885) and the region medians (North America $140,000, Europe $84,000, LATAM $75,000) match.
+
 ### 5.6 Account and publishing (you, once the report is ready; the trials start counting at sign-up)
 1. Start a Microsoft 365 trial, which creates the `…onmicrosoft.com` account. Cancel the subscription before it bills; the account stays.
 2. At app.powerbi.com, start the 60-day Pro trial.
@@ -210,6 +222,8 @@ Pages use Fit to page, at a 16:9 ratio.
 
   Close Desktop before editing the files.
 - **Two routes from one dimension to a table are ambiguous** in Power BI. So `Job skills` takes only `job_key` and `skill`, and every job filter reaches it through `Job postings`. Its copies of the job columns in gold are for SQL.
+- **A measure filter on a chart whose axis is a hierarchy also works at the lower levels.** On the region chart (Region › Country), "Median salary (enough jobs) is not blank" left out the countries under 30 before each region's median was computed, which moved APAC from $77K to $81K. The measure is already blank below 30, so that chart has no such filter.
+- **A date slicer saves a fixed end date** once it has a selection, and the days added by later refreshes then fall outside the default. The Date slicers are cleared, so they save no filter.
 
 ## Repo layout additions
 

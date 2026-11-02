@@ -4,10 +4,10 @@
   "position": {
     "x": 0,
     "y": 441.06024096385545,
-    "z": 3000,
+    "z": 2000,
     "height": 84.819277108433738,
     "width": 373.20481927710841,
-    "tabOrder": 3000
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "slicer",
@@ -53,7 +53,7 @@
               },
               "queryRef": "Location.Place.Country",
               "nativeQueryRef": "Place Country",
-              "active": false
+              "active": true
             },
             {
               "field": {
@@ -131,7 +131,20 @@
             "isPinned": true
           }
         ],
-        "root": {}
+        "root": {
+          "children": [
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "'Europe'"
+                  }
+                }
+              ],
+              "isToggled": true
+            }
+          ]
+        }
       }
     ],
     "objects": {
@@ -195,6 +208,13 @@
                   "Value": "16D"
                 }
               }
+            },
+            "showRestatement": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -227,69 +247,39 @@
             }
           }
         }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
+    "syncGroup": {
+      "groupName": "Region",
+      "fieldChanges": true,
+      "filterChanges": true
+    },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "12e6c151885ab270d38b",
-        "field": {
-          "HierarchyLevel": {
-            "Expression": {
-              "Hierarchy": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Location"
-                  }
-                },
-                "Hierarchy": "Place"
-              }
-            },
-            "Level": "Region"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "fadbc03f5dd4a29c5d40",
-        "field": {
-          "HierarchyLevel": {
-            "Expression": {
-              "Hierarchy": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Location"
-                  }
-                },
-                "Hierarchy": "Place"
-              }
-            },
-            "Level": "Country"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "35be0ef30a8e41a0d007",
-        "field": {
-          "HierarchyLevel": {
-            "Expression": {
-              "Hierarchy": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Location"
-                  }
-                },
-                "Hierarchy": "Place"
-              }
-            },
-            "Level": "City"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

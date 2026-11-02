@@ -145,6 +145,19 @@ table _Measures
 		displayFolder: Skill pairs
 		lineageTag: 6722cc22-aea4-493e-8352-7ded30ec39b1
 
+	/// Median salary where at least 30 jobs list a plausible salary, blank elsewhere, so a few salaries can't top a chart.
+	measure 'Median salary (enough jobs)' = ```
+			
+			    VAR MinimumJobs = 30
+			    RETURN
+			        IF([Jobs with salary] >= MinimumJobs, [Median salary])
+			```
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salaries
+		lineageTag: 550e1a1a-95a0-4557-810d-64acad927ee7
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
 	column Value
 		dataType: int64
 		isHidden

@@ -3,11 +3,11 @@
   "name": "95a1d903288c8a5ec9ed",
   "position": {
     "x": 0,
-    "y": 525.8795180722891,
-    "z": 4000,
+    "y": 526.38202247191009,
+    "z": 3000,
     "height": 217.44578313253012,
     "width": 373.20481927710841,
-    "tabOrder": 4000
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "slicer",
@@ -103,6 +103,13 @@
                   "Value": "16D"
                 }
               }
+            },
+            "showRestatement": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -135,26 +142,39 @@
             }
           }
         }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
+    "syncGroup": {
+      "groupName": "Seniority",
+      "fieldChanges": true,
+      "filterChanges": true
+    },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "7ca818905aedb015d072",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Seniority"
-              }
-            },
-            "Property": "Seniority"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }
