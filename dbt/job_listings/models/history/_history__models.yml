@@ -3,10 +3,12 @@ version: 2
 # Counts of Himalayas jobs that stay after the jobs are deleted at expiry (Phase 5, decision 4). Each build appends
 # only the jobs first seen since the previous build, so every job is counted once, before it can expire. The tables
 # can't be rebuilt once the jobs are gone: full_refresh is off (dbt_project.yml), and they must never be dropped.
+# The one exception was planned: in November 2026 they were dropped and rebuilt once to count jobs instead of postings
+# (decision 11), losing the counts of the jobs that had expired by then (103 of 25,523).
 
 models:
   - name: hist_himalayas_jobs_by_day
-    description: "Himalayas jobs per UTC day first seen, kept as counts after the jobs expire. One row per day x build that saw new jobs: sum jobs over a day's or week's rows. Appended to by every build, never rebuilt (Phase 5, decision 4)."
+    description: "Himalayas jobs per UTC day first seen, kept as counts after the jobs expire. A job's postings count once, on the day the earliest still in silver was first seen; a job reposted after all its postings expired counts again (decision 11). One row per day x build that saw new jobs: sum jobs over a day's or week's rows. Appended to by every build, never rebuilt (Phase 5, decision 4)."
     constraints:
       - type: primary_key
         name: pk_hist_himalayas_jobs_by_day
@@ -45,7 +47,7 @@ models:
           - type: not_null
 
   - name: hist_himalayas_skills_by_day
-    description: "Himalayas jobs per UTC day first seen x skill, kept as counts after the jobs expire. One row per day x skill x build that saw new jobs: sum jobs over a day's or week's rows. Skills are those found when the job was first seen. Appended to by every build, never rebuilt (Phase 5, decision 4)."
+    description: "Himalayas jobs per UTC day first seen x skill, kept as counts after the jobs expire. One row per day x skill x build that saw new jobs: sum jobs over a day's or week's rows. Skills are those of all the job's postings (int_job_skills) when the job was first seen. Appended to by every build, never rebuilt (Phase 5, decision 4)."
     constraints:
       - type: primary_key
         name: pk_hist_himalayas_skills_by_day

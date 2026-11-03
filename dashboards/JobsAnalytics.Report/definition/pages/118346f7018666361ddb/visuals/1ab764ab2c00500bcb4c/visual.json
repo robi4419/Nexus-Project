@@ -439,5 +439,23 @@
       "filterChanges": true
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "466b61c4785db280c008",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Job postings"
+              }
+            },
+            "Property": "Listed now"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

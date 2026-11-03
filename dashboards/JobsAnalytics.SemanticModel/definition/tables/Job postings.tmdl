@@ -1,5 +1,6 @@
-/// One row per job posting (gold.fct_job_postings), without titles, links, IDs, companies or raw salaries: the
-/// report shows aggregates only, and Publish to web exposes the whole model.
+/// One row per job (gold.fct_job_postings): a company's postings of one role, on any board, count once. Without titles,
+/// links, IDs, companies or raw salaries: the report shows aggregates only, and Publish to web exposes the whole model.
+/// The boards a job is on come through 'Job sources'.
 table 'Job postings'
 	lineageTag: 3f3dc495-7cae-4282-8419-4d21d27476f5
 
@@ -26,13 +27,6 @@ table 'Job postings'
 		sourceColumn: published_date
 
 		annotation UnderlyingDateTimeDataType = Date
-
-	column source
-		dataType: string
-		isHidden
-		lineageTag: 0d4aad2c-e65d-47a5-bd90-90665158363a
-		summarizeBy: none
-		sourceColumn: source
 
 	column Remote
 		dataType: boolean
@@ -69,7 +63,7 @@ table 'Job postings'
 				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
 				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
 				    Data = Gold{[Name = "fct_job_postings", Kind = "Table"]}[Data],
-				    Columns = Table.SelectColumns(Data, {"job_key", "seniority", "published_date", "source", "is_remote", "is_listed_now", "salary_mid_usd_yearly", "salary_is_plausible"})
+				    Columns = Table.SelectColumns(Data, {"job_key", "seniority", "published_date", "is_remote", "is_listed_now", "salary_mid_usd_yearly", "salary_is_plausible"})
 				in
 				    Columns
 

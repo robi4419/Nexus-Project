@@ -74,16 +74,16 @@
         "sort": [
           {
             "field": {
-              "Measure": {
+              "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "_Measures"
+                    "Entity": "Heatmap rows"
                   }
                 },
-                "Property": "Heatmap lift"
+                "Property": "Skill"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
         ]
       }
@@ -305,7 +305,7 @@
             "rowPadding": {
               "expr": {
                 "Literal": {
-                  "Value": "15D"
+                  "Value": "14D"
                 }
               }
             },
@@ -342,6 +342,24 @@
                   "Value": "false"
                 }
               }
+            },
+            "styleTotal": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "null"
+                    }
+                  }
+                }
+              }
             }
           },
           "selector": {
@@ -372,6 +390,22 @@
                 }
               }
             }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "80D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Heatmap lift"
           }
         }
       ]
@@ -441,7 +475,23 @@
   "filterConfig": {
     "filters": [
       {
+        "name": "b531ef9566895ce022c0",
+        "ordinal": 0,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Heatmap lift"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
         "name": "a434bac3ce763a8a5e55",
+        "ordinal": 1,
         "field": {
           "Column": {
             "Expression": {
@@ -543,21 +593,8 @@
         "howCreated": "User"
       },
       {
-        "name": "b531ef9566895ce022c0",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Heatmap lift"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
         "name": "d0252214c4dae5e13963",
+        "ordinal": 2,
         "field": {
           "Column": {
             "Expression": {
@@ -572,6 +609,7 @@
       },
       {
         "name": "907dea4cbe7ad809465b",
+        "ordinal": 3,
         "field": {
           "Column": {
             "Expression": {
@@ -584,6 +622,7 @@
         },
         "type": "Categorical"
       }
-    ]
+    ],
+    "filterSortOrder": "Custom"
   }
 }

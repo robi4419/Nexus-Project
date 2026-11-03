@@ -65,6 +65,61 @@
    The overview and salary pages start filtered on `is_listed_now`, and a slicer includes the rest. The two `agg_` tables ignore the dashboard filters by design (Phase 3).
 8. **The Databricks host and HTTP path are two Power Query parameters, committed with the model.** They aren't credentials: the token is never in the project files, because Desktop and the service store credentials separately. A new token named `power-bi` can be revoked without touching dbt's.
 9. **The published model refreshes daily at 19:00 UTC,** after the nightly chain (green by about 18:30), with refresh-failure emails on.
+10. **(2026-11-03) Skills come only from the description's lines about the job.**
+    - **Why:** DocuSign ranked among the best-paid skills, but two-thirds of its 80 jobs only named it in the employer's text. 33 were Oura's and Adastra's "offers are sent through DocuSign" notice, and 20 were customer lists such as Mirantis' "serves … Adobe, DocuSign, … Splunk". The same text inflated other skills: Stripe (startups "like Stripe" in About text), Lever (French "lever des fonds"), Apache Spark (the investor Spark Capital), GDPR (applicant-privacy notices), and Go (German "das Go geben").
+    - **The rule** is `job_text()` in `transform/skills.py`. Each line belongs to the section its last heading opened.
+      - **Headings** are recognised from lists of job headings (requirements, responsibilities, nice to have, the role… or a heading naming the job's title) and company headings (about us, benefits, privacy, interview process, the boards' footers), in English, German, French, Dutch, Spanish and Portuguese.
+      - **Job sections** count whole, and so do sections under an unknown heading.
+      - **Notices** never count outside job sections: customer and investor lists, offer notices and applicant-privacy text.
+      - **Company sections** count only requirement-like lines (*experience*, *you*, *du*, *vous*, *je*…).
+      - **Lines before the first heading** count only when they read like a requirement, unless the posting has no job section; then they all count.
+      - **The title** always counts.
+    - **Measured on 3,604 jobs** (one in twelve, 2026-11-03), against whole-text matching:
+      - 2.9% of skill tags dropped, nearly all the employer's own text;
+      - Python lost about 1% of its tags; Notion 37%, Canva 32%, Stripe 26%, GDPR 24%.
+    - **Rejected:**
+      - Counting only job sections: it dropped 7.1% of tags, including real requirements written before the first heading or under unrecognised headings.
+      - Dropping sentences a company repeats across its roles: it would need company-level aggregation in Spark for little extra.
+    - **Not filtered, after checking:**
+      - negations: 228 lines in 44,179 postings, mostly "a bonus, not a requirement", which are real nice-to-haves;
+      - English skill names in other languages' prose: the top matches were genuine.
+    - **With it:** the HTML fix in `transform/text.py` (Phase 2, section 2.6). 16% of Arbeitnow descriptions had their HTML left as visible tags on one long line, so they had no headings for this rule to find.
+    - **History:** the Himalayas history was rebuilt once for decision 11, after this rule was deployed, so every week of the trend uses it.
+    - **In production (2026-11-03):** silver's posting skill tags fell from 237,790 to 231,414 (−2.7%).
+11. **(2026-11-03) A job counts once, however often it's posted.**
+    - **Why:** 3,795 of 31,647 listed postings (12%) repeated a job already counted, so a few companies' requirements weighed several times in every share:
+      - Bjak listed 952 postings of 96 roles;
+      - Mindrift posted one AI-trainer role 77 times;
+      - Speechify posted one role per US city (53 titles);
+      - 690 jobs are on two or three boards.
+    - **The rule** is in `int_job_postings`.
+      - **Same company and title:** postings with the same company and title are one job, on any board and in any location. Company and title are compared lower-cased, letters and digits only, without a trailing legal form (Inc, GmbH…) or gender tags ((m/w/d)).
+      - **Same description:** a company's postings with the same description, at least 300 characters long, are one job too. They take the alphabetically first of their titles, and two rounds of title → description → title join titles linked through a second description.
+    - **Silver keeps every posting**, one row per source posting as before. From staging on, `posting_key` names a posting and `job_key` the job.
+    - **Gold is one row per job.** `fct_job_postings` takes:
+      - the earliest publish date;
+      - listed and remote when any of its postings is;
+      - the title, link and seniority of the newest listed posting;
+      - the salary of the newest posting with a plausible one.
+
+      Skills, locations, industries and types are the union over its postings. The new `bridge_job_sources` lists the boards a job is on, so the Source slicer finds it under each.
+    - **The weekly trend** counts jobs per source. A job on two boards counts once for each.
+    - **The history is rebuilt once to count jobs.** The two `hist_himalayas_*` tables are dropped and backfilled from silver. That loses the counts of 103 Himalayas jobs (0.4%) that had expired since 21 October. From then on, a job reposted after all its postings expired counts again.
+    - **Rehearsed before building** (2026-11-03): the compiled models were chained over silver as one read-only query.
+      - 44,179 postings make 38,280 jobs, one `fct_job_postings` row each;
+      - 31,647 listed postings make 27,852 listed jobs;
+      - every posting's skills reach its job;
+      - the median plausible salary of listed jobs went from $131,778 (postings) to $134,824 (jobs).
+    - **Not merged:** a role whose postings differ in both title and description (Pennylane's support role has two description variants, so it's two jobs), and a company written differently on different boards (Oura, ŌURA, Oura Health).
+    - **Rolled out on 2026-11-03, in one go between two nightly runs:**
+      1. `databricks bundle deploy`, for decision 10 and the HTML fix. The workspace copy of `transform/` was checked before step 2.
+      2. Both `hist_himalayas_*` tables were dropped. They held 25,523 counted jobs in 13 day rows and 4,393 skill rows, counted through 2026-11-03 18:04 UTC.
+      3. `transform_and_build` was triggered by hand, and it ran green: 98 tests pass, 27 models and the seed built, no warnings.
+         - **Silver:** no description has HTML tags left, on any source. Posting skill tags fell from 237,790 to 231,414 (−2.7%, decision 10).
+         - **Gold:** 44,179 postings make 38,278 jobs, 27,852 of them listed. 690 jobs are on more than one board, and the biggest job has 77 postings. 205,145 job × skill rows; DocuSign fell from 80 postings to 31 jobs.
+         - **History:** 22,341 Himalayas jobs (from 25,420 postings), equal to silver, and 4,349 skill rows.
+         - **Trend:** two complete weeks, 19 and 26 October, for every source.
+      4. Next: refresh Power BI Desktop, where the Source slicer now goes through the new `Job sources` bridge.
 
 ## How it fits
 

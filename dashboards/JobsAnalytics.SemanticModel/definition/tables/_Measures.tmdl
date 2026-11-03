@@ -3,7 +3,7 @@
 table _Measures
 	lineageTag: 26068e48-5b7b-4e4b-bbc7-d0bade6cd7cc
 
-	/// Job postings in the current filters.
+	/// Jobs in the current filters; a company's postings of one role, on any board, count once.
 	measure Jobs = COUNTROWS ( 'Job postings' )
 		formatString: #,0
 		displayFolder: Jobs

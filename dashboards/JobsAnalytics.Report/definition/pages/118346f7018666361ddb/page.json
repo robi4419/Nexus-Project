@@ -29,12 +29,12 @@
     {
       "source": "7a16c87299000cc57c97",
       "target": "a2a5092c8c4e72592318",
-      "type": "NoFilter"
+      "type": "DataFilter"
     },
     {
       "source": "7a16c87299000cc57c97",
       "target": "4f0d44dd17232dc06148",
-      "type": "NoFilter"
+      "type": "DataFilter"
     }
   ]
 }

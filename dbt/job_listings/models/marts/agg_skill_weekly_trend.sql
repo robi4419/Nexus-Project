@@ -1,22 +1,27 @@
--- Jobicy and Arbeitnow keep every job in silver: count them by the week they were published.
-with silver_postings as (
-  select jp.job_key, jp.source, d.week_start
-  from {{ ref('fct_job_postings') }} as jp
+-- Jobicy and Arbeitnow keep every job in silver: count each source's jobs (a job's postings once, decision 11) by the
+-- week the source first published them. A job on two boards counts once for each.
+with silver_jobs as (
+  select p.source, p.job_key, d.week_start
+  from (
+    select source, job_key, min(published_date) as published_date
+    from {{ ref('int_job_postings') }}
+    where source in ('jobicy', 'arbeitnow')
+    group by source, job_key
+  ) as p
   join {{ ref('dim_date') }} as d
-    on jp.published_date = d.date_day
-  where jp.source in ('jobicy', 'arbeitnow')
+    on p.published_date = d.date_day
 ),
 silver_week_totals as (
   select source, week_start, count(*) as week_jobs
-  from silver_postings
+  from silver_jobs
   group by source, week_start
 ),
 silver_skill_counts as (
-  select p.source, p.week_start, js.skill, count(*) as jobs
-  from silver_postings as p
-  join {{ ref('fct_job_skills') }} as js
-    on p.job_key = js.job_key
-  group by p.source, p.week_start, js.skill
+  select sj.source, sj.week_start, js.skill, count(*) as jobs
+  from silver_jobs as sj
+  join {{ ref('int_job_skills') }} as js
+    on sj.job_key = js.job_key
+  group by sj.source, sj.week_start, js.skill
 ),
 -- Himalayas deletes expired jobs: count it from the frozen daily counts, by the week each job was first seen.
 himalayas_week_totals as (

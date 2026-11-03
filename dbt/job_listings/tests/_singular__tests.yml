@@ -2,6 +2,10 @@ version: 2
 
 data_tests:
   - name: assert_himalayas_history_covers_silver
-    description: "Fails when a day first seen has more Himalayas jobs in silver than in hist_himalayas_jobs_by_day, i.e. jobs the history never counted (Phase 5, decision 4). Silver can only have fewer: jobs leave it at expiry, and the history keeps their counts. Returns the days that fail."
+    description: "Fails when, up to some day first seen, silver holds more Himalayas jobs than hist_himalayas_jobs_by_day counted, i.e. jobs the history never counted (Phase 5, decisions 4 and 11). Silver can only hold fewer: jobs leave it at expiry, and the history keeps their counts. Compared as running totals, because a job whose earliest posting expired moves to a later day in silver. Returns the days that fail."
   - name: assert_implausible_salary_share
     description: "Warns (doesn't fail) when more than max_implausible_salary_share (dbt_project.yml, 5%) of the jobs with a yearly USD salary have an implausible one: outside 5,000 to 1,500,000, or a minimum above the maximum (decisions 7 and 9). Jobs without a salary don't count. Returns one row with the counts when it warns."
+  - name: assert_fct_job_postings_one_row_per_job
+    description: "Fails when fct_job_postings doesn't have exactly one row per job_key of int_job_postings (Phase 5, decision 11): a job lost or duplicated while merging its postings. Returns the expected and actual counts."
+  - name: assert_job_skills_cover_posting_skills
+    description: "Fails when a skill found in a posting (stg_silver__job_skills) doesn't reach the posting's job in fct_job_skills. Returns the posting x skill rows that don't."

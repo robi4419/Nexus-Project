@@ -9,14 +9,16 @@ reasons are in [`docs/phases/phase-3-dbt-models.md`](../../docs/phases/phase-3-d
 | Layer | Folder | Materialized as | Schema | Models |
 |---|---|---|---|---|
 | staging | `models/staging/` | views | `gold_staging` | `stg_silver__*`: one per silver table, plus surrogate keys |
-| intermediate | `models/intermediate/` | views | `gold_staging` | `int_job_postings` (salary midpoint and plausibility), `int_job_skill_pairs` |
+| intermediate | `models/intermediate/` | views | `gold_staging` | `int_job_postings` (which job each posting is, salary midpoint and plausibility), `int_job_skills`, `int_job_skill_pairs` |
 | marts | `models/marts/` | tables with enforced contracts | `gold` | `dim_*`, `fct_*`, `bridge_*`, `agg_*` |
 | history | `models/history/` | incremental tables, appended to and never rebuilt | `gold` | `hist_himalayas_*`: Himalayas counts per day first seen, kept after the jobs expire |
 | seed | `seeds/` | table | `gold_staging` | `seniority_levels`: the seniority scale and its sort order |
 
 The marts form a star: `fct_job_postings` (one row per job) and `fct_job_skills` (job × skill) in the centre;
 `dim_date`, `dim_skill`, `dim_location`, `dim_company`, `dim_industry` and `dim_seniority` around them; bridges for
-the attributes a job can have several of (places, industries, job types). Every mart declares its column types,
+the attributes a job can have several of (boards, places, industries, job types). A job is a company's postings of
+one role: the same company and title, or the same long description, on any board (Phase 5, decision 11). Staging keys
+each posting with `posting_key`; from `int_job_postings` on, `job_key` is the job. Every mart declares its column types,
 `NOT NULL` and `CHECK` constraints (enforced by Databricks) and primary and foreign keys (informational, checked by
 tests). Count jobs across a bridge with `count(distinct job_key)`.
 
@@ -59,8 +61,9 @@ the dbt in its own image. Running dbt by hand, as below, is for development.
 ## Tests
 
 - **Keys and values:** `unique`, `not_null`, `accepted_values`, `relationships` and `dbt_utils.unique_combination_of_columns`.
-- **Reconciliation:** `dbt_utils.equal_rowcount` checks one `fct_job_postings` row per silver job and one
-  `fct_job_skills` row per silver job × skill.
+- **Reconciliation:** `tests/assert_fct_job_postings_one_row_per_job.sql` checks one `fct_job_postings` row per job
+  of `int_job_postings`, and `tests/assert_job_skills_cover_posting_skills.sql` that every skill found in a posting
+  reaches its job in `fct_job_skills`.
 - **Salary warning:** `tests/assert_implausible_salary_share.sql` **warns** (doesn't fail) when more than 5% of the
   salaried jobs have an implausible salary. The limit is the variable `max_implausible_salary_share` in
   `dbt_project.yml`; override it for one run with `--vars "{max_implausible_salary_share: 0.005}"`.

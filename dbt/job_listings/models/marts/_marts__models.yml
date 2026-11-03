@@ -183,12 +183,7 @@ models:
 
   # ---------- Facts ----------
   - name: fct_job_postings
-    description: "One row per job posting, the centre of the star. Joins dim_company, dim_seniority and dim_date directly; locations, industries and types come through the bridges, skills through fct_job_skills. Count jobs with count(*) here, but with count(distinct job_key) after joining a bridge."
-    data_tests:
-      # Reconciliation: one row per silver job, none lost or duplicated.
-      - dbt_utils.equal_rowcount:
-          arguments:
-            compare_model: source('silver', 'jobs')
+    description: "One row per job, the centre of the star: the postings of one company and title (or one long description), on any board and in any location, are one job (Phase 5, decision 11). Joins dim_company, dim_seniority and dim_date directly; sources, locations, industries and types come through the bridges, skills through fct_job_skills. Count jobs with count(*) here, but with count(distinct job_key) after joining a bridge. The reconciliation with silver is the singular test assert_fct_job_postings_one_row_per_job."
     columns:
       - name: job_key
         data_type: string
@@ -244,39 +239,29 @@ models:
               arguments:
                 to: ref('dim_date')
                 field: date_day
-      - name: source
-        data_type: string
-        description: "{{ doc('source') }}"
-        constraints:
-          - type: not_null
-      - name: source_job_id
-        data_type: string
-        description: "{{ doc('source_job_id') }}"
-        constraints:
-          - type: not_null
       - name: title
         data_type: string
-        description: "{{ doc('title') }}"
+        description: "{{ doc('title') }} From the job's newest listed posting, or its newest posting when none is listed."
         constraints:
           - type: not_null
       - name: url
         data_type: string
-        description: "{{ doc('url') }}"
+        description: "{{ doc('url') }} From the same posting as title."
         constraints:
           - type: not_null
       - name: is_remote
         data_type: boolean
-        description: "{{ doc('is_remote') }}"
+        description: "{{ doc('is_remote') }} True when any of the job's postings is remote."
         constraints:
           - type: not_null
       - name: is_listed_now
         data_type: boolean
-        description: "{{ doc('is_listed_now') }}"
+        description: "{{ doc('is_listed_now') }} True when any of the job's postings is."
         constraints:
           - type: not_null
       - name: published_at
         data_type: timestamp
-        description: "{{ doc('published_at') }}"
+        description: "{{ doc('published_at') }} The job's earliest posting."
         constraints:
           - type: not_null
       - name: published_month
@@ -297,17 +282,17 @@ models:
         description: "{{ doc('last_seen_at') }}"
         constraints:
           - type: not_null
-      - name: times_seen
+      - name: postings
         data_type: bigint
-        description: "{{ doc('times_seen') }}"
+        description: "How many postings, on all boards together, are this job."
         constraints:
           - type: not_null
           - type: check
-            name: chk_fct_job_postings_times_seen
-            expression: "times_seen >= 1"
+            name: chk_fct_job_postings_postings
+            expression: "postings >= 1"
       - name: salary_min
         data_type: double
-        description: "{{ doc('salary_min') }}"
+        description: "{{ doc('salary_min') }} The salary fields come from the job's newest posting with a plausible salary, else its newest posting with any salary."
       - name: salary_max
         data_type: double
         description: "{{ doc('salary_max') }}"
@@ -331,7 +316,7 @@ models:
         description: "{{ doc('salary_is_plausible') }}"
 
   - name: fct_job_skills
-    description: "One row per job x skill found in its title or description. Carries the job's date, company and seniority keys and the filters source, is_listed_now and is_remote, so skill charts join the dimensions directly (decision 10)."
+    description: "One row per job x skill found in the title or the description's lines about the job of any of its postings (int_job_skills). Carries the job's date, company and seniority keys and the filters is_listed_now and is_remote, so skill charts join the dimensions directly (decision 10). The reconciliation with silver is the singular test assert_job_skills_cover_posting_skills."
     constraints:
       - type: primary_key
         name: pk_fct_job_skills
@@ -341,10 +326,6 @@ models:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns: ["job_key", "skill"]
-      # Reconciliation: one row per silver job x skill; the inner join to the jobs drops none.
-      - dbt_utils.equal_rowcount:
-          arguments:
-            compare_model: source('silver', 'job_skills')
     columns:
       - name: job_key
         data_type: string
@@ -419,11 +400,6 @@ models:
             to: ref('dim_seniority')
             to_columns: [seniority]
             warn_unenforced: false
-      - name: source
-        data_type: string
-        description: "{{ doc('source') }} Copied so skill charts can leave out Himalayas (decision 3)."
-        constraints:
-          - type: not_null
       - name: is_listed_now
         data_type: boolean
         description: "{{ doc('is_listed_now') }} Copied for current vs all-time skill demand."
@@ -559,6 +535,43 @@ models:
               arguments:
                 values: ["Full-Time", "Part-Time", "Contract", "Internship", "Temporary"]
 
+  - name: bridge_job_sources
+    description: "One row per job x board it's posted on (decision 11): a job found on Jobicy and Himalayas has two rows. Joins fct_job_postings to the source filter; count jobs across it with count(distinct job_key)."
+    constraints:
+      - type: primary_key
+        name: pk_bridge_job_sources
+        columns: [job_key, source]
+        warn_unenforced: false
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "source"]
+    columns:
+      - name: job_key
+        data_type: string
+        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_bridge_job_sources_job_key
+            to: ref('fct_job_postings')
+            to_columns: [job_key]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fct_job_postings')
+                field: job_key
+      - name: source
+        data_type: string
+        description: "{{ doc('source') }}"
+        constraints:
+          - type: not_null
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["jobicy", "arbeitnow", "himalayas"]
+
   # ---------- Aggregates ----------
   - name: agg_skill_co_occurrence
     description: "One row per ordered pair of skills asked for together in at least 5 jobs; each pair appears in both directions, so a heatmap fills both halves. Counted over all jobs with at least one skill: dashboard filters don't apply."
@@ -636,7 +649,7 @@ models:
             expression: "lift > 0"
 
   - name: agg_skill_weekly_trend
-    description: "One row per complete week x source x skill (every skill, 0 when not asked for), for rising-skill charts. Jobicy and Arbeitnow are counted by publish week, from silver. Himalayas is counted by the week each job was first seen, from the frozen counts in hist_himalayas_*: it deletes expired jobs, which would fake a decline, and its pubDate is the last update (Phase 5, decisions 4 and 5). Starts with the week of 2026-10-19; a week is included once its Sunday is two days old, a margin for jobs a feed lists a day late. Dashboard filters don't apply. For several sources together, divide summed jobs by summed week_jobs."
+    description: "One row per complete week x source x skill (every skill, 0 when not asked for), for rising-skill charts. Counts jobs, a job's postings once (decision 11); a job on two boards counts once for each. Jobicy and Arbeitnow are counted by the week the source first published the job, from silver. Himalayas is counted by the week each job was first seen, from the frozen counts in hist_himalayas_*: it deletes expired jobs, which would fake a decline, and its pubDate is the last update (Phase 5, decisions 4 and 5). Starts with the week of 2026-10-19; a week is included once its Sunday is two days old, a margin for jobs a feed lists a day late. Dashboard filters don't apply. For several sources together, divide summed jobs by summed week_jobs."
     constraints:
       - type: primary_key
         name: pk_agg_skill_weekly_trend

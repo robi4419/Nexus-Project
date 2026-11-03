@@ -4,10 +4,10 @@ version: 2
 
 models:
   - name: int_job_postings
-    description: "One row per job: stg_silver__jobs plus company_key, published_month, a salary midpoint and a plausibility flag. Shared by fct_job_postings, fct_job_skills and dim_company."
+    description: "One row per posting: stg_silver__jobs plus job_key (the job it belongs to, Phase 5 decision 11), company_key, published_month, a salary midpoint and a plausibility flag. Shared by fct_job_postings, the bridges, the weekly trend, the history and dim_company."
     columns:
-      - name: job_key
-        description: "{{ doc('job_key') }}"
+      - name: posting_key
+        description: "{{ doc('posting_key') }}"
         data_tests: [unique, not_null]
       - name: source
         description: "{{ doc('source') }}"
@@ -55,6 +55,11 @@ models:
         description: "{{ doc('times_seen') }}"
       - name: built_at
         description: "{{ doc('built_at') }}"
+      - name: description_hash
+        description: "Fingerprint of the description, from stg_silver__jobs; NULL when it's under 300 characters."
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
       - name: company_key
         description: "{{ doc('company_key') }}"
         data_tests: [not_null]
@@ -65,6 +70,22 @@ models:
         description: "{{ doc('salary_mid_usd_yearly') }}"
       - name: salary_is_plausible
         description: "{{ doc('salary_is_plausible') }}"
+  - name: int_job_skills
+    description: "One row per job x skill: the skills of all the job's postings (stg_silver__job_skills through int_job_postings), so a job posted several times counts once. Feeds fct_job_skills, int_job_skill_pairs, the weekly trend and the history."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "skill"]
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
+      - name: skill
+        description: "{{ doc('skill') }}"
+      - name: mentions
+        description: "The most mentions of the skill in any one of the job's postings (title + the description's lines about the job)."
+      - name: in_title
+        description: "True when the skill is in the title of any of the job's postings."
   - name: int_job_skill_pairs
     description: "One row per job x pair of skills found in that job, each pair once and in alphabetical order (skill_a < skill_b). Feeds agg_skill_co_occurrence."
     data_tests:

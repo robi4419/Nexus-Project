@@ -82,10 +82,11 @@
         },
         {
           "location": {
-            "x": 994.09281230372562,
-            "y": 299.64761857666429
+            "x": 955.11847030372564,
+            "y": 161.4658605766644
           },
           "nodeIndex": "Job skills",
+          "nodeLineageTag": "b620c362-4988-4742-aa83-1a3a04f3daf8",
           "size": {
             "height": 128,
             "width": 234
@@ -158,8 +159,8 @@
         },
         {
           "location": {
-            "x": 761.44359106268689,
-            "y": 482.59988066582332
+            "x": 607.31778406268711,
+            "y": 471.97051466582337
           },
           "nodeIndex": "Source",
           "nodeLineageTag": "3332c90f-2cf6-497d-af21-b40db30e3f60",
@@ -204,6 +205,19 @@
           "nodeLineageTag": "94dcfb98-e99d-48d7-8d77-357a8f236718",
           "size": {
             "height": 145,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 891.59560845776423,
+            "y": 326.16205177302356
+          },
+          "nodeIndex": "Job sources",
+          "nodeLineageTag": "5a3143d4-1e00-40b4-83c3-d38f089a9414",
+          "size": {
+            "height": 128,
             "width": 234
           },
           "zIndex": 0

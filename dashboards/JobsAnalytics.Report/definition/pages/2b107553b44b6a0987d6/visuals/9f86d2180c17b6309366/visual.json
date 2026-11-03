@@ -204,5 +204,23 @@
       "filterChanges": true
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8cd6f31c950a09cb3264",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Source"
+              }
+            },
+            "Property": "Source"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

@@ -58,8 +58,6 @@ CREATE TABLE fct_job_postings (
   company_key text NOT NULL,
   seniority text NOT NULL,
   published_date date NOT NULL,
-  source text NOT NULL,
-  source_job_id text NOT NULL,
   title text NOT NULL,
   url text NOT NULL,
   is_remote boolean NOT NULL,
@@ -69,7 +67,7 @@ CREATE TABLE fct_job_postings (
   expires_at timestamp,
   first_seen_at timestamp NOT NULL,
   last_seen_at timestamp NOT NULL,
-  times_seen bigint NOT NULL,
+  postings bigint NOT NULL,
   salary_min double precision,
   salary_max double precision,
   salary_currency text,
@@ -92,7 +90,6 @@ CREATE TABLE fct_job_skills (
   published_date date NOT NULL,
   company_key text NOT NULL,
   seniority text NOT NULL,
-  source text NOT NULL,
   is_listed_now boolean NOT NULL,
   is_remote boolean NOT NULL,
   CONSTRAINT pk_fct_job_skills PRIMARY KEY (job_key, skill),
@@ -124,6 +121,13 @@ CREATE TABLE bridge_job_types (
   job_type text NOT NULL,
   CONSTRAINT pk_bridge_job_types PRIMARY KEY (job_key, job_type),
   CONSTRAINT fk_bridge_job_types_job_key FOREIGN KEY (job_key) REFERENCES fct_job_postings (job_key)
+);
+
+CREATE TABLE bridge_job_sources (
+  job_key text NOT NULL,
+  source text NOT NULL,
+  CONSTRAINT pk_bridge_job_sources PRIMARY KEY (job_key, source),
+  CONSTRAINT fk_bridge_job_sources_job_key FOREIGN KEY (job_key) REFERENCES fct_job_postings (job_key)
 );
 
 CREATE TABLE agg_skill_co_occurrence (

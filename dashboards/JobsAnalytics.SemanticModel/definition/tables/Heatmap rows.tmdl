@@ -16,6 +16,7 @@ table 'Heatmap rows'
 		dataType: int64
 		isHidden
 		formatString: 0
+		lineageTag: 48369875-bf7e-4e5a-9810-2791c5494b73
 		summarizeBy: none
 		sourceColumn: [Order]
 

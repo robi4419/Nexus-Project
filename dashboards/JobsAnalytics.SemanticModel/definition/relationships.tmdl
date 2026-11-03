@@ -6,10 +6,6 @@ relationship postings_seniority
 	fromColumn: 'Job postings'.seniority
 	toColumn: Seniority.Seniority
 
-relationship postings_source
-	fromColumn: 'Job postings'.source
-	toColumn: Source.'Source key'
-
 relationship job_skills_postings
 	fromColumn: 'Job skills'.job_key
 	toColumn: 'Job postings'.job_key
@@ -56,4 +52,13 @@ relationship trend_source
 relationship trend_week
 	fromColumn: 'Weekly skill trend'.Week
 	toColumn: Date.Date
+
+relationship job_sources_source
+	fromColumn: 'Job sources'.source
+	toColumn: Source.'Source key'
+
+relationship job_sources_postings
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Job sources'.job_key
+	toColumn: 'Job postings'.job_key
 

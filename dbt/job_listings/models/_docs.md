@@ -7,7 +7,11 @@ description. Silver's own columns are explained in more depth in `docs/silver-jo
 ## Keys
 
 {% docs job_key %}
-Surrogate key of the job: md5 hash of source and source_job_id.
+Surrogate key of the job: md5 hash of the company and title as int_job_postings matches them (lower-cased, letters and digits only, without a trailing legal form or gender tags). Postings of the same company and title are one job, on any board and in any location; so are a company's postings with the same description of at least 300 characters, which take the alphabetically first of their titles (Phase 5, decision 11).
+{% enddocs %}
+
+{% docs posting_key %}
+Surrogate key of one posting: md5 hash of source and source_job_id. Several postings can be one job (job_key).
 {% enddocs %}
 
 {% docs company_key %}
@@ -141,7 +145,7 @@ Taxonomy category, e.g. Programming Languages or CRM & Sales Tools.
 {% enddocs %}
 
 {% docs mentions %}
-How many times the skill is mentioned in the job's title and description; at least 1.
+How many times the skill is mentioned in the job's title and in the description's lines about the job (not the employer's own text); at least 1.
 {% enddocs %}
 
 {% docs in_title %}
