@@ -5,6 +5,11 @@
   "displayOption": "FitToPage",
   "height": 1080,
   "width": 1920,
+  "pageBinding": {
+    "name": "eb18bc2603e6a6db3699",
+    "type": "Default",
+    "parameters": []
+  },
   "objects": {
     "outspacePane": [
       {
@@ -12,7 +17,7 @@
           "width": {
             "expr": {
               "Literal": {
-                "Value": "230L"
+                "Value": "202L"
               }
             }
           }

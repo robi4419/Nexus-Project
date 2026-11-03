@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "80a4f78376e4210ead76",
   "position": {
-    "x": 476.60777385159008,
-    "y": 130.60070671378091,
+    "x": 476.12277867528275,
+    "y": 128.72374798061389,
     "z": 9003,
-    "height": 914.20494699646645,
-    "width": 1443.39222614841,
+    "height": 915.02423263327955,
+    "width": 1443.8772213247173,
     "tabOrder": 9003
   },
   "visual": {
@@ -74,16 +74,16 @@
         "sort": [
           {
             "field": {
-              "Column": {
+              "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Heatmap rows"
+                    "Entity": "_Measures"
                   }
                 },
-                "Property": "Skill"
+                "Property": "Heatmap lift"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ]
       }
@@ -122,7 +122,7 @@
             "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'Left'"
+                  "Value": "'Center'"
                 }
               }
             },
@@ -143,7 +143,14 @@
             "defaultColumnWidth": {
               "expr": {
                 "Literal": {
-                  "Value": "90D"
+                  "Value": "87D"
+                }
+              }
+            },
+            "titleAlignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Auto'"
                 }
               }
             }
@@ -178,6 +185,13 @@
               "expr": {
                 "Literal": {
                   "Value": "11D"
+                }
+              }
+            },
+            "steppedLayoutIndentation": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
                 }
               }
             }
@@ -301,6 +315,13 @@
                   "Value": "12D"
                 }
               }
+            },
+            "gridVertical": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -314,10 +335,43 @@
                   "Value": "'Center'"
                 }
               }
+            },
+            "styleHeader": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           },
           "selector": {
             "metadata": "_Measures.Heatmap lift"
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "layout": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Compact'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "blankRows": [
+        {
+          "properties": {
+            "showBlankRows": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
           }
         }
       ]
@@ -489,20 +543,6 @@
         "howCreated": "User"
       },
       {
-        "name": "8392cf7ee9ec0ab34207",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Heatmap columns"
-              }
-            },
-            "Property": "Skill"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
         "name": "b531ef9566895ce022c0",
         "field": {
           "Measure": {
@@ -528,11 +568,10 @@
             "Property": "Skill"
           }
         },
-        "type": "Categorical",
-        "howCreated": "User"
+        "type": "Categorical"
       },
       {
-        "name": "fede29e7b78532ba94b1",
+        "name": "907dea4cbe7ad809465b",
         "field": {
           "Column": {
             "Expression": {
