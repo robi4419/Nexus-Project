@@ -9,6 +9,277 @@ from pathlib import Path
 _TOKEN = re.compile(r"(?:\.?[\w+#]+)+|[^\w\s]")
 _END = ""
 
+# --- the job's own sections ------------------------------------------------------------------------------------------
+# A posting mixes the job (requirements, responsibilities, nice to have) with text about the employer (about us,
+# customers and investors, benefits, privacy and hiring notices). Skills named only in the employer's text aren't asked
+# of the candidate, so job_text() keeps the job's lines. Headings are compared lowercased, with straight apostrophes
+# and without leading or trailing symbols ("🟩 What's in it for you:" -> "what's in it for you").
+
+_YOU_WILL = r"(?:you'll|you will|you'd|you would)"
+_JOB_HEADINGS = [
+    # English
+    r"(?:key |main |core |primary |your |role |job |the |additional |day-to-day |daily )?"
+    r"(?:responsibilities|duties|tasks|accountabilities)",
+    r"(?:minimum |basic |preferred |required |desired |additional |bonus |key |your |the |technical |must-have "
+    r"|nice-to-have )?(?:qualifications|requirements|skills|experience|competencies|expertise)",
+    rf"(?:what|things) {_YOU_WILL} (?:do|own|bring|be doing|need|work on|achieve|build|have|tackle|get to do|learn)",
+    r"what (?:we're|we are) (?:looking for|expecting)",
+    r"what (?:you|we) need",
+    r"what we expect",
+    r"what is expected",
+    r"what you (?:bring|have|do|will)",
+    r"what makes you",
+    r"who (?:you are|are you)",
+    r"what you are",
+    r"about you",
+    r"is (?:that|this) you",
+    r"are you",
+    r"you (?:are|have|will|bring|might be|should have|'ll|'re)",
+    r"in this role",
+    rf"as an? .+ {_YOU_WILL}",
+    r"(?:the )?role",
+    r"about (?:the|this|our) (?:role|job|position|opportunity|team)",
+    r"(?:role|position|job) (?:overview|summary|description|purpose|responsibilities|requirements|details)",
+    r"job description",
+    r"description",
+    r"overview",
+    r"(?:the |an |your )?opportunity",
+    r"(?:a )?day (?:to day|in the life)",
+    r"your (?:role|mission|profile|impact|skills|experience|background|qualifications|responsibilities|day|tasks"
+    r"|toolkit|stack)",
+    r"nice[- ]to[- ]haves?",
+    r"bonus(?: points)?",
+    r"preferred",
+    r"required",
+    r"must[- ]haves?",
+    r"(?:the )?ideal candidate",
+    r"ideally",
+    r"tech(?:nical)? stack",
+    r"(?:our )?stack",
+    r"technologies",
+    r"tools",
+    r"tooling",
+    r"education",
+    r"what success looks like",
+    # German
+    r"(?:deine |ihre |eure )?(?:aufgaben|rolle|mission|verantwortung|aufgabenbereich|tätigkeiten|tätigkeit)",
+    r"was (?:du|sie) mitbring(?:st|en)",
+    r"das bring(?:st du|en sie) mit",
+    r"das (?:solltest du|sollten sie) mitbringen",
+    r"(?:dein|ihr) profil",
+    r"qualifikation(?:en)?",
+    r"anforderungen",
+    r"das erwartet dich",
+    r"was dich erwartet",
+    r"wen wir suchen",
+    r"was du kannst",
+    r"was wir (?:von dir |von ihnen )?erwarten",
+    r"(?:stellen)?beschreibung",
+    # French
+    r"(?:vos |tes )?(?:missions|responsabilités)",
+    r"(?:vos|tes) compétences",
+    r"profil recherché",
+    r"(?:votre|ton) (?:profil|rôle)",
+    r"compétences(?: requises)?",
+    r"ce que (?:tu feras|vous ferez)",
+    r"le poste",
+    r"description du poste",
+    r"missions principales",
+    r"ce que nous recherchons",
+    # Dutch
+    r"wat ga je doen",
+    r"wat je gaat doen",
+    r"wat (?:breng je mee|wij vragen|vragen wij)",
+    r"wat wij van je vragen",
+    r"(?:jouw|je) (?:profiel|rol)",
+    r"wie ben (?:jij|je)",
+    r"functieomschrijving",
+    r"functie-eisen",
+    r"taken",
+    r"verantwoordelijkheden",
+    # Spanish and Portuguese
+    r"requisitos",
+    r"responsabilidades",
+    r"funciones",
+    r"atividades",
+    r"(?:lo )?qu[eé] (?:harás|haras)",
+    r"(?:tu |seu |o )?perfil",
+    r"(?:lo )?qu[eé] buscamos",
+    r"o que buscamos",
+    r"o que (?:você|voce) (?:vai|irá) fazer",
+    r"o que esperamos",
+    r"deseable",
+    r"diferenciais",
+    r"qualificações",
+    r"conhecimentos",
+    r"conocimientos",
+]
+_COMPANY_HEADINGS = [
+    # English
+    r"about (?!(?:the|this|our) (?:role|job|position|opportunity|team)\b|you\b).*",
+    r"who we are",
+    r"(?:our|the) company",
+    r"our (?:values|mission|story|culture|benefits|offer|investors|customers)",
+    r"why (?:join|work|you|us|we)\b.*",
+    r"benefits.*",
+    r"perks.*",
+    r"(?:what )?we offer.*",
+    rf"what {_YOU_WILL} get.*",
+    r"compensation.*",
+    r"salary.*",
+    r"pay (?:range|transparency).*",
+    r"total rewards.*",
+    r"what's in it for you.*",
+    r"(?:interview|hiring|recruitment|application|selection) process.*",
+    r"how to apply.*",
+    r"next steps",
+    r"apply(?: now| here)?",
+    r"equal (?:employment )?opportunit.*",
+    r".*equal opportunity employer.*",
+    r"eeo.*",
+    r"diversity.*",
+    r"accommodation.*",
+    r".*personal data.*",
+    r".*privacy.*",
+    r"additional information",
+    r"disclaimer",
+    r"legal.*",
+    r".*fraud.*",
+    r"li-remote",
+    r"join us",
+    r"join our team",
+    r"culture",
+    r"life at .*",
+    # the job boards' own footers
+    r"find (?:more )?.*jobs in .* on arbeitnow",
+    r"originally posted on himalayas",
+    # German
+    r"über uns",
+    r"wer wir sind",
+    r"(?:was )?wir bieten.*",
+    r"das bieten wir.*",
+    r"was wir (?:dir |ihnen )?bieten.*",
+    r"unser angebot",
+    r"benefits für dich",
+    r"warum .*",
+    r"personenbezogene daten",
+    r"wir freuen uns.*",
+    r"über (?:das unternehmen|die firma)",
+    # French
+    r"(?:nos )?avantages.*",
+    r"ce que nous (?:offrons|proposons)",
+    r"pourquoi nous rejoindre",
+    r"qui sommes-nous",
+    r"à propos(?: de nous)?",
+    r"données personnelles",
+    r"notre data policy",
+    # Dutch, Spanish and Portuguese
+    r"wat (?:bieden wij|wij bieden)",
+    r"wij bieden",
+    r"over ons",
+    r"datos personales",
+    r"(?:qué|que) ofrecemos",
+    r"beneficios",
+    r"sobre nosotros",
+    r"quiénes somos",
+    r"benefícios",
+    r"sobre (?:nós|a empresa)",
+    r"o que oferecemos",
+]
+# A job heading may go on ("Requirements & skills"); a company heading must match whole.
+_JOB_HEADING = re.compile(r"^(?:" + "|".join(_JOB_HEADINGS) + r")\b")
+_COMPANY_HEADING = re.compile(r"^(?:" + "|".join(_COMPANY_HEADINGS) + r")$")
+_HEADING_EDGES = re.compile(r"^[\W_]+|[^\w)]+$")
+_WORD = re.compile(r"[^\W\d_]{3,}")
+# Words of a job title that don't name the job, for headings like "About the Quality Assurance Engineer III"
+_TITLE_FILLER = {
+    "senior", "junior", "lead", "staff", "principal", "remote", "hybrid", "contract", "intern",
+    "the", "and", "for", "with", "all",
+}
+# Words that make a line read like a requirement, in the languages of the feeds
+_REQUIREMENT = re.compile(
+    r"\b(?:experience[ds]?|proficien\w*|familiar\w*|knowledge|expertise|expert in|skilled|skills?|comfortable"
+    r"|hands-on|ability to|understanding of|background in|nice to have|bonus|required|preferred|must|stack|you|your"
+    r"|du|dein\w*|erfahrung\w*|kenntnisse|kennst|bringst|beherrschst|idealerweise|umgang"
+    r"|vous|votre|tu|ton|tes|expérience|maîtrise|connaissances?"
+    r"|je|jij|jouw|ervaring|kennis"
+    r"|experiencia|experiência|conocimientos?|conhecimentos?|manejo|dominio|domínio|tus|você)\b",
+    re.IGNORECASE,
+)
+# Lines about the employer, wherever they are: customer and investor lists, offer and applicant-privacy notices
+_NOTICE = re.compile(
+    r"trusted by|relied (?:up)?on by|loved by|backed by|funded by"
+    r"|(?:customers|clients|organi[sz]ations|companies|brands|enterprises|businesses|partners|investors|leaders)"
+    r" (?:such as|like|including|include)"
+    r"|serves [^.]{0,80}including"
+    r"|offers?(?: letters?)? [^.]{0,40}(?:sent|issued|delivered|extended) (?:through|via|using|by)"
+    r"|by (?:applying|submitting|clicking)|privacy (?:policy|notice)|personal (?:data|information)"
+    r"|process(?:ing)? (?:of )?your (?:personal )?(?:data|information)",
+    re.IGNORECASE,
+)
+
+
+def _heading_kind(line: str, title_words: set[str]) -> str | None:
+    """"job", "company" or "other" when the line is a section heading, else None."""
+
+    line = line.strip()
+    if not 3 <= len(line) <= 60 or line[0] in "-•·*":
+        return None
+    heading = _HEADING_EDGES.sub("", line.lower().replace("’", "'"))
+
+    if _JOB_HEADING.match(heading) or (
+        len(title_words) >= 2 and title_words <= set(_WORD.findall(heading))
+    ):
+        return "job"
+    if _COMPANY_HEADING.match(heading):
+        return "company"
+
+    # an unknown heading: a line ending in ":", or a short line of capitalised words
+    words = line.rstrip(":").split()
+    if line.endswith(":") or (
+        len(words) <= 6
+        and line[-1] not in ".,;"
+        and all(not word[0].isalpha() or word[0].isupper() for word in words)
+    ):
+        return "other"
+    return None
+
+
+def job_text(text: str | None, title: str | None = None) -> str | None:
+    """The lines of a job description that are about the job, for matching skills.
+
+    Each line belongs to the section its last heading opened: a job section (requirements, responsibilities, nice to
+    have, the role, ... or a heading naming the job's title), a company section (about us, benefits, privacy, hiring
+    process, ...) or a section under an unknown heading. Job sections count whole. Elsewhere notices never count, and:
+    - sections under an unknown heading count;
+    - company sections count only their requirement-like lines ("experience with", "you", "du", "vous", ...);
+    - the lines before the first heading count only when they read like a requirement, unless the posting has no job
+      section at all; then they all count.
+    """
+
+    if text is None:
+        return None
+    title_words = set(_WORD.findall((title or "").lower())) - _TITLE_FILLER
+    lines = text.split("\n")
+    kinds = [_heading_kind(line, title_words) for line in lines]
+    has_job_section = "job" in kinds
+
+    kept = []
+    section = "intro"
+    for line, kind in zip(lines, kinds):
+        section = kind or section
+        if section == "job":
+            kept.append(line)
+        elif _NOTICE.search(line):
+            continue
+        elif (
+            section == "other"
+            or (section == "intro" and not has_job_section)
+            or _REQUIREMENT.search(line)
+        ):
+            kept.append(line)
+    return "\n".join(kept)
+
 
 def _fingerprint(*parts: str) -> str:
     """12 characters that change whenever any of the parts change."""
@@ -155,10 +426,11 @@ class SkillMatcher:
         text: str | None,
         company: str | None = None,
     ) -> list[dict]:
-        """Return one dict per skill mentioned: skill, category, mentions (title + text) and in_title."""
+        """Return one dict per skill mentioned: skill, category, mentions (title + the job's lines of the text, see
+        job_text) and in_title."""
 
         employer = self._employer(company)
-        in_text = self._matches(text)
+        in_text = self._matches(job_text(text, title))
         in_title = self._matches(title)
 
         skills_indexes = (set(in_text) | set(in_title)) - employer
@@ -187,10 +459,12 @@ class SkillMatcher:
         width: int = 40,
     ) -> list[dict]:
         """For reviewing matches: one dict per counted match with skill, category, field ("title" or "text") and the
-        matched text in [brackets] with up to `width` characters on each side, on one line.
+        matched text in [brackets] with up to `width` characters on each side, on one line. The text is the job's lines
+        (see job_text), the same ones match() reads.
         """
 
         employer = self._employer(company)
+        text = job_text(text, title)
         in_text = self._matches(text)
         in_title = self._matches(title)
 

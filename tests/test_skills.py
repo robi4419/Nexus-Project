@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from transform.skills import SkillMatcher
+from transform.skills import SkillMatcher, job_text
 from transform.text import html_to_text
 
 SKILLS_CSV = Path(__file__).parent.parent / "databricks" / "reference" / "skills.csv"
@@ -244,6 +244,78 @@ def test_snippets_put_each_match_on_one_line(matcher):
             "snippet": "Tools: - [Python] - SQL",
         },
     ]
+
+
+# --- the job's own sections ----------------------------------------------------------------------------------
+
+
+SECTION_CASES = [
+    # company sections don't count, job sections do
+    (
+        "About us\nWe build our tools in Java.\nRequirements\n- Python and SQL\nBenefits\n- Free React courses",
+        {"Python": 1, "SQL": 1},
+    ),
+    # a requirement-like line counts even in a company section
+    (
+        "About us\nWe build in Java.\nYou have experience with Go.\nRequirements\n- Python",
+        {"Go": 1, "Python": 1},
+    ),
+    # a notice doesn't, even with requirement-like words
+    (
+        "Requirements\n- Python\nAdditional information\nBy applying, you agree we keep your data in Excel.",
+        {"Python": 1},
+    ),
+    # before the first heading, only requirement-like lines count when the posting has job sections
+    (
+        "Acme is the Java company.\nYou will write Go services.\nRequirements\n- Python",
+        {"Go": 1, "Python": 1},
+    ),
+    # a posting without job sections keeps its intro, but not its company sections
+    (
+        "Acme is the Java company.\nWe need Python.\nBenefits\n- Free React courses",
+        {"Java": 1, "Python": 1},
+    ),
+    # an unknown heading ends a company section
+    (
+        "About us\nWe build in Java.\nEngineering at Acme:\n- Python and SQL",
+        {"Python": 1, "SQL": 1},
+    ),
+    # headings in the feeds' other languages
+    ("Über uns\nWir nutzen Java.\nDein Profil\n- Python", {"Python": 1}),
+    ("Qui sommes-nous\nNous utilisons Java.\nProfil recherché\n- Python", {"Python": 1}),
+    ("Over ons\nWij gebruiken Java.\nWat ga je doen\n- Python", {"Python": 1}),
+    ("Sobre nosotros\nUsamos Java.\nRequisitos\n- Python", {"Python": 1}),
+    # headings with symbols and curly apostrophes
+    ("🟩 What’s in it for you:\n- Java licences\n✅ Is that you?\n- Python", {"Python": 1}),
+]
+
+
+@pytest.mark.parametrize(("text", "expected"), SECTION_CASES)
+def test_only_the_jobs_own_lines_count(matcher, text, expected):
+    assert mentions(matcher, None, text) == expected
+
+
+def test_a_heading_naming_the_job_title_is_a_job_heading(matcher):
+    text = "About Acme\nWe build in Java.\nAbout the Quality Assurance Engineer\n- Test Python and SQL services"
+
+    assert mentions(matcher, "Quality Assurance Engineer", text) == {"Python": 1, "SQL": 1}
+    # without the title, "About the ..." is a company heading
+    assert mentions(matcher, None, text) == {}
+
+
+def test_job_text_of_missing_or_plain_text():
+    assert job_text(None) is None
+    assert job_text("Python and SQL", "Data Engineer") == "Python and SQL"
+
+
+def test_real_skill_list_skips_customer_lists_and_offer_notices(real_matcher):
+    text = (
+        "Mirantis serves leading enterprises, including Adobe, DocuSign, PayPal and Splunk.\n"
+        "Requirements\n- Strong Python\n"
+        "Additional information\n- Official offers are sent through Docusign after a verbal offer."
+    )
+
+    assert mentions(real_matcher, None, text) == {"Python": 1}
 
 
 # --- the real skills.csv -------------------------------------------------------------------------------------
