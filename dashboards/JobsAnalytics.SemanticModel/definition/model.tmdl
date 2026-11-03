@@ -27,6 +27,8 @@ ref table 'Job industries'
 ref table 'Job types'
 ref table 'Skill pairs'
 ref table 'Weekly skill trend'
+ref table 'Heatmap rows'
+ref table 'Heatmap columns'
 
 ref cultureInfo en-US
 

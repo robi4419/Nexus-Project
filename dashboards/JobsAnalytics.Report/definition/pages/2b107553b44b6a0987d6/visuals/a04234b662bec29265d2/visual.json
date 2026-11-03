@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "a04234b662bec29265d2",
   "position": {
-    "x": 0,
+    "x": 372.686308492201,
     "y": 0,
     "z": 0,
-    "height": 129.54216867469879,
-    "width": 1920,
+    "height": 129.7746967071057,
+    "width": 1547.3136915077989,
     "tabOrder": 0
   },
   "visual": {
@@ -32,7 +32,7 @@
                   {
                     "value": "Median yearly salary in USD over jobs listing a plausible salary. Salaries come from Himalayas and Jobicy, Arbeitnow lists none.",
                     "textStyle": {
-                      "fontSize": "20pt"
+                      "fontSize": "18pt"
                     }
                   }
                 ],

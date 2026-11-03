@@ -163,6 +163,14 @@ Pages use Fit to page, at a 16:9 ratio.
   A new measure, `Median salary (enough jobs)`, is blank below 30 salaried jobs, so a handful of salaries can't top a chart. The slicers are synced with the Skills overview's. Arbeitnow lists no salaries (0 of 4,827 listed jobs), and the page says so.
 - **No salary map:** 195 of the 202 countries with at least 30 salaried jobs get most of them from the same 348 jobs, each listing more than 40 countries. A map would paint most of the world with those jobs' median ($87,000). A job's countries are where candidates may live, hence the region chart's title.
 - **Checked against SQL on gold** (listed now): the 20 best-paid skills, the ladder (Intern $46,800 to Executive $219,885) and the region medians (North America $140,000, Europe $84,000, LATAM $75,000) match.
+- **Skills asked together, done on 2026-11-03:**
+  - **a skill dropdown, synced on all three pages,** with nothing picked by default. On Skills overview and Salaries the rankings ignore it, and the cards, the ladder and the region chart follow it;
+  - **most often asked with the picked skill:** its 15 most frequent partners, by share of its jobs;
+  - **heatmap:** the lift between the 15 most common skills, or between the picked skill and its 14 most frequent partners;
+  - **a hidden tooltip page** puts each cell into words: the jobs asking for both, the shares in both directions and the lift.
+
+  The dropdown filters `Skill pairs` to one skill, so the heatmap takes its axes from two tables related to nothing, `Heatmap rows` and `Heatmap columns`. A Top N filter by `Heatmap rank` picks the rows, and `Heatmap lift` is blank in the columns outside them. The pairs are counted over all jobs, so the page has no job slicers. The Filters pane is hidden from viewers, so the visual-level filters stay as designed.
+- **No drill-through:** Power BI applies a drill-through as a page filter, which leaves a dropdown on the same field offering only the drilled skill, and a drill-through can't set or clear a slicer. The synced dropdown carries a picked skill between pages instead.
 
 ### 5.6 Account and publishing (you, once the report is ready; the trials start counting at sign-up)
 1. Start a Microsoft 365 trial, which creates the `…onmicrosoft.com` account. Cancel the subscription before it bills; the account stays.
@@ -224,6 +232,10 @@ Pages use Fit to page, at a 16:9 ratio.
 - **Two routes from one dimension to a table are ambiguous** in Power BI. So `Job skills` takes only `job_key` and `skill`, and every job filter reaches it through `Job postings`. Its copies of the job columns in gold are for SQL.
 - **A measure filter on a chart whose axis is a hierarchy also works at the lower levels.** On the region chart (Region › Country), "Median salary (enough jobs) is not blank" left out the countries under 30 before each region's median was computed, which moved APAC from $77K to $81K. The measure is already blank below 30, so that chart has no such filter.
 - **A date slicer saves a fixed end date** once it has a selection, and the days added by later refreshes then fall outside the default. The Date slicers are cleared, so they save no filter.
+- **A visual takes one Top N filter.** The heatmap's columns follow its rows through `ALLSELECTED` in `Heatmap lift` instead.
+- **A matrix has no Tooltips well.** A report-page tooltip shows the extra values.
+- **A slicer's Single select keeps one item always selected.** The skill dropdown uses Ctrl to multi-select instead: a click picks one skill, and clicking it again clears it.
+- **Test the picked skill on the dropdown's own column, `Skill[Skill]`.** On `'Skill pairs'[skill]`, each bar's own filter can leave a single skill, so `HASONEVALUE` was true with nothing picked.
 
 ## Repo layout additions
 

@@ -1,5 +1,6 @@
 /// One row per ordered pair of skills asked for together in at least 5 jobs (gold.agg_skill_co_occurrence). Counted
-/// over all jobs: the job filters don't apply. Rows: Skill[Skill]; columns: Asked with; values: the Skill pairs measures.
+/// over all jobs: the job filters don't apply. The bar chart shows Asked with for the skill picked in the dropdown; the
+/// heatmap takes its axes from 'Heatmap rows' and 'Heatmap columns'.
 table 'Skill pairs'
 	lineageTag: 1c10e54a-3506-4d75-8e66-093b4e15da69
 

@@ -4,7 +4,7 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 1.7715609999999986,
+        "x": 3.5431219999999972,
         "y": 0
       },
       "nodes": [
@@ -178,6 +178,32 @@
           "nodeLineageTag": "9620112e-6589-4d8b-b3aa-32fcfff36ff7",
           "size": {
             "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1959.8468914577634,
+            "y": 3.1691697730238957
+          },
+          "nodeIndex": "Heatmap columns",
+          "nodeLineageTag": "d89a1707-ea50-46bf-a13a-a4eb3e5f97d3",
+          "size": {
+            "height": 145,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1960.3971314577632,
+            "y": 157.29497677302385
+          },
+          "nodeIndex": "Heatmap rows",
+          "nodeLineageTag": "94dcfb98-e99d-48d7-8d77-357a8f236718",
+          "size": {
+            "height": 145,
             "width": 234
           },
           "zIndex": 0

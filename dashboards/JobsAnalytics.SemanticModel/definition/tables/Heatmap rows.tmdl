@@ -1,0 +1,15 @@
+/// Every skill that has a pair, for the heatmap's rows. Related to no table, so the skill dropdown doesn't filter it:
+/// a Top N filter by [Heatmap rank] picks the 15 rows shown.
+table 'Heatmap rows'
+	lineageTag: 94dcfb98-e99d-48d7-8d77-357a8f236718
+
+	column Skill
+		dataType: string
+		lineageTag: 0831067f-1947-4ff5-884d-9d80fa522ecd
+		summarizeBy: none
+		sourceColumn: [Skill]
+
+	partition 'Heatmap rows' = calculated
+		mode: import
+		source = DISTINCT ( SELECTCOLUMNS ( 'Skill pairs', "Skill", 'Skill pairs'[skill] ) )
+

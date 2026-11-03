@@ -1,0 +1,15 @@
+/// The same skills as 'Heatmap rows', for the heatmap's columns. A matrix needs two different fields for its two axes.
+/// [Heatmap lift] is blank outside the rows the Top N filter keeps, so the columns show the same skills as the rows.
+table 'Heatmap columns'
+	lineageTag: d89a1707-ea50-46bf-a13a-a4eb3e5f97d3
+
+	column Skill
+		dataType: string
+		lineageTag: e2a46a74-c661-4e32-9ddd-e468316eb655
+		summarizeBy: none
+		sourceColumn: [Skill]
+
+	partition 'Heatmap columns' = calculated
+		mode: import
+		source = DISTINCT ( SELECTCOLUMNS ( 'Skill pairs', "Skill", 'Skill pairs'[skill] ) )
+
