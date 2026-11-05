@@ -133,7 +133,7 @@ Uses `databricks-sdk`'s `WorkspaceClient`, which reads `DATABRICKS_HOST` and `DA
 
 ### 1.5 Unit tests: `tests/`
 Run locally with `pytest`, no network or Databricks needed.
-- `tests/fixtures/jobicy_page.json`: a trimmed real response (2 jobs, short descriptions).
+- `tests/fixtures/jobicy_page.json`: a response in the API's format with 2 made-up jobs and short descriptions. It held a trimmed real response until Phase 5 made the repository public.
 - **HTTP helper tests:** retry settings, timeout and `User-Agent` are applied.
 - **Jobicy client tests** with a fake session that returns prepared responses:
   - follows the cursor across pages and stops when `hasMore` is false;
