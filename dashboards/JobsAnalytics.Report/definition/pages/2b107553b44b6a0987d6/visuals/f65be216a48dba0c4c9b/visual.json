@@ -4,10 +4,10 @@
   "position": {
     "x": 1405.6572379367719,
     "y": 632.54575707154731,
-    "z": 10003,
+    "z": 13000,
     "height": 410.51580698835272,
     "width": 503.16139767054904,
-    "tabOrder": 10003
+    "tabOrder": 13000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -332,25 +332,6 @@
         }
       },
       {
-        "name": "3b9b7a66d1a465bc2e87",
-        "field": {
-          "HierarchyLevel": {
-            "Expression": {
-              "Hierarchy": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Location"
-                  }
-                },
-                "Hierarchy": "Place"
-              }
-            },
-            "Level": "Country"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
         "name": "3929044d73589d1b9b33",
         "field": {
           "Measure": {
@@ -401,20 +382,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "04b983f1428a51ba4254",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with salary"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

@@ -4,10 +4,10 @@
   "position": {
     "x": 902.4958402662229,
     "y": 632.54575707154731,
-    "z": 10002,
+    "z": 12000,
     "height": 410.51580698835272,
     "width": 503.16139767054904,
-    "tabOrder": 10002
+    "tabOrder": 12000
   },
   "visual": {
     "visualType": "lineChart",
@@ -586,20 +586,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "de03eb55b1b9463b9c20",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with salary"
-          }
-        },
-        "type": "Advanced"
       }
     ],
     "filterSortOrder": "Ascending"

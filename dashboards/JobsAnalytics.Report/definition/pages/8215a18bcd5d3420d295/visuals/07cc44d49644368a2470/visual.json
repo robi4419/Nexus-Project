@@ -4,10 +4,10 @@
   "position": {
     "x": 0,
     "y": 128.90459363957598,
-    "z": 9002,
+    "z": 3000,
     "height": 912.50883392226149,
     "width": 476.60777385159008,
-    "tabOrder": 9002
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -254,48 +254,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "3789e6f549971235d2e1",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Share asking for both"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "a3814fd3a9c80494e23b",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with both"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "07f2fbef4b63b82e1eee",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Pair lift"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

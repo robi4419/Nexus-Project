@@ -4,10 +4,10 @@
   "position": {
     "x": 0,
     "y": 0,
-    "z": 11001,
+    "z": 12000,
     "height": 129.7746967071057,
     "width": 372.686308492201,
-    "tabOrder": 11001
+    "tabOrder": 12000
   },
   "visual": {
     "visualType": "slicer",
@@ -222,23 +222,5 @@
       "filterChanges": true
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "964e2b024e5e01b37b0a",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Skill"
-              }
-            },
-            "Property": "Skill"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

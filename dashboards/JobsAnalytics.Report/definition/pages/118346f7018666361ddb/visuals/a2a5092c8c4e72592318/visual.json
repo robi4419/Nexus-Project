@@ -128,37 +128,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "c1318af5e7044b89b614",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Skill"
-              }
-            },
-            "Property": "Category"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "ab67b2d768c0d3248028",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Share of jobs"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

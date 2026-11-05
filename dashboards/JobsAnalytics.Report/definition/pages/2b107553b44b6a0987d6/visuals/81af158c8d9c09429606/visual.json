@@ -293,7 +293,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Median and 25th-75th precentile; skills with at least 30 salaried jobs'"
+                  "Value": "'Median and 25th-75th precentile'"
                 }
               }
             },
@@ -464,20 +464,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "8d94a1d2ed640a1ddb05",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with salary"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

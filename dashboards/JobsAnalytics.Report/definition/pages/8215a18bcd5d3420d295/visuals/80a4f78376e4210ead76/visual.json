@@ -4,10 +4,10 @@
   "position": {
     "x": 476.12277867528275,
     "y": 128.72374798061389,
-    "z": 9003,
+    "z": 4000,
     "height": 915.02423263327955,
     "width": 1443.8772213247173,
-    "tabOrder": 9003
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -153,6 +153,13 @@
                   "Value": "'Auto'"
                 }
               }
+            },
+            "autoExpand": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -212,6 +219,171 @@
         },
         {
           "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Conditional": {
+                      "Cases": [
+                        {
+                          "Condition": {
+                            "And": {
+                              "Left": {
+                                "Comparison": {
+                                  "ComparisonKind": 2,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "_Measures"
+                                        }
+                                      },
+                                      "Property": "Heatmap lift"
+                                    }
+                                  },
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "3D"
+                                    }
+                                  }
+                                }
+                              },
+                              "Right": {
+                                "Comparison": {
+                                  "ComparisonKind": 4,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "_Measures"
+                                        }
+                                      },
+                                      "Property": "Heatmap lift"
+                                    }
+                                  },
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "10000D"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#FFFFFF'"
+                            }
+                          }
+                        },
+                        {
+                          "Condition": {
+                            "And": {
+                              "Left": {
+                                "Comparison": {
+                                  "ComparisonKind": 2,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "_Measures"
+                                        }
+                                      },
+                                      "Property": "Heatmap lift"
+                                    }
+                                  },
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "0.5D"
+                                    }
+                                  }
+                                }
+                              },
+                              "Right": {
+                                "Comparison": {
+                                  "ComparisonKind": 3,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "_Measures"
+                                        }
+                                      },
+                                      "Property": "Heatmap lift"
+                                    }
+                                  },
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "3D"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#213439'"
+                            }
+                          }
+                        },
+                        {
+                          "Condition": {
+                            "And": {
+                              "Left": {
+                                "Comparison": {
+                                  "ComparisonKind": 2,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "_Measures"
+                                        }
+                                      },
+                                      "Property": "Heatmap lift"
+                                    }
+                                  },
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "0D"
+                                    }
+                                  }
+                                }
+                              },
+                              "Right": {
+                                "Comparison": {
+                                  "ComparisonKind": 3,
+                                  "Left": {
+                                    "Measure": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Entity": "_Measures"
+                                        }
+                                      },
+                                      "Property": "Heatmap lift"
+                                    }
+                                  },
+                                  "Right": {
+                                    "Literal": {
+                                      "Value": "0.5D"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#FFFFFF'"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
             "backColor": {
               "solid": {
                 "color": {
@@ -232,7 +404,7 @@
                           "min": {
                             "color": {
                               "Literal": {
-                                "Value": "'#ffdb99'"
+                                "Value": "'#92442e'"
                               }
                             },
                             "value": {
@@ -256,7 +428,7 @@
                           "max": {
                             "color": {
                               "Literal": {
-                                "Value": "'maxColor'"
+                                "Value": "'#324e55'"
                               }
                             },
                             "value": {
@@ -268,7 +440,12 @@
                           "nullColoringStrategy": {
                             "strategy": {
                               "Literal": {
-                                "Value": "'asZero'"
+                                "Value": "'specificColor'"
+                              }
+                            },
+                            "color": {
+                              "Literal": {
+                                "Value": "'#666666'"
                               }
                             }
                           }

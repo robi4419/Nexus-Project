@@ -291,34 +291,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "b588542b8207eb053203",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with skill"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "e5a93ecec10d370961d2",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Share of jobs"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }
