@@ -1,12 +1,12 @@
 {
   "data": [
     {
-      "slug": "customer-success-manager-ts24-essen-350534",
-      "company_name": "TruckScout24",
-      "title": "Customer Success Manager (m/w/d) TS24",
-      "description": "<p><strong>Du bist ein Kommunikationstalent & hast Lust auf Kundenkontakt? Dann suchen wir genau Dich!</strong></p>",
+      "slug": "customer-success-manager-essen-900101",
+      "company_name": "Example Logistik GmbH",
+      "title": "Customer Success Manager (m/w/d)",
+      "description": "<p><strong>Erfundener Testjob: Du bist ein Kommunikationstalent & hast Lust auf Kundenkontakt? Dann suchen wir genau Dich!</strong></p>",
       "remote": false,
-      "url": "https://www.arbeitnow.com/jobs/companies/truckscout24/customer-success-manager-ts24-essen-350534",
+      "url": "https://www.arbeitnow.com/jobs/companies/example-logistik/customer-success-manager-essen-900101",
       "tags": [
         "Customer Service"
       ],
@@ -18,12 +18,12 @@
       "created_at": 1792508457
     },
     {
-      "slug": "remote-software-engineer-applied-ai-430890",
-      "company_name": "Circuithub",
+      "slug": "remote-software-engineer-applied-ai-900102",
+      "company_name": "Example Robotics",
       "title": "Software Engineer, Applied AI",
-      "description": "<h2>About CircuitHub</h2><p style=\"min-height:1.5em\">CircuitHub is reshaping electronics manufacturing with The Grid, a factory-scale robotics platform that makes small-batch, high-mix electronics assembly radically more efficient. Think semiconductor-fab precision applied to the chaotic world of prototyping and low-volume production: a 10x throughput improvement in one of the world's most foundat",
+      "description": "<h2>About Example Robotics</h2><p style=\"min-height:1.5em\">Made-up test job: Example Robotics builds a robotics platform for small-batch electronics assembly, and you will apply machine learning to plan and inspect each build.</p>",
       "remote": true,
-      "url": "https://www.arbeitnow.com/jobs/companies/circuithub/remote-software-engineer-applied-ai-430890",
+      "url": "https://www.arbeitnow.com/jobs/companies/example-robotics/remote-software-engineer-applied-ai-900102",
       "tags": [
         "Software Engineering"
       ],

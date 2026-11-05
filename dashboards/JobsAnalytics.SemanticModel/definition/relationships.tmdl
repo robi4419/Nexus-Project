@@ -1,0 +1,60 @@
+relationship postings_date
+	fromColumn: 'Job postings'.published_date
+	toColumn: Date.Date
+
+relationship postings_seniority
+	fromColumn: 'Job postings'.seniority
+	toColumn: Seniority.Seniority
+
+relationship job_skills_postings
+	fromColumn: 'Job skills'.job_key
+	toColumn: 'Job postings'.job_key
+
+relationship job_skills_skill
+	fromColumn: 'Job skills'.skill
+	toColumn: Skill.Skill
+
+relationship job_locations_location
+	fromColumn: 'Job locations'.location_key
+	toColumn: Location.location_key
+
+relationship job_locations_postings
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Job locations'.job_key
+	toColumn: 'Job postings'.job_key
+
+relationship job_industries_industry
+	fromColumn: 'Job industries'.industry
+	toColumn: Industry.Industry
+
+relationship job_industries_postings
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Job industries'.job_key
+	toColumn: 'Job postings'.job_key
+
+relationship job_types_postings
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Job types'.job_key
+	toColumn: 'Job postings'.job_key
+
+relationship skill_pairs_skill
+	fromColumn: 'Skill pairs'.skill
+	toColumn: Skill.Skill
+
+relationship trend_skill
+	fromColumn: 'Weekly skill trend'.skill
+	toColumn: Skill.Skill
+
+relationship trend_week
+	fromColumn: 'Weekly skill trend'.Week
+	toColumn: Date.Date
+
+relationship job_sources_source
+	fromColumn: 'Job sources'.source
+	toColumn: Source.'Source key'
+
+relationship job_sources_postings
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Job sources'.job_key
+	toColumn: 'Job postings'.job_key
+

@@ -3,7 +3,9 @@
 # MAGIC # Silver: job skills
 # MAGIC
 # MAGIC Rebuilds `<catalog>.silver.job_skills` from `<catalog>.silver.jobs`: **one row per job and skill** found in the
-# MAGIC job's title or description, matched against `databricks/reference/skills.csv` by `transform/skills.py`. Every
+# MAGIC job's title or description, matched against `databricks/reference/skills.csv` by `transform/skills.py`. Only the
+# MAGIC description's lines about the job count (`job_text`): its job sections (requirements, responsibilities, nice to
+# MAGIC have...), and elsewhere only requirement-like lines, never customer, investor, offer or privacy notices. Every
 # MAGIC row carries the skill list's `taxonomy_version`, so results from different versions of the list can be told apart.
 # MAGIC The table is replaced on every run, but it's built from a **persistent cache**: only jobs whose text is new or
 # MAGIC changed, or all jobs after a change to the skill list or the matcher's code, are matched again.
@@ -77,12 +79,15 @@ SKILLS_TYPE = ArrayType(
 spark.udf.register("match_skills", matcher.match, SKILLS_TYPE)
 
 # A quick self-test on the workers: expect Python (2 mentions, in_title), SQL and Kubernetes (2); no Go.
-# The second column expects only Python: Grafana is the employer there.
+# The second column expects only Python: Grafana is the employer there. The third expects Python and SQL: Stripe and
+# Snowflake are named in the company's own section.
 display(spark.sql("""
     SELECT
         match_skills('Senior Python Engineer', 'Python and SQL. Own the Go-to-market plan. Kubernetes (k8s).', 'Acme')
             AS skills,
-        match_skills('Data Engineer', 'Grafana Labs builds Grafana. You know Python.', 'Grafana Labs') AS employer_skipped
+        match_skills('Data Engineer', 'Grafana Labs builds Grafana. You know Python.', 'Grafana Labs') AS employer_skipped,
+        match_skills('Data Engineer', 'About us\\nTrusted by Stripe and Snowflake.\\nRequirements\\n- Python and SQL', 'Acme')
+            AS job_sections_only
 """))
 
 # COMMAND ----------

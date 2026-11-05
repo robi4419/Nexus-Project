@@ -3,7 +3,7 @@ with source as (
 ),
 renamed as (
   select
-    {{ dbt_utils.generate_surrogate_key(['source', 'source_job_id']) }} as job_key,
+    {{ dbt_utils.generate_surrogate_key(['source', 'source_job_id']) }} as posting_key,
     {{ dbt_utils.generate_surrogate_key(['location_name', 'location_type', 'country_code']) }} as location_key,
     location_raw, location_name, location_type, country_code, region
   from source

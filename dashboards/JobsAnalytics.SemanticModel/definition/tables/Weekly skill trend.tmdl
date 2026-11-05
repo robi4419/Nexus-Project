@@ -1,0 +1,52 @@
+/// One row per complete week x skill (gold.agg_skill_weekly_trend): each job once, in the week it was first listed on
+/// any board (Phase 5, decision 12). Himalayas weeks come from frozen counts (decision 4). The job filters don't apply;
+/// use the Trend measures.
+table 'Weekly skill trend'
+	lineageTag: 9620112e-6589-4d8b-b3aa-32fcfff36ff7
+
+	/// Monday of the week.
+	column Week
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: dd0e65b1-241c-493e-b04e-fad3bbb8b293
+		summarizeBy: none
+		sourceColumn: week_start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column skill
+		dataType: string
+		isHidden
+		lineageTag: 471ac8f7-9fd1-4226-a9e7-b0cd62f8f46e
+		summarizeBy: none
+		sourceColumn: skill
+
+	column skill_jobs
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 6ff8a7e5-7820-4f6e-ad39-415ffa15e3c9
+		summarizeBy: none
+		sourceColumn: jobs
+
+	column week_jobs
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 470305d0-a746-40cd-9189-f71b0b96f094
+		summarizeBy: none
+		sourceColumn: week_jobs
+
+	partition 'Weekly skill trend' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "agg_skill_weekly_trend", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"week_start", "skill", "jobs", "week_jobs"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

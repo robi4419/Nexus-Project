@@ -218,6 +218,7 @@ Follow the Phase 1 checklist "Adding another API later":
 
 ### 2.6 `transform/` package (unit-tested locally)
 - `text.py`: `html_to_text(html)` turns block tags into line breaks, removes the other tags, converts `html.unescape` codes like `&amp;`, and collapses whitespace.
+  - **Added 2026-11-03: HTML escaped once more.** Some Arbeitnow postings carry the employer's whole HTML escaped (`&lt;p&gt;…&lt;/p&gt;`), with Arbeitnow's own footer in plain HTML. The old order (tags out, then unescape) turned that layer into visible tags: 2,275 of 14,234 Arbeitnow descriptions in silver had about 176 tags each, on one long line. Now a description with escaped closing tags or line breaks (`&lt;/p&gt;`, `&lt;br&gt;`) is unescaped first. An escaped tag in prose ("&lt;div&gt;") has no escaped closing tag, so it stays text. On a sample of 2,175 raw jobs, only those descriptions changed; Jobicy and Himalayas came out identical.
 - `seniority.py`: `seniority(title, source_level) -> (seniority, seniority_source)`, where `seniority_source` is `title`, `source_level` or `none`. Rules match whole words, ignore case, and the first match wins:
   - Executive (Chief, CEO/CTO/CFO/COO/CIO/CISO, VP/SVP/EVP, President, which also covers Vice President)
   - Director (Director, Head of)
@@ -326,6 +327,7 @@ Follow the Phase 1 checklist "Adding another API later":
 
    Fixes:
    - **The employer-name rule:** `SkillMatcher` skips a skill whose aliases match the company name, and silver_skills passes `company_name`.
+   - **The job's own lines (added 2026-11-03):** only the description's lines about the job count, not the employer's text (about us, customer and investor lists, benefits, notices). See Phase 5, decision 10.
    - Exclusions `-Rails Foundation` and `-Grafana K6`.
    - 33 new skills (351 → 384), found through the candidate-terms list and the no-skill review. The PR #3 description and commit `33ddc64` say 27 and 378, which is a counting mistake:
      - AI tools: Claude, ChatGPT, Cursor, GitHub and Microsoft Copilot, Gemini, MCP, AI Agents, LLM Fine-tuning;

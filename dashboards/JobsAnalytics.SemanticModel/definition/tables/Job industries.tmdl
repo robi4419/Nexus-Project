@@ -1,0 +1,32 @@
+/// One row per job x industry (gold.bridge_job_industries). Hidden bridge: filter with the Industry table.
+table 'Job industries'
+	isHidden
+	lineageTag: 9facd7e6-26ec-4dd4-8118-8f7268683a3b
+
+	column job_key
+		dataType: string
+		isHidden
+		lineageTag: aff10138-c2b6-41ed-a8ad-87503c7b41ba
+		summarizeBy: none
+		sourceColumn: job_key
+
+	column industry
+		dataType: string
+		isHidden
+		lineageTag: 287e6713-477b-44ad-94f1-f2a7e7af5825
+		summarizeBy: none
+		sourceColumn: industry
+
+	partition 'Job industries' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "bridge_job_industries", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"job_key", "industry"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

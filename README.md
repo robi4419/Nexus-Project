@@ -1,8 +1,10 @@
 # Nexus-Project
 
-A daily data pipeline for the remote job market. It collects job postings from Jobicy, Arbeitnow and Himalayas, plus ECB exchange rates. It cleans them, extracts the skills and tools each posting asks for, and builds a star schema for dashboards you can filter by country, industry, seniority, job type and date.
+A daily data pipeline for the remote job market. It collects job postings from Jobicy, Arbeitnow and Himalayas, plus ECB exchange rates. It cleans them, extracts the skills and tools each posting asks for, and builds a star schema for a Power BI report you can filter by country, industry, seniority, job type and date.
 
-**Stack:** Apache Airflow 3 (orchestration, in Docker) · Databricks (bronze and silver: Auto Loader, PySpark, Unity Catalog) · dbt (the gold star schema, with contracts and tests) · Power BI (dashboards) · GitHub Actions (CI)
+**Live report:** https://robi4419.github.io/Nexus-Project/, with four pages (skills overview, rising skills, salaries, skills asked together), refreshed every night.
+
+**Stack:** Apache Airflow 3 (orchestration, in Docker) · Databricks (bronze and silver: Auto Loader, PySpark, Unity Catalog) · dbt (the gold star schema, with contracts and tests) · Power BI (the report, published to the web) · GitHub Pages and Actions
 
 See [docs/PLAN.md](docs/PLAN.md) for the architecture and the development plan, and [`docs/phases/`](docs/phases/) for each phase's decisions.
 
@@ -19,12 +21,13 @@ Every evening, with no manual step:
                                                                                in USD, skills) → data-quality checks
                                                                              dbt: deps → source freshness → build
                                                                                (gold star schema and its tests)
+19:00 UTC  the Power BI service refreshes the report's model from gold ─► the public report on GitHub Pages
 any failed run ─► email
 ```
 
 ## Data sources and credits
 
-- Job postings from [Jobicy](https://jobicy.com), [Arbeitnow](https://www.arbeitnow.com) and [Himalayas](https://himalayas.app). Data sourced from Himalayas is credited with a link. Every Apply link goes to the original posting, through Himalayas' `applicationLink` for its jobs, and Himalayas jobs are deleted once they expire, as its API terms require.
+- Job postings from [Jobicy](https://jobicy.com), [Arbeitnow](https://www.arbeitnow.com) and [Himalayas](https://himalayas.app). Data sourced from Himalayas is credited with a link. Every Apply link goes to the original posting, through Himalayas' `applicationLink` for its jobs, and Himalayas jobs are deleted once they expire, as its API terms require. The public report shows aggregates only.
 - Exchange rates from the European Central Bank, via [Frankfurter](https://frankfurter.dev).
 - City names from [GeoNames](https://www.geonames.org) (CC BY 4.0).
 
@@ -38,7 +41,9 @@ any failed run ─► email
 | `databricks/` | Asset Bundle Job definition, notebooks (bronze, silver, checks) and reference CSVs |
 | `databricks.yml` | Asset Bundle root |
 | `dbt/job_listings/` | dbt project for the gold layer ([its README](dbt/job_listings/README.md)) |
-| `dashboards/` | Power BI project |
+| `dashboards/` | Power BI project (PBIP): the semantic model in TMDL and the report pages in PBIR ([Phase 5](docs/phases/phase-5-dashboards.md)) |
+| `site/` | The GitHub Pages page that embeds the published report |
+| `.github/workflows/` | Deploys `site/` to GitHub Pages on a push to `main` |
 | `scripts/` | One-off helpers: build the GeoNames reference data, export the marts' DDL for the ER diagram |
 | `tests/` | pytest suite |
 | `docs/` | Plan, per-phase docs and the ER diagram |
@@ -52,7 +57,8 @@ any failed run ─► email
 - the Databricks CLI;
 - a Databricks workspace (Free Edition works) with a SQL warehouse and a personal access token;
 - a free Himalayas API key;
-- a Gmail address with an app password, for failure emails.
+- a Gmail address with an app password, for failure emails;
+- for the report: Power BI Desktop (free, Windows).
 
 1. Copy `.env.example` to `.env` and fill in the values. `.env` is gitignored; never commit it.
 2. Create the local virtualenv for tests and dbt development:
@@ -77,6 +83,7 @@ any failed run ─► email
 
    From then on, everything runs by itself every day. Trigger `alert_test` once to check that failure emails arrive.
 6. Optional: `docker compose --profile flower up -d` starts the Celery monitor at http://localhost:5555.
+7. Optional, the report: open `dashboards/JobsAnalytics.pbip` in Power BI Desktop. Point the `DatabricksHost` and `DatabricksHttpPath` parameters at your workspace (Transform data → Edit parameters), refresh, and enter a Databricks access token as the Account key when asked. Publishing it to the web is in [Phase 5, section 5.6](docs/phases/phase-5-dashboards.md).
 
 Stop everything with `docker compose down`. Airflow runs only while Docker is up, and runs missed while it was down start when it comes back.
 
@@ -85,3 +92,4 @@ Stop everything with `docker compose down`. Airflow runs only while Docker is up
 - **Tests:** `.venv\Scripts\python.exe -m pytest`.
 - **dbt by hand:** see the [dbt README](dbt/job_listings/README.md).
 - **After changing notebooks, reference CSVs or `transform/`,** run `databricks bundle deploy`. Airflow reads `ingestion/` and `transform/` live from the mounted folders; Databricks uses the deployed copy.
+- **Power BI files:** close Desktop before editing the TMDL or PBIR files by hand, because Desktop rewrites them when it saves.

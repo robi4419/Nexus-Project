@@ -4,11 +4,13 @@ version: 2
 
 models:
   - name: stg_silver__jobs
-    description: "One row per job posting from silver.jobs (Jobicy, Arbeitnow and Himalayas), with the surrogate key job_key. Leaves out the description text, raw levels and raw locations."
+    description: "One row per job posting from silver.jobs (Jobicy, Arbeitnow and Himalayas), with the surrogate key posting_key. Leaves out the raw levels, the raw locations and the description text, keeping only a fingerprint of the description."
     columns:
-      - name: job_key
-        description: "{{ doc('job_key') }} Joins jobs to the skill, location, industry and type models."
+      - name: posting_key
+        description: "{{ doc('posting_key') }} Joins postings to the skill, location, industry and type models."
         data_tests: [unique, not_null]
+      - name: description_hash
+        description: "md5 hash of the description text, lower-cased with whitespace collapsed, when it's at least 300 characters long (shorter ones may say too little to tell roles apart); NULL otherwise. int_job_postings uses it to find one job posted under several titles."
       - name: source
         description: "{{ doc('source') }}"
         data_tests:
@@ -74,14 +76,14 @@ models:
       - name: built_at
         description: "{{ doc('built_at') }}"
   - name: stg_silver__job_skills
-    description: "One row per job x skill from silver.job_skills, with the surrogate key job_key."
+    description: "One row per job x skill from silver.job_skills, with the surrogate key posting_key."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
-            combination_of_columns: ["job_key", "skill"]
+            combination_of_columns: ["posting_key", "skill"]
     columns:
-      - name: job_key
-        description: "{{ doc('job_key') }}"
+      - name: posting_key
+        description: "{{ doc('posting_key') }}"
         data_tests: [not_null]
       - name: skill
         description: "{{ doc('skill') }}"
@@ -94,14 +96,14 @@ models:
       - name: taxonomy_version
         description: "{{ doc('taxonomy_version') }}"
   - name: stg_silver__job_locations
-    description: "One row per job x location from silver.job_locations, with the surrogate keys job_key and location_key."
+    description: "One row per job x location from silver.job_locations, with the surrogate keys posting_key and location_key."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
-            combination_of_columns: ["job_key", "location_raw"]
+            combination_of_columns: ["posting_key", "location_raw"]
     columns:
-      - name: job_key
-        description: "{{ doc('job_key') }}"
+      - name: posting_key
+        description: "{{ doc('posting_key') }}"
         data_tests: [not_null]
       - name: location_key
         description: "{{ doc('location_key') }}"
@@ -120,26 +122,26 @@ models:
       - name: region
         description: "{{ doc('location_region') }}"
   - name: stg_silver__job_industries
-    description: "One row per job x industry from silver.job_industries, with the surrogate key job_key."
+    description: "One row per job x industry from silver.job_industries, with the surrogate key posting_key."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
-            combination_of_columns: ["job_key", "industry"]
+            combination_of_columns: ["posting_key", "industry"]
     columns:
-      - name: job_key
-        description: "{{ doc('job_key') }}"
+      - name: posting_key
+        description: "{{ doc('posting_key') }}"
         data_tests: [not_null]
       - name: industry
         description: "{{ doc('industry') }}"
   - name: stg_silver__job_types
-    description: "One row per job x job_type from silver.job_types, with the surrogate key job_key."
+    description: "One row per job x job_type from silver.job_types, with the surrogate key posting_key."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
-            combination_of_columns: ["job_key", "job_type"]
+            combination_of_columns: ["posting_key", "job_type"]
     columns:
-      - name: job_key
-        description: "{{ doc('job_key') }}"
+      - name: posting_key
+        description: "{{ doc('posting_key') }}"
         data_tests: [not_null]
       - name: job_type
         description: "{{ doc('job_type') }}"

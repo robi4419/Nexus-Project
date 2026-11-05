@@ -1,0 +1,33 @@
+/// One row per job x board it's posted on (gold.bridge_job_sources): a job found on Jobicy and Himalayas has two rows,
+/// so the Source slicer finds it under both. Hidden bridge: filter with the Source table.
+table 'Job sources'
+	isHidden
+	lineageTag: 5a3143d4-1e00-40b4-83c3-d38f089a9414
+
+	column job_key
+		dataType: string
+		isHidden
+		lineageTag: 03ec9530-61e6-47ab-a440-15057577ba05
+		summarizeBy: none
+		sourceColumn: job_key
+
+	column source
+		dataType: string
+		isHidden
+		lineageTag: 45923221-afd9-47dc-ac56-2d233e34ee91
+		summarizeBy: none
+		sourceColumn: source
+
+	partition 'Job sources' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "bridge_job_sources", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"job_key", "source"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

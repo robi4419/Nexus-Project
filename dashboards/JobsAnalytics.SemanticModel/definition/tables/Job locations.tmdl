@@ -1,0 +1,32 @@
+/// One row per job x place (gold.bridge_job_locations). Hidden bridge: filter with the Location table.
+table 'Job locations'
+	isHidden
+	lineageTag: 63e5e4bb-d199-45f8-9c2f-cec8b4d95a45
+
+	column job_key
+		dataType: string
+		isHidden
+		lineageTag: 86e1bf56-770d-4695-a6fa-acce721f8711
+		summarizeBy: none
+		sourceColumn: job_key
+
+	column location_key
+		dataType: string
+		isHidden
+		lineageTag: 25d8c3f8-761c-4d14-8da7-24fc2beda93f
+		summarizeBy: none
+		sourceColumn: location_key
+
+	partition 'Job locations' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "bridge_job_locations", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"job_key", "location_key"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,120 @@
+/// One row per day from 2026-10-01 (gold.dim_date).
+table Date
+	lineageTag: 91bf65a2-2d26-4efb-9256-51d778a89c74
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: c95b75ae-dca6-45fe-b465-fbe4be6d03be
+		summarizeBy: none
+		sourceColumn: date_day
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 9c369ead-e8a1-4e91-b204-c988315fa2d2
+		summarizeBy: none
+		sourceColumn: year
+
+	column Quarter
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f3c90318-fb6d-4aa7-84bc-53b76b566063
+		summarizeBy: none
+		sourceColumn: quarter
+
+	column 'Year quarter'
+		dataType: string
+		lineageTag: f4089dec-3c54-4d9d-85da-4ab9c4647983
+		summarizeBy: none
+		sourceColumn: year_quarter
+
+	column Month
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5f4772b8-a9b8-41d2-96e8-3144746ac9fc
+		summarizeBy: none
+		sourceColumn: month
+
+	column 'Month name'
+		dataType: string
+		lineageTag: 9f8a2766-d492-4274-8f45-0177544e7f6c
+		summarizeBy: none
+		sourceColumn: month_name
+		sortByColumn: Month
+
+	column 'Year month'
+		dataType: string
+		lineageTag: 288ddacc-cc4c-42d7-8b78-c0773630dfb2
+		summarizeBy: none
+		sourceColumn: year_month
+
+	/// Monday of the week.
+	column 'Week start'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: d6b66f50-8e78-4d0a-8908-21104331d31e
+		summarizeBy: none
+		sourceColumn: week_start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Day of week'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c5cc0b8b-cbd6-452c-af0b-cda80672b558
+		summarizeBy: none
+		sourceColumn: day_of_week
+
+	column 'Day name'
+		dataType: string
+		lineageTag: f132aacf-6c71-4227-ad1e-355066a3a5c7
+		summarizeBy: none
+		sourceColumn: day_name
+		sortByColumn: 'Day of week'
+
+	column Weekend
+		dataType: boolean
+		lineageTag: 1473865a-197c-4d16-a85a-fede1fd806c1
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+	hierarchy Calendar
+		lineageTag: 0e91e9d9-2c70-4c94-b845-e3cf30e95a41
+
+		level Year
+			lineageTag: 2e4d29bd-4a05-43bc-880c-a131652c1422
+			column: Year
+
+		level Quarter
+			lineageTag: 27a10097-b070-4942-a300-bdf2bee7ee60
+			column: 'Year quarter'
+
+		level Month
+			lineageTag: 2aeaa6b5-d88c-40c6-b243-aaf9763f78e0
+			column: 'Year month'
+
+		level Day
+			lineageTag: 73d8c5da-b01c-4cfe-b0d2-6c969b051823
+			column: Date
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "dim_date", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"date_day", "year", "quarter", "year_quarter", "month", "month_name", "year_month", "week_start", "day_of_week", "day_name", "is_weekend"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

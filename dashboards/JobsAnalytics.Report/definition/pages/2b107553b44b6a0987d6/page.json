@@ -1,0 +1,50 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "2b107553b44b6a0987d6",
+  "displayName": "Salaries",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "objects": {
+    "outspacePane": [
+      {
+        "properties": {
+          "width": {
+            "expr": {
+              "Literal": {
+                "Value": "181L"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "69305af40c928071dcad",
+      "target": "81af158c8d9c09429606",
+      "type": "NoFilter"
+    },
+    {
+      "source": "69305af40c928071dcad",
+      "target": "4b7d66b2cad9aab77c6c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "69305af40c928071dcad",
+      "target": "634389dea69ca007d03e",
+      "type": "DataFilter"
+    },
+    {
+      "source": "69305af40c928071dcad",
+      "target": "f65be216a48dba0c4c9b",
+      "type": "DataFilter"
+    },
+    {
+      "source": "69305af40c928071dcad",
+      "target": "7ee39425e3ab3eb073bd",
+      "type": "DataFilter"
+    }
+  ]
+}

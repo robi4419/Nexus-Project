@@ -1,0 +1,31 @@
+/// One row per job x job type (gold.bridge_job_types). The five types need no dimension: slice on Job type here.
+table 'Job types'
+	lineageTag: 030cbc32-eea8-44a0-bc15-83fe44466fdb
+
+	column job_key
+		dataType: string
+		isHidden
+		lineageTag: 9f7b75ed-4545-4215-a94c-5a71b48491fc
+		summarizeBy: none
+		sourceColumn: job_key
+
+	/// Full-Time, Part-Time, Contract, Internship or Temporary.
+	column 'Job type'
+		dataType: string
+		lineageTag: 04486617-87a6-4502-b26d-062322fad087
+		summarizeBy: none
+		sourceColumn: job_type
+
+	partition 'Job types' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "bridge_job_types", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"job_key", "job_type"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

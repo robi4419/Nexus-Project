@@ -83,6 +83,7 @@ NO_STRINGS = "cast(array() AS ARRAY<STRING>)"
 # A quick self-test that runs both functions on the workers, not only here on the driver.
 display(spark.sql("""
     SELECT clean_html('<p>Python &amp; SQL</p><ul><li>dbt</li></ul>') AS cleaned,
+           clean_html('&lt;p&gt;Escaped once more&lt;/p&gt;<p>Find jobs on Arbeitnow</p>') AS cleaned_escaped,
            derive_seniority('Sr. Data Engineer', NULL) AS from_title,
            derive_seniority('Data Analyst', 'Mid') AS from_source_level,
            title_tech_category('SAP FICO Consultant') AS tech_category

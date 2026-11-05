@@ -1,0 +1,67 @@
+/// One row per place jobs are listed in: a city, country, region, Worldwide or an unknown place (gold.dim_location).
+/// A missing level has a label in parentheses, so the Place hierarchy always drills down.
+table Location
+	lineageTag: c5bda1fa-e8a9-40d6-8ba0-afae06d53d1b
+
+	column location_key
+		dataType: string
+		isHidden
+		lineageTag: 7dea85ac-e8d4-4c05-9903-0fea2d62352c
+		summarizeBy: none
+		sourceColumn: location_key
+
+	column Region
+		dataType: string
+		lineageTag: 30e7495d-6ba0-4771-aa40-1a47c90cfa1d
+		summarizeBy: none
+		sourceColumn: region
+
+	column Country
+		dataType: string
+		lineageTag: 96276f82-5131-4cef-8ceb-16eb4b4e976e
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: country_name
+
+	column City
+		dataType: string
+		lineageTag: c2df3ab9-27ae-492e-a95c-e99d07bf53d4
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: city_name
+
+	/// city, country, region, worldwide or unknown.
+	column 'Location type'
+		dataType: string
+		lineageTag: 7f301bf7-4523-4cba-b729-6884e1f33e5a
+		summarizeBy: none
+		sourceColumn: location_type
+
+	hierarchy Place
+		lineageTag: 3f8f6b1c-dd66-41c5-bfa0-1fb63127791b
+
+		level Region
+			lineageTag: 4f72410f-1506-4bcc-acdf-3b470ff49768
+			column: Region
+
+		level Country
+			lineageTag: 81f2ba8a-4dca-4e8c-a2da-8ce204e2dc77
+			column: Country
+
+		level City
+			lineageTag: 81afd4eb-d5f3-4acf-8bbb-cc3fc1dcb859
+			column: City
+
+	partition Location = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "dim_location", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"location_key", "region", "country_name", "city_name", "location_type"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+

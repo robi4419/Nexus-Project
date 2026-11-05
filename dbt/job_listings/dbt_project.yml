@@ -41,6 +41,13 @@ models:
       +materialized: table
       +contract: # every mart must declare each column's type; the build fails if the SQL differs
         enforced: true
+    history: # counts that must outlive the jobs they count (Phase 5, decision 4): appended to, never rebuilt
+      +materialized: incremental
+      +incremental_strategy: append
+      +full_refresh: false # even `dbt build --full-refresh` leaves them alone; the counted jobs may be gone
+      +on_schema_change: fail
+      +contract:
+        enforced: true
 
 vars:
   # Decision 7: warn when more than this share of salaried jobs has an implausible salary.

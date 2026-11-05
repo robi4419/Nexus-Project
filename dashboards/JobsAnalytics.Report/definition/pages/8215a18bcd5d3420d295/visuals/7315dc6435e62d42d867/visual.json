@@ -1,0 +1,137 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "7315dc6435e62d42d867",
+  "position": {
+    "x": 0,
+    "y": 1042.5060240963855,
+    "z": 1000,
+    "height": 37.012048192771083,
+    "width": 1920,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Jobs: Data sourced from ",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    }
+                  },
+                  {
+                    "value": "Himalayas",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    },
+                    "url": "https://himalayas.app"
+                  },
+                  {
+                    "value": " • ",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    }
+                  },
+                  {
+                    "value": "Jobicy",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    },
+                    "url": "https://jobicy.com"
+                  },
+                  {
+                    "value": " • ",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    }
+                  },
+                  {
+                    "value": "Arbeitnow",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    },
+                    "url": "https://www.arbeitnow.com"
+                  },
+                  {
+                    "value": " | Exchange rates: ECB via ",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    }
+                  },
+                  {
+                    "value": "Frankfurter",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    },
+                    "url": "https://frankfurter.dev"
+                  },
+                  {
+                    "value": " | Places: ",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    }
+                  },
+                  {
+                    "value": "GeoNames",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    },
+                    "url": "https://www.geonames.org"
+                  },
+                  {
+                    "value": " (",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    }
+                  },
+                  {
+                    "value": "CC BY 4.0",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    },
+                    "url": "https://creativecommons.org/licenses/by/4.0/"
+                  },
+                  {
+                    "value": ")",
+                    "textStyle": {
+                      "fontSize": "14pt"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "center"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "5D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

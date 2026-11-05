@@ -1,0 +1,375 @@
+/// All measures, in display folders. Jobs and Salaries follow every job filter; Trend and Skill pairs read the two
+/// gold aggregate tables, which only Skill and the week filter. ("Measures" itself is a reserved table name.)
+table _Measures
+	lineageTag: 26068e48-5b7b-4e4b-bbc7-d0bade6cd7cc
+
+	/// Jobs in the current filters; a company's postings of one role, on any board, count once.
+	measure Jobs = COUNTROWS ( 'Job postings' )
+		formatString: #,0
+		displayFolder: Jobs
+		lineageTag: 6872d96e-530c-425c-8ba3-0b4fc65241f5
+
+	/// Job postings asking for the selected skills; with no skill selected, jobs asking for at least one skill.
+	measure 'Jobs with skill' = DISTINCTCOUNT ( 'Job skills'[job_key] )
+		formatString: #,0
+		displayFolder: Jobs
+		lineageTag: 38028d27-e2cc-401b-88ba-7e8047e928ae
+
+	/// Jobs with skill as a share of all jobs in the same filters, ignoring the skill filter.
+	measure 'Share of jobs' = DIVIDE ( [Jobs with skill], CALCULATE ( [Jobs], REMOVEFILTERS ( Skill ) ) )
+		formatString: 0.0%
+		displayFolder: Jobs
+		lineageTag: 632aa8a2-92d1-4d09-8d4f-98a32a26e5ae
+
+	/// Jobs with a plausible yearly salary (5,000 to 1,500,000 USD). Skill filters reach the jobs through CROSSFILTER.
+	measure 'Jobs with salary' =
+			CALCULATE (
+			    [Jobs],
+			    'Job postings'[Plausible salary] = TRUE (),
+			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
+			)
+		formatString: #,0
+		displayFolder: Salaries
+		lineageTag: 85cf73f0-4767-4c57-bcc6-c2c3a9e2babf
+
+	/// Share of the jobs in the current filters (skill included) that list a plausible salary.
+	measure 'Share with salary' =
+			DIVIDE (
+			    [Jobs with salary],
+			    CALCULATE ( [Jobs], CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH ) )
+			)
+		formatString: 0.0%
+		displayFolder: Salaries
+		lineageTag: 407daa52-add3-477d-8c66-7bca08be2207
+
+	/// Median yearly salary in USD over the plausible salaries in the current filters (skill included).
+	measure 'Median salary' =
+			CALCULATE (
+			    MEDIAN ( 'Job postings'[Salary (USD)] ),
+			    'Job postings'[Plausible salary] = TRUE (),
+			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
+			)
+		formatString: \$#,0
+		displayFolder: Salaries
+		lineageTag: a2c48b4a-89fd-48f5-a20b-1c84fb9267b3
+
+	/// The salary a quarter of the plausible salaries are below.
+	measure 'Salary 25th percentile' =
+			CALCULATE (
+			    PERCENTILE.INC ( 'Job postings'[Salary (USD)], 0.25 ),
+			    'Job postings'[Plausible salary] = TRUE (),
+			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
+			)
+		formatString: \$#,0
+		displayFolder: Salaries
+		lineageTag: 907d0bed-5c0b-4400-8dd8-15e67243bf58
+
+	/// The salary three quarters of the plausible salaries are below.
+	measure 'Salary 75th percentile' =
+			CALCULATE (
+			    PERCENTILE.INC ( 'Job postings'[Salary (USD)], 0.75 ),
+			    'Job postings'[Plausible salary] = TRUE (),
+			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
+			)
+		formatString: \$#,0
+		displayFolder: Salaries
+		lineageTag: d751b14f-d240-4255-a44b-484b15c23186
+
+	/// Jobs first listed in the week asking for the skill, each job once (decision 12).
+	measure 'Trend jobs with skill' = SUM ( 'Weekly skill trend'[skill_jobs] )
+		formatString: #,0
+		displayFolder: Trend
+		lineageTag: 13b7c886-9835-4160-b9df-a3559dd4c296
+
+	/// All jobs first listed in the week, whatever the skill filter; over several weeks, their sum. Every skill's row of
+	/// a week holds the same week_jobs, so each week takes it once.
+	measure 'Trend jobs' =
+			CALCULATE (
+			    SUMX ( VALUES ( 'Weekly skill trend'[Week] ), CALCULATE ( MAX ( 'Weekly skill trend'[week_jobs] ) ) ),
+			    REMOVEFILTERS ( Skill )
+			)
+		formatString: #,0
+		displayFolder: Trend
+		lineageTag: 5068cfc8-aa20-4ac6-9e99-11809edc7da4
+
+	/// Share of the week's jobs asking for the skill.
+	measure 'Week share' = DIVIDE ( [Trend jobs with skill], [Trend jobs] )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 2da8fc77-4574-4f64-8a93-32108ae38827
+
+	/// Week share in the week before.
+	measure 'Previous week share' =
+			VAR ThisWeek = MAX ( 'Weekly skill trend'[Week] )
+			RETURN
+			    CALCULATE ( [Week share], 'Weekly skill trend'[Week] = ThisWeek - 7 )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 0ea87e5f-e036-4995-afef-a239f75ec5ac
+
+	/// Week share minus the previous week's, in percentage points: +1.3 pp means 1.3 more of every 100 jobs in the week
+	/// ask for the skill. Blank in the first week.
+	measure 'Share change' =
+			VAR Previous = [Previous week share]
+			RETURN
+			    IF ( NOT ISBLANK ( Previous ), ( [Week share] - Previous ) * 100 )
+		formatString: +0.0" pp";-0.0" pp";0.0" pp"
+		displayFolder: Trend
+		lineageTag: e94b5cc8-e562-4733-9af2-34ad9e254e66
+
+	/// Share change in the latest complete week, for ranking the biggest risers and fallers. On a chart without weeks,
+	/// [Previous week share] is then the week before it.
+	measure 'Share change latest week' =
+			VAR Latest = [Latest week]
+			RETURN
+			    CALCULATE ( [Share change], 'Weekly skill trend'[Week] = Latest )
+		formatString: +0.0" pp";-0.0" pp";0.0" pp"
+		displayFolder: Trend
+		lineageTag: 8e4feefa-1ef0-472e-8826-e42a0f8496a6
+
+	/// How many times more often the picked skill and the skill on the axis are asked for together than if they were
+	/// unrelated: above 1 linked. Blank unless one skill is picked.
+	measure 'Pair lift' = IF ( HASONEVALUE ( 'Skill'[Skill] ), MAX ( 'Skill pairs'[lift] ) )
+		formatString: 0.00
+		displayFolder: Skill pairs
+		lineageTag: beb40d37-02bf-4e6e-b56e-721f4e03a459
+
+	/// Jobs asking for both the picked skill and the skill on the axis. Blank unless one skill is picked.
+	measure 'Jobs with both' = IF ( HASONEVALUE ( 'Skill'[Skill] ), SUM ( 'Skill pairs'[jobs_both] ) )
+		formatString: #,0
+		displayFolder: Skill pairs
+		lineageTag: d607d67d-be7a-4d57-83ad-0d0a1d2ea1f1
+
+	/// Share of the picked skill's jobs that also ask for the skill on the axis (one-directional). Blank unless one skill
+	/// is picked, so the bar chart stays empty until then.
+	measure 'Share asking for both' = IF ( HASONEVALUE ( Skill[Skill] ), MAX ( 'Skill pairs'[share_of_skill_jobs] ) )
+		formatString: 0.0%
+		displayFolder: Skill pairs
+		lineageTag: 6722cc22-aea4-493e-8352-7ded30ec39b1
+
+	/// Median salary where at least 30 jobs list a plausible salary, blank elsewhere, so a few salaries can't top a chart.
+	measure 'Median salary (enough jobs)' =
+			VAR MinimumJobs = 30
+			RETURN
+			    IF ( [Jobs with salary] >= MinimumJobs, [Median salary] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salaries
+		lineageTag: 550e1a1a-95a0-4557-810d-64acad927ee7
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Which skills the heatmap shows, for the Top N filter on its rows; the columns follow the rows through
+	/// [Heatmap lift]. With no skill picked: the jobs asking for the skill, so the 15 most common skills. With one
+	/// picked: 2 for the picked skill, else the share of its jobs that also ask for this one, so the picked skill and its
+	/// 14 most frequent partners.
+	measure 'Heatmap rank' =
+			VAR Picked = SELECTEDVALUE ( Skill[Skill] )
+			VAR ThisSkill = COALESCE ( SELECTEDVALUE ( 'Heatmap rows'[Skill] ), SELECTEDVALUE ( 'Heatmap columns'[Skill] ) )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( Picked ),
+			            CALCULATE ( MAX ( 'Skill pairs'[skill_jobs] ), REMOVEFILTERS ( Skill ), 'Skill pairs'[skill] = ThisSkill ),
+			        ThisSkill = Picked, 2,
+			        CALCULATE (
+			            MAX ( 'Skill pairs'[share_of_skill_jobs] ),
+			            REMOVEFILTERS ( Skill ),
+			            'Skill pairs'[skill] = Picked,
+			            'Skill pairs'[Asked with] = ThisSkill
+			        )
+			    )
+		formatString: 0.000
+		displayFolder: Skill pairs
+		lineageTag: 0ab16260-d17e-4665-bb6b-8c274a62d5eb
+
+	/// Lift of the heatmap's row skill with its column skill: how many times more often they're asked for together than
+	/// if they were unrelated (1 unrelated, 2 twice as often). Blank on the diagonal, for pairs in fewer than 5 jobs, and
+	/// in columns that aren't among the rows the Top N filter keeps, so the matrix hides those columns.
+	measure 'Heatmap lift' =
+			VAR RowSkill = SELECTEDVALUE ( 'Heatmap rows'[Skill] )
+			VAR ColumnSkill = SELECTEDVALUE ( 'Heatmap columns'[Skill] )
+			VAR ShownSkills = ALLSELECTED ( 'Heatmap rows'[Skill] )
+			RETURN
+			    IF (
+			        ColumnSkill IN ShownSkills,
+			        CALCULATE (
+			            MAX ( 'Skill pairs'[lift] ),
+			            REMOVEFILTERS ( Skill ),
+			            'Skill pairs'[skill] = RowSkill,
+			            'Skill pairs'[Asked with] = ColumnSkill
+			        )
+			    )
+		formatString: 0.0
+		displayFolder: Skill pairs
+		lineageTag: f1fff0b5-e359-4946-a0fb-1fee58e73420
+
+	/// The bar chart's title: names the picked skill, or asks for one.
+	measure 'Pairs chart title' =
+			
+			VAR Picked = SELECTEDVALUE ( Skill[Skill] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        NOT ISBLANK ( Picked ), "Most often asked with " & Picked,
+			        ISFILTERED ( Skill[Skill] ), "Pick just one skill to see what it's asked with",
+			        "Pick a skill to see what it's asked with"
+			    )
+		displayFolder: Skill pairs
+		lineageTag: f505111d-d751-4dfa-9a09-0a5380f1e3b0
+
+	/// The heatmap's title: the 15 most common skills, or the picked skill and its 14 most frequent partners.
+	measure 'Heatmap title' =
+			VAR Picked = SELECTEDVALUE ( Skill[Skill] )
+			RETURN
+			    IF (
+			        ISBLANK ( Picked ),
+			        "How closely the 15 most common skills go together",
+			        "How closely " & Picked & " and its 14 most frequent partners go together"
+			    )
+		displayFolder: Skill pairs
+		lineageTag: 50a3a0a3-d480-49c5-9b7c-091a9b7d7962
+
+	/// Heatmap tooltip line: how many jobs ask for both the row skill and the column skill.
+	measure 'Heatmap tooltip jobs' =
+			VAR RowSkill = SELECTEDVALUE ( 'Heatmap rows'[Skill] )
+			VAR ColumnSkill = SELECTEDVALUE ( 'Heatmap columns'[Skill] )
+			VAR JobsBoth =
+			    CALCULATE (
+			        MAX ( 'Skill pairs'[jobs_both] ),
+			        REMOVEFILTERS ( Skill ),
+			        'Skill pairs'[skill] = RowSkill,
+			        'Skill pairs'[Asked with] = ColumnSkill
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( JobsBoth ), FORMAT ( JobsBoth, "#,0" ) & " jobs ask for both" )
+		displayFolder: Skill pairs
+		lineageTag: 081df238-80cd-4046-b248-19eb15f26302
+
+	/// Heatmap tooltip line: the share of the row skill's jobs that also ask for the column skill.
+	measure 'Heatmap tooltip row share' =
+			VAR RowSkill = SELECTEDVALUE ( 'Heatmap rows'[Skill] )
+			VAR ColumnSkill = SELECTEDVALUE ( 'Heatmap columns'[Skill] )
+			VAR Share =
+			    CALCULATE (
+			        MAX ( 'Skill pairs'[share_of_skill_jobs] ),
+			        REMOVEFILTERS ( Skill ),
+			        'Skill pairs'[skill] = RowSkill,
+			        'Skill pairs'[Asked with] = ColumnSkill
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( Share ), FORMAT ( Share, "0%" ) & " of " & RowSkill & " jobs also ask for " & ColumnSkill )
+		displayFolder: Skill pairs
+		lineageTag: 967e6044-f4ec-456e-984a-fe59c90fce44
+
+	/// Heatmap tooltip line: the share of the column skill's jobs that also ask for the row skill.
+	measure 'Heatmap tooltip column share' =
+			VAR RowSkill = SELECTEDVALUE ( 'Heatmap rows'[Skill] )
+			VAR ColumnSkill = SELECTEDVALUE ( 'Heatmap columns'[Skill] )
+			VAR Share =
+			    CALCULATE (
+			        MAX ( 'Skill pairs'[share_of_skill_jobs] ),
+			        REMOVEFILTERS ( Skill ),
+			        'Skill pairs'[skill] = ColumnSkill,
+			        'Skill pairs'[Asked with] = RowSkill
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( Share ), FORMAT ( Share, "0%" ) & " of " & ColumnSkill & " jobs also ask for " & RowSkill )
+		displayFolder: Skill pairs
+		lineageTag: 49118edd-d301-4951-9f29-f406b00ff565
+
+	/// Heatmap tooltip line: the lift in words. Looks the pair up itself: on the tooltip page, ALLSELECTED in
+	/// [Heatmap lift] would see only the hovered cell.
+	measure 'Heatmap tooltip lift' =
+			VAR RowSkill = SELECTEDVALUE ( 'Heatmap rows'[Skill] )
+			VAR ColumnSkill = SELECTEDVALUE ( 'Heatmap columns'[Skill] )
+			VAR Lift =
+			    CALCULATE (
+			        MAX ( 'Skill pairs'[lift] ),
+			        REMOVEFILTERS ( Skill ),
+			        'Skill pairs'[skill] = RowSkill,
+			        'Skill pairs'[Asked with] = ColumnSkill
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( Lift ), "Asked for together " & FORMAT ( Lift, "0.0" ) & " times as often as if unrelated" )
+		displayFolder: Skill pairs
+		lineageTag: b734eaf0-3b5c-413f-b32d-3323d6ec140f
+
+	/// The latest complete week in the trend, whatever the filters.
+	measure 'Latest week' = CALCULATE ( MAX ( 'Weekly skill trend'[Week] ), REMOVEFILTERS ( 'Weekly skill trend' ) )
+		formatString: d mmm yyyy
+		displayFolder: Trend
+		lineageTag: 22096e38-5b75-426a-b021-aa643bc3676a
+
+	/// Week share in the latest complete week.
+	measure 'Share latest week' =
+			VAR Latest = [Latest week]
+			RETURN
+			    CALCULATE ( [Week share], 'Weekly skill trend'[Week] = Latest )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 496aa401-45ef-4107-b41b-7b90f9dacd15
+
+	/// Jobs asking for the skill in the latest complete week.
+	measure 'Jobs latest week' =
+			VAR Latest = [Latest week]
+			RETURN
+			    CALCULATE ( [Trend jobs with skill], 'Weekly skill trend'[Week] = Latest )
+		formatString: #,0
+		displayFolder: Trend
+		lineageTag: 22e81b27-cb16-44a6-b957-a6ef3fa9c3bf
+
+	/// Jobs asking for the skill in the week before the latest complete week.
+	measure 'Jobs week before' =
+			VAR Latest = [Latest week]
+			RETURN
+			    CALCULATE ( [Trend jobs with skill], 'Weekly skill trend'[Week] = Latest - 7 )
+		formatString: #,0
+		displayFolder: Trend
+		lineageTag: 805fc38d-3c30-4950-81cb-c49311ec9435
+
+	/// The movers charts' subtitle: the two weeks they compare.
+	measure 'Movers subtitle' =
+			VAR Latest = [Latest week]
+			RETURN
+			    "Week of " & FORMAT ( Latest, "d mmm" ) & " vs " & FORMAT ( Latest - 7, "d mmm" )
+			        & ", in percentage points of each week's new jobs"
+		displayFolder: Trend
+		lineageTag: b5269904-d3bb-4457-b392-0fdba39aed3e
+
+	/// The trend line's title, from the skills the chart shows: none (bars clicked in both mover charts, whose filters
+	/// intersect) gets a hint; one by name; "the latest week's top 10" when it shows exactly those (nothing picked, or
+	/// picks that include them all); otherwise the picked skills. The chart's Top N is a filter on Skill too, so
+	/// ISFILTERED or a count alone can't tell no pick from 10 or more. Keep ChartTop equal to it.
+	measure 'Trend line title' =
+			
+			VAR ChartTop = 10 -- the line chart's Top N; keep the two equal
+			VAR Shown = VALUES ( Skill[Skill] ) -- the skills the chart shows: the picks, cut by its Top N
+			VAR ShownCount = COUNTROWS ( Shown )
+			VAR TopSkills = TOPN ( ChartTop, ALL ( Skill[Skill] ), [Share latest week] ) -- the top skills, ignoring the picks
+			VAR ShowsTopSkills =
+			    ( ShownCount = COUNTROWS ( TopSkills ) ) && ISEMPTY ( EXCEPT ( Shown, TopSkills ) )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISEMPTY ( Shown ), "No skill is in both selections: click bars in one chart, or pick skills in the dropdown",
+			        ShownCount = 1, "Weekly share of new jobs asking for " & SELECTEDVALUE ( Skill[Skill] ),
+			        ShowsTopSkills, "Weekly share of new jobs asking for the latest week's top " & ChartTop & " skills",
+			        ShownCount < ChartTop, "Weekly share of new jobs asking for the picked skills",
+			        "Weekly share of new jobs asking for the " & ChartTop & " picked skills most asked for in the latest week"
+			    )
+		displayFolder: Trend
+		lineageTag: bf784cfb-22c6-4c21-8d65-f402991bb54f
+
+	column Value
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6a543b1a-8f7c-40a4-802e-16ab4f88c419
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+	partition _Measures = calculated
+		mode: import
+		source = ROW ( "Value", 0 )
+

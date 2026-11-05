@@ -1,0 +1,33 @@
+/// Every skill that has a pair, for the heatmap's rows. Related to no table, so the skill dropdown doesn't filter it:
+/// a Top N filter by [Heatmap rank] picks the 15 rows shown. Sorted by Order, like 'Heatmap columns', so both axes
+/// list the skills in the same order, most asked-for first.
+table 'Heatmap rows'
+	lineageTag: 94dcfb98-e99d-48d7-8d77-357a8f236718
+
+	column Skill
+		dataType: string
+		lineageTag: 0831067f-1947-4ff5-884d-9d80fa522ecd
+		summarizeBy: none
+		sourceColumn: [Skill]
+		sortByColumn: Order
+
+	/// 1 for the skill asked for in the most jobs, 2 for the next, and so on (all jobs, as in Skill pairs).
+	column Order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 48369875-bf7e-4e5a-9810-2791c5494b73
+		summarizeBy: none
+		sourceColumn: [Order]
+
+	partition 'Heatmap rows' = calculated
+		mode: import
+		source =
+				VAR Skills = SUMMARIZE ( 'Skill pairs', 'Skill pairs'[skill], 'Skill pairs'[skill_jobs] )
+				RETURN
+				    SELECTCOLUMNS (
+				        Skills,
+				        "Skill", 'Skill pairs'[skill],
+				        "Order", RANKX ( Skills, 'Skill pairs'[skill_jobs], , DESC, DENSE )
+				    )
+

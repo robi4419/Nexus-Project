@@ -1,0 +1,13 @@
+EVALUATE
+ROW (
+    "Jobs", [Jobs],
+    "Jobs with skill", [Jobs with skill],
+    "Python share", CALCULATE ( [Share of jobs], Skill[Skill] = "Python" ),
+    "Jobs with salary", [Jobs with salary],
+    "Median salary", [Median salary],
+    "Python median salary", CALCULATE ( [Median salary], Skill[Skill] = "Python" ),
+    "Europe jobs", CALCULATE ( [Jobs], Location[Region] = "Europe" ),
+    "Listed now", CALCULATE ( [Jobs], 'Job postings'[Listed now] = TRUE () ),
+    "Python week share", CALCULATE ( [Week share], Skill[Skill] = "Python", 'Weekly skill trend'[Week] = DATE ( 2026, 10, 19 ) ),
+    "Skill pairs", COUNTROWS ( 'Skill pairs' )
+)

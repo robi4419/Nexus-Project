@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "36314a56ce0c56892737",
+  "displayName": "Rising Skills",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "pageBinding": {
+    "name": "9f01188d866e02ee80d9",
+    "type": "Default",
+    "parameters": []
+  },
+  "objects": {
+    "outspacePane": [
+      {
+        "properties": {
+          "width": {
+            "expr": {
+              "Literal": {
+                "Value": "202L"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "6d9cef71c01c5ac214ad",
+      "target": "b8395ea0a789eae55990",
+      "type": "NoFilter"
+    },
+    {
+      "source": "6d9cef71c01c5ac214ad",
+      "target": "e06c703c10be204c83da",
+      "type": "NoFilter"
+    },
+    {
+      "source": "e06c703c10be204c83da",
+      "target": "b8395ea0a789eae55990",
+      "type": "NoFilter"
+    },
+    {
+      "source": "b8395ea0a789eae55990",
+      "target": "e06c703c10be204c83da",
+      "type": "NoFilter"
+    },
+    {
+      "source": "0bd55fa726253593908e",
+      "target": "e06c703c10be204c83da",
+      "type": "HighlightFilter"
+    },
+    {
+      "source": "0bd55fa726253593908e",
+      "target": "b8395ea0a789eae55990",
+      "type": "HighlightFilter"
+    }
+  ]
+}

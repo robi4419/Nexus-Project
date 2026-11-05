@@ -1,5 +1,5 @@
 with job_skills as (
-  select * from {{ ref('stg_silver__job_skills') }}
+  select * from {{ ref('int_job_skills') }}
 ),
 final as (
   select a.job_key, a.skill as skill_a, b.skill as skill_b
