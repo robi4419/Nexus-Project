@@ -45,10 +45,6 @@ relationship trend_skill
 	fromColumn: 'Weekly skill trend'.skill
 	toColumn: Skill.Skill
 
-relationship trend_source
-	fromColumn: 'Weekly skill trend'.source
-	toColumn: Source.'Source key'
-
 relationship trend_week
 	fromColumn: 'Weekly skill trend'.Week
 	toColumn: Date.Date

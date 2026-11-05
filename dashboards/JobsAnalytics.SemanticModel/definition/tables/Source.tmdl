@@ -1,4 +1,5 @@
-/// The three job sources, so one slicer filters both the jobs and the weekly trend.
+/// The three job sources, for the Source slicer. It filters the jobs through 'Job sources'; the weekly trend counts each
+/// job once over all three (decision 12), so it has no source.
 table Source
 	lineageTag: 3332c90f-2cf6-497d-af21-b40db30e3f60
 

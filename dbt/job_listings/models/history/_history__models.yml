@@ -1,14 +1,14 @@
 version: 2
 
-# Counts of Himalayas jobs that stay after the jobs are deleted at expiry (Phase 5, decision 4). Each build appends
-# only the jobs first seen since the previous build, so every job is counted once, before it can expire. The tables
-# can't be rebuilt once the jobs are gone: full_refresh is off (dbt_project.yml), and they must never be dropped.
-# The one exception was planned: in November 2026 they were dropped and rebuilt once to count jobs instead of postings
-# (decision 11), losing the counts of the jobs that had expired by then (103 of 25,523).
+# Counts that must outlive the Himalayas jobs they count (Phase 5, decisions 4 and 12). Each build appends only what's
+# new since the previous build, before the jobs can expire. The tables can't be rebuilt once the jobs are gone:
+# full_refresh is off (dbt_project.yml), and they must never be dropped. The one exception was planned: in November
+# 2026 the two day tables were dropped and rebuilt once to count jobs instead of postings (decision 11), losing the
+# counts of the jobs that had expired by then (103 of 25,523).
 
 models:
   - name: hist_himalayas_jobs_by_day
-    description: "Himalayas jobs per UTC day first seen, kept as counts after the jobs expire. A job's postings count once, on the day the earliest still in silver was first seen; a job reposted after all its postings expired counts again (decision 11). One row per day x build that saw new jobs: sum jobs over a day's or week's rows. Appended to by every build, never rebuilt (Phase 5, decision 4)."
+    description: "Himalayas jobs per UTC day first seen, kept as counts after the jobs expire. A job's postings count once, on the day the earliest still in silver was first seen; a job reposted after all its postings expired counts again, as a new opening (decisions 11 and 13). One row per day x build that saw new jobs: sum jobs over a day's or week's rows. Appended to by every build, never rebuilt (Phase 5, decision 4)."
     constraints:
       - type: primary_key
         name: pk_hist_himalayas_jobs_by_day
@@ -96,3 +96,74 @@ models:
         description: "The latest first_seen_at counted by the build that added the row, over all the jobs it counted (with or without skills)."
         constraints:
           - type: not_null
+
+  - name: hist_himalayas_overlap_jobs_by_week
+    description: "Openings counted twice when agg_skill_weekly_trend adds Jobicy's and Arbeitnow's openings to Himalayas', per week: Jobicy/Arbeitnow openings + Himalayas openings - openings over all boards (int_job_openings; Phase 5, decisions 12 and 13), kept after the Himalayas jobs expire. The trend subtracts them, so a job on several boards counts once per opening. Each week is counted by the build that completes it, once its Sunday is two days old, while the Himalayas postings are still in silver; the trend shows exactly the weeks stored here. One row per week from 2026-10-19, 0 when none. Appended to by every build, never rebuilt."
+    constraints:
+      - type: primary_key
+        name: pk_hist_himalayas_overlap_jobs_by_week
+        columns: [week_start]
+        warn_unenforced: false
+    columns:
+      - name: week_start
+        data_type: date
+        description: "Monday of the week (dim_date)."
+        constraints:
+          - type: not_null
+        data_tests:
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: jobs
+        data_type: bigint
+        description: "Openings that began in the week and that both board groups counted; 0 when none."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_hist_himalayas_overlap_jobs_by_week_jobs
+            expression: "jobs >= 0"
+
+  - name: hist_himalayas_overlap_skills_by_week
+    description: "The openings of hist_himalayas_overlap_jobs_by_week per week x skill, with the skills of all the job's postings (int_job_skills) when the week was counted. One row per week x skill. Counts the weeks that model has stored and this one hasn't. Appended to by every build, never rebuilt (Phase 5, decisions 12 and 13)."
+    constraints:
+      - type: primary_key
+        name: pk_hist_himalayas_overlap_skills_by_week
+        columns: [week_start, skill]
+        warn_unenforced: false
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["week_start", "skill"]
+    columns:
+      - name: week_start
+        data_type: date
+        description: "Monday of the week (dim_date)."
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: skill
+        data_type: string
+        description: "{{ doc('skill') }} A skill later renamed or removed from the taxonomy keeps its old name here."
+        constraints:
+          - type: not_null
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_skill')
+                field: skill
+              config:
+                severity: warn # old rows keep skills the taxonomy may drop later
+      - name: jobs
+        data_type: bigint
+        description: "Openings counted twice that week, asking for the skill."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_hist_himalayas_overlap_skills_by_week_jobs
+            expression: "jobs > 0"

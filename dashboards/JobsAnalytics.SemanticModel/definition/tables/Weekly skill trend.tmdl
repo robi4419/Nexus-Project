@@ -1,5 +1,6 @@
-/// One row per complete week x source x skill (gold.agg_skill_weekly_trend). Himalayas weeks come from frozen counts
-/// (Phase 5, decision 4). The job filters don't apply; use the Trend measures, which combine the selected sources.
+/// One row per complete week x skill (gold.agg_skill_weekly_trend): each job once, in the week it was first listed on
+/// any board (Phase 5, decision 12). Himalayas weeks come from frozen counts (decision 4). The job filters don't apply;
+/// use the Trend measures.
 table 'Weekly skill trend'
 	lineageTag: 9620112e-6589-4d8b-b3aa-32fcfff36ff7
 
@@ -12,13 +13,6 @@ table 'Weekly skill trend'
 		sourceColumn: week_start
 
 		annotation UnderlyingDateTimeDataType = Date
-
-	column source
-		dataType: string
-		isHidden
-		lineageTag: f069faeb-b813-48af-b2b2-106979541cd6
-		summarizeBy: none
-		sourceColumn: source
 
 	column skill
 		dataType: string
@@ -50,7 +44,7 @@ table 'Weekly skill trend'
 				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
 				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
 				    Data = Gold{[Name = "agg_skill_weekly_trend", Kind = "Table"]}[Data],
-				    Columns = Table.SelectColumns(Data, {"week_start", "source", "skill", "jobs", "week_jobs"})
+				    Columns = Table.SelectColumns(Data, {"week_start", "skill", "jobs", "week_jobs"})
 				in
 				    Columns
 

@@ -4,7 +4,7 @@ version: 2
 
 models:
   - name: int_job_postings
-    description: "One row per posting: stg_silver__jobs plus job_key (the job it belongs to, Phase 5 decision 11), company_key, published_month, a salary midpoint and a plausibility flag. Shared by fct_job_postings, the bridges, the weekly trend, the history and dim_company."
+    description: "One row per posting: stg_silver__jobs plus job_key (the job it belongs to, Phase 5 decision 11), company_key, published_month, a salary midpoint and a plausibility flag. Shared by fct_job_postings, the bridges, int_job_openings, the history and dim_company."
     columns:
       - name: posting_key
         description: "{{ doc('posting_key') }}"
@@ -86,6 +86,25 @@ models:
         description: "The most mentions of the skill in any one of the job's postings (title + the description's lines about the job)."
       - name: in_title
         description: "True when the skill is in the title of any of the job's postings."
+  - name: int_job_openings
+    description: "One row per job x scope x week in which an opening of the job began (Phase 5, decisions 12 and 13). Each posting is a listing: Jobicy and Arbeitnow on the publish date, Himalayas on the day first seen. A listing starts a new opening when none of the job's earlier listings is still live: Jobicy and Arbeitnow listings count as live for 8 weeks, Himalayas ones until they expire. Feeds the weekly trend and the Himalayas overlap history."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["job_key", "scope", "week_start"]
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
+      - name: scope
+        description: "Which listings decide the openings: jobicy_arbeitnow or himalayas (only that board group's listings), or all_boards (every listing, so a job on several boards opens once)."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["jobicy_arbeitnow", "himalayas", "all_boards"]
+      - name: week_start
+        description: "Monday of the week the opening began (as in dim_date)."
+        data_tests: [not_null]
   - name: int_job_skill_pairs
     description: "One row per job x pair of skills found in that job, each pair once and in alphabetical order (skill_a < skill_b). Feeds agg_skill_co_occurrence."
     data_tests:
@@ -103,3 +122,35 @@ models:
         description: "The alphabetically first skill of the pair."
       - name: skill_b
         description: "The alphabetically second skill of the pair."
+
+unit_tests:
+  - name: int_job_openings_count_a_job_again_once_its_listings_lapse
+    description: "a: Jobicy reposts it 9 weeks later, a new opening. b: reposted every few weeks, so one listing is always live: one opening. c: Himalayas first, Arbeitnow a week later: one opening over all boards, one per board group. d: a Himalayas posting expires early and the job is posted again: two openings."
+    model: int_job_openings
+    given:
+      - input: ref('int_job_postings')
+        rows:
+          - {job_key: a, source: jobicy, published_date: 2026-10-05, first_seen_at: 2026-10-05 18:00:00}
+          - {job_key: a, source: jobicy, published_date: 2026-12-07, first_seen_at: 2026-12-07 18:00:00}
+          - {job_key: b, source: jobicy, published_date: 2026-10-05, first_seen_at: 2026-10-05 18:00:00}
+          - {job_key: b, source: arbeitnow, published_date: 2026-11-02, first_seen_at: 2026-11-02 18:00:00}
+          - {job_key: b, source: jobicy, published_date: 2026-12-14, first_seen_at: 2026-12-14 18:00:00}
+          - {job_key: c, source: himalayas, published_date: 2026-10-20, first_seen_at: 2026-10-21 18:00:00, expires_at: 2026-12-19 00:00:00}
+          - {job_key: c, source: arbeitnow, published_date: 2026-10-28, first_seen_at: 2026-10-28 18:00:00}
+          - {job_key: d, source: himalayas, published_date: 2026-10-20, first_seen_at: 2026-10-21 18:00:00, expires_at: 2026-11-10 00:00:00}
+          - {job_key: d, source: himalayas, published_date: 2026-11-19, first_seen_at: 2026-11-20 18:00:00, expires_at: 2027-01-19 00:00:00}
+    expect:
+      rows:
+        - {job_key: a, scope: jobicy_arbeitnow, week_start: 2026-10-05}
+        - {job_key: a, scope: jobicy_arbeitnow, week_start: 2026-12-07}
+        - {job_key: a, scope: all_boards, week_start: 2026-10-05}
+        - {job_key: a, scope: all_boards, week_start: 2026-12-07}
+        - {job_key: b, scope: jobicy_arbeitnow, week_start: 2026-10-05}
+        - {job_key: b, scope: all_boards, week_start: 2026-10-05}
+        - {job_key: c, scope: himalayas, week_start: 2026-10-19}
+        - {job_key: c, scope: jobicy_arbeitnow, week_start: 2026-10-26}
+        - {job_key: c, scope: all_boards, week_start: 2026-10-19}
+        - {job_key: d, scope: himalayas, week_start: 2026-10-19}
+        - {job_key: d, scope: himalayas, week_start: 2026-11-16}
+        - {job_key: d, scope: all_boards, week_start: 2026-10-19}
+        - {job_key: d, scope: all_boards, week_start: 2026-11-16}

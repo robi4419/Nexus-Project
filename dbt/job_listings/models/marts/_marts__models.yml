@@ -649,11 +649,11 @@ models:
             expression: "lift > 0"
 
   - name: agg_skill_weekly_trend
-    description: "One row per complete week x source x skill (every skill, 0 when not asked for), for rising-skill charts. Counts jobs, a job's postings once (decision 11); a job on two boards counts once for each. Jobicy and Arbeitnow are counted by the week the source first published the job, from silver. Himalayas is counted by the week each job was first seen, from the frozen counts in hist_himalayas_*: it deletes expired jobs, which would fake a decline, and its pubDate is the last update (Phase 5, decisions 4 and 5). Starts with the week of 2026-10-19; a week is included once its Sunday is two days old, a margin for jobs a feed lists a day late. Dashboard filters don't apply. For several sources together, divide summed jobs by summed week_jobs."
+    description: "One row per complete week x skill (every skill, 0 when not asked for), for rising-skill charts. A job counts once per opening, in the week the opening began on any board (int_job_openings; Phase 5, decisions 12 and 13): Jobicy and Arbeitnow by publish date, Himalayas by the day first seen (its pubDate is the last update). A repost on any board while one of the job's listings is still live (8 weeks for Jobicy and Arbeitnow, until expiry for Himalayas) doesn't count again; a later one is a new opening. Jobicy and Arbeitnow are counted from silver; Himalayas from the frozen counts in hist_himalayas_*_by_day, because it deletes expired jobs, which would fake a decline (decision 4); openings both count are subtracted through hist_himalayas_overlap_*. The weeks are those hist_himalayas_overlap_jobs_by_week has stored: from 2026-10-19, each once its Sunday is two days old. Dashboard filters don't apply."
     constraints:
       - type: primary_key
         name: pk_agg_skill_weekly_trend
-        columns: [week_start, source, skill]
+        columns: [week_start, skill]
         warn_unenforced: false
       - type: check
         name: chk_agg_skill_weekly_trend_jobs_in_week
@@ -661,7 +661,7 @@ models:
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
-            combination_of_columns: ["week_start", "source", "skill"]
+            combination_of_columns: ["week_start", "skill"]
     columns:
       - name: week_start
         data_type: date
@@ -678,15 +678,6 @@ models:
               arguments:
                 to: ref('dim_date')
                 field: date_day
-      - name: source
-        data_type: string
-        description: "{{ doc('source') }}"
-        constraints:
-          - type: not_null
-        data_tests:
-          - accepted_values:
-              arguments:
-                values: ["jobicy", "arbeitnow", "himalayas"]
       - name: skill
         data_type: string
         description: "{{ doc('skill') }} Foreign key to dim_skill."
@@ -704,7 +695,7 @@ models:
                 field: skill
       - name: jobs
         data_type: bigint
-        description: "The source's jobs that week asking for the skill (published that week; for Himalayas, first seen that week); 0 when none."
+        description: "Openings that began that week asking for the skill; 0 when none. Never below 0: frozen and live skill tags can differ by a job after an expiry or a matcher change."
         constraints:
           - type: not_null
           - type: check
@@ -712,7 +703,7 @@ models:
             expression: "jobs >= 0"
       - name: week_jobs
         data_type: bigint
-        description: "All the source's jobs that week, with or without skills."
+        description: "All openings that began that week, with or without skills."
         constraints:
           - type: not_null
           - type: check
@@ -720,7 +711,7 @@ models:
             expression: "week_jobs > 0"
       - name: share
         data_type: double
-        description: "Share of the source's jobs that week asking for the skill: jobs / week_jobs. Unlike jobs, it doesn't rise just because a week was busy."
+        description: "Share of the week's jobs asking for the skill: jobs / week_jobs. Unlike jobs, it doesn't rise just because a week was busy."
         constraints:
           - type: not_null
           - type: check
@@ -728,10 +719,10 @@ models:
             expression: "share >= 0 and share <= 1"
       - name: prev_jobs
         data_type: bigint
-        description: "jobs in the source's previous week. NULL in the first week."
+        description: "jobs in the previous week. NULL in the first week."
       - name: prev_share
         data_type: double
-        description: "share in the source's previous week. NULL in the first week."
+        description: "share in the previous week. NULL in the first week."
       - name: share_change
         data_type: double
         description: "share - prev_share, as a fraction (0.012 = +1.2 percentage points). Rising skills have the largest values; filter on jobs or prev_jobs to skip skills too rare to trust. NULL in the first week."

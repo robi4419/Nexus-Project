@@ -55,6 +55,7 @@
    - Himalayas is counted by the week each job was first seen, from the frozen counts. Its `pubDate` is the last update, so counting by it would move refreshed jobs to later weeks.
    - DAX measures compute shares and week-over-week changes, so any choice of sources works.
    - The title fallback (Phase 4, decision 8) changes Himalayas' mix from 2026-10-31. The page notes it, and a source slicer can leave Himalayas out.
+   - *Changed by decision 12:* one row per week × skill, each job once, and no source slicer.
 6. **I write the semantic model, and you build the visuals.** The model is TMDL text in the PBIP project: tables, Databricks queries, relationships, hierarchies and measures, reviewable in git. You build the pages in Desktop with my step-by-step guidance. Everything is committed, except Desktop's local cache and settings.
 7. **Four pages, each with a credits footer, starting on jobs listed now:**
    - **Skills overview:** top skills and categories by share of jobs, with filters for region and country, industry, seniority, job type and date.
@@ -103,7 +104,7 @@
       - the salary of the newest posting with a plausible one.
 
       Skills, locations, industries and types are the union over its postings. The new `bridge_job_sources` lists the boards a job is on, so the Source slicer finds it under each.
-    - **The weekly trend** counts jobs per source. A job on two boards counts once for each.
+    - **The weekly trend** counts jobs per source. A job on two boards counts once for each, until decision 12.
     - **The history is rebuilt once to count jobs.** The two `hist_himalayas_*` tables are dropped and backfilled from silver. That loses the counts of 103 Himalayas jobs (0.4%) that had expired since 21 October. From then on, a job reposted after all its postings expired counts again.
     - **Rehearsed before building** (2026-11-03): the compiled models were chained over silver as one read-only query.
       - 44,179 postings make 38,280 jobs, one `fct_job_postings` row each;
@@ -120,6 +121,65 @@
          - **History:** 22,341 Himalayas jobs (from 25,420 postings), equal to silver, and 4,349 skill rows.
          - **Trend:** two complete weeks, 19 and 26 October, for every source.
       4. Next: refresh Power BI Desktop, where the Source slicer now goes through the new `Job sources` bridge.
+12. **(2026-11-04) The weekly trend counts each job once, in the week it was first listed on any board.**
+    - **Why:** the trend counted each board separately, so a job on two boards counted twice. Himalayas' copies couldn't be matched with the others once they expired. The Source slicer it allowed on the Rising skills page wasn't worth that.
+    - **The rule** is `int_job_first_listings`. For each job, it gives the week Himalayas first listed it (by the day first seen) and the week Jobicy or Arbeitnow first did (by publish date), and the job counts in the earlier one. A board listing the job again, or another board listing it later, is the same job still listed, so it doesn't count again.
+    - **How a week is counted:**
+      - the jobs Jobicy or Arbeitnow first listed that week, recomputed from silver;
+      - plus the jobs Himalayas first listed that week, from the frozen history, unchanged (decision 4);
+      - minus the jobs on both whose later first listing fell that week.
+
+      That last count can't be recomputed once the Himalayas posting expires. Two new incremental tables, `hist_himalayas_overlap_jobs_by_week` and `…_skills_by_week`, store it once per week, written by the build that completes the week. The trend shows exactly the weeks stored there.
+
+      Example: Jobicy lists Acme on 20 October and Himalayas on 29 October. The week of 19 October counts 1 + 0 − 0 = 1, and the week of 26 October counts 0 + 1 − 1 = 0.
+    - **Measured** (2026-11-04), against counting each board separately:
+      - 13,512 and 17,129 jobs in the weeks of 19 and 26 October, instead of 13,677 and 17,611;
+      - shares move by up to 0.3 pp: Go 6.1 → 5.8%, Machine Learning 11.7 → 11.4%;
+      - the risers stay the same. Among the fallers, Linux goes from −0.6 to −0.8 pp and SQL leaves the top 5. Machine Learning turns from +0.1 to −0.1.
+    - **Rehearsed** (2026-11-04, read-only): the new model files ran as first builds over that day's data.
+      - **Week of 19 October:** 13,512 jobs, equal to an independent count from silver.
+      - **Week of 26 October:** 17,129 jobs, which is the independent 17,084 plus the 45 expired Himalayas jobs the history kept.
+      - **Shapes and limits:** 768 rows (2 weeks × 384 skills); no count went below 0; shares within 0.04 pp of the independent count.
+    - **Rejected:**
+      - **First listing per board:** a copy on another board in a later week counted again (17,403 jobs in the week of 26 October).
+      - **Every week a board lists the job:** a repost is the same job still listed (18,194).
+      - **Jobs listed during the week:**
+        - Jobicy's and Arbeitnow's feeds are 7-day windows, while Himalayas jobs stay listed until they expire, about two months later.
+        - Our Himalayas stock grows until its first big expiries in December (19,001 of 22,728 jobs). Himalayas went from 46% to 70% of the listed jobs between the two weeks, so nearly every tech skill seemed to rise 2–3 pp.
+        - The Skills overview's Listed now shows current demand instead.
+      - **Dating every job by the day first seen:** Arbeitnow's first run brought 4,161 jobs published the week before, so nearly every common skill seemed to rise 1–2.7 pp.
+      - **Keeping the job keys of expired Himalayas jobs to match copies later:** a job key is the company and title hashed, so it would keep the expired job under another name (decision 4).
+      - **Freezing Jobicy and Arbeitnow too:** a matcher fix would no longer reach their past weeks.
+    - **Left imperfect:**
+      - **Expired before matching:** a job counts twice when its Himalayas posting has already expired by the time the week of its later listing is stored.
+      - **Late landings:** a Jobicy or Arbeitnow posting that lands more than two days late, after its week is stored, isn't matched.
+      - **Floored skill counts:** frozen and live skill tags can differ by a job after an expiry or a matcher change, so a skill count is floored at 0. That didn't happen in the rehearsal.
+    - **Power BI:** the trend has no source column, the Source slicer leaves the Rising skills page, and the Trend measures no longer combine sources.
+13. **(2026-11-05) A job counts again, as a new opening, once none of its listings is live.**
+    - **Why:** under decision 12, a repost never counted again on Jobicy and Arbeitnow, whose postings silver keeps forever. On Himalayas it did, once its earlier postings expired (a median of 59 days after first seen). Over the months, re-openings of the same company and title would have vanished on Jobicy and Arbeitnow while Himalayas kept counting them. Himalayas' weight in new jobs would have grown into a fake trend.
+    - **The rule** is `int_job_openings`, which replaces `int_job_first_listings`. A listing starts a new opening when none of the job's earlier listings is still live:
+      - a Jobicy or Arbeitnow listing counts as live for 8 weeks after it was published, because their feeds show only 7 days and we can't see when a job closes;
+      - a Himalayas listing is live until it expires, which is when the Himalayas history already counts a job again.
+
+      A role that's reposted continuously stays one opening.
+    - **How a week is counted:** as in decision 12, but with openings instead of jobs.
+      - The Jobicy and Arbeitnow openings come from silver.
+      - The Himalayas openings come from the frozen history, which is unchanged.
+      - The overlap tables now store what those two count twice: Jobicy/Arbeitnow openings + Himalayas openings − openings over all boards, frozen per week.
+    - **A unit test** in `_int__models.yml` pins the rule with four made-up jobs:
+      - a repost 9 weeks later;
+      - reposts every few weeks;
+      - Himalayas first, then Arbeitnow;
+      - a Himalayas posting that expired early, followed by a new one.
+    - **Measured before choosing:**
+      - same-board reposts 7 or more days later: 325 jobs on Arbeitnow, 274 on Himalayas, 48 on Jobicy;
+      - the longest gap so far is 26 days.
+    - **Rehearsed** (2026-11-05, read-only): the result is identical to the trend built the day before, with 13,512 and 17,129 jobs and all 768 skill counts the same. The data, which starts on 7 October, has no 8-week gap yet, so no history table needed a rebuild.
+    - **Rejected:**
+      - **keeping one count per job;**
+      - **a 4-week window:** it would recount roles that are only bumped;
+      - **counting again 8 weeks after the last counted week, however often the job was reposted:** the Himalayas history can't do that without remembering expired jobs.
+    - **Left behind:** dbt doesn't drop the old view `gold_staging.int_job_first_listings`.
 
 ## How it fits
 
@@ -226,6 +286,18 @@ Pages use Fit to page, at a 16:9 ratio.
 
   The dropdown filters `Skill pairs` to one skill, so the heatmap takes its axes from two tables related to nothing, `Heatmap rows` and `Heatmap columns`. A Top N filter by `Heatmap rank` picks the rows, and `Heatmap lift` is blank in the columns outside them. The pairs are counted over all jobs, so the page has no job slicers. The Filters pane is hidden from viewers, so the visual-level filters stay as designed.
 - **No drill-through:** Power BI applies a drill-through as a page filter, which leaves a dropdown on the same field offering only the drilled skill, and a drill-through can't set or clear a slicer. The synced dropdown carries a picked skill between pages instead.
+- **Rising skills, done on 2026-11-04:**
+  - **Rising and Falling:** the 10 skills whose share of each week's new jobs rose or fell most, latest complete week against the week before, in percentage points. The tooltips hold both weeks' shares and jobs.
+  - **Weekly share line:** the latest week's top 10 skills, or the picked ones. Its title follows what it shows.
+  - **A note** on how a week counts jobs (decisions 12 and 13), and on Himalayas' title fallback from 31 October.
+
+  **Open, to decide on 2026-11-10 when the week of 2 November appears:** whether the trend should use mix-adjusted shares.
+  - **What happened** (investigated 2026-11-05): from 3 November, Himalayas posts and updates about 2,000 jobs a day instead of about 6,000. Fresh tech postings fell from 1,700–2,400 a day to 650–800, after a mass re-bump of two-week-old jobs on 1–2 November.
+  - **Not an API change:** the fields, `pubDate`, the sort order, the page size and the release notes are unchanged. The feed's `totalCount` fell from about 128,000 to 112,841.
+  - **The effect:** Himalayas went from 73% of the week's new jobs to 42% so far. The combined shares then show fake falls for tech skills (CI/CD −5.9 pp, AWS −5.6 pp) and fake rises for skills common on Arbeitnow.
+  - **The proposed fix:** each skill's share computed within each board group and combined with fixed weights, so one board's volume can't move it.
+
+  The dropdown filters only the line, and clicking a bar shows that skill's line. The two bar charts don't filter each other. The trend counts all three boards together, so the page has no Source slicer. Checked against gold after the 2026-11-04 build: the 20 movers and the 10 lines match.
 
 ### 5.6 Account and publishing (you, once the report is ready; the trials start counting at sign-up)
 1. Start a Microsoft 365 trial, which creates the `…onmicrosoft.com` account. Cancel the subscription before it bills; the account stays.
@@ -291,6 +363,9 @@ Pages use Fit to page, at a 16:9 ratio.
 - **A matrix has no Tooltips well.** A report-page tooltip shows the extra values.
 - **A slicer's Single select keeps one item always selected.** The skill dropdown uses Ctrl to multi-select instead: a click picks one skill, and clicking it again clears it.
 - **Test the picked skill on the dropdown's own column, `Skill[Skill]`.** On `'Skill pairs'[skill]`, each bar's own filter can leave a single skill, so `HASONEVALUE` was true with nothing picked.
+- **A chart's Top N filter also filters its title measure.** On the trend line, `ISFILTERED ( Skill[Skill] )` was true with nothing picked, so the title said "the picked skills". `Trend line title` compares the skills shown with the latest week's top 10 instead.
+- **Selections in different visuals intersect.** A bar clicked in Rising and one Ctrl+clicked in Falling leave no skill, so the trend line is empty; Ctrl+click adds skills only within one visual or slicer. The two charts were kept, and the trend line's title says what happened and points to the dropdown. `COUNTROWS` of an empty table is blank, which counts as 0 in a comparison, so the title tests `ISEMPTY` first.
+- **A `%` format makes a difference of shares read as growth:** 0.02 shows as "+2.0%". Share changes are multiplied by 100 and formatted `+0.0" pp"`.
 
 ## Repo layout additions
 
@@ -298,7 +373,10 @@ Pages use Fit to page, at a 16:9 ratio.
 dbt/job_listings/models/history/
     hist_himalayas_jobs_by_day.sql        ← frozen counts per day first seen
     hist_himalayas_skills_by_day.sql      ← … per day first seen × skill
+    hist_himalayas_overlap_jobs_by_week.sql    ← jobs also on Jobicy or Arbeitnow, per week (decision 12)
+    hist_himalayas_overlap_skills_by_week.sql  ← … per week × skill
     _history__models.yml
+dbt/job_listings/models/intermediate/int_job_openings.sql  ← the weeks each job's openings began (decision 13)
 dashboards/
     JobsAnalytics.pbip
     JobsAnalytics.SemanticModel/definition/   ← TMDL: tables, relationships, measures
