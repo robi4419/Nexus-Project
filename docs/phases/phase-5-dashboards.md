@@ -17,7 +17,7 @@
 - [x] 5.4 Semantic model in TMDL: tables, relationships, hierarchies, DAX measures; refreshed and checked against gold
 - [ ] 5.5 Report pages (you build them, I guide): skills overview, rising skills, salaries, skills asked together
 - [ ] 5.6 Account and publishing: tenant, Pro trial, Publish to web, daily refresh
-- [ ] 5.7 Make the repository public: made-up fixtures, history scan, author email, licence
+- [x] 5.7 Make the repository public: made-up fixtures, history scan, author email, licence
 - [ ] 5.8 GitHub Pages site with the iframe
 - [ ] 5.9 Verify end to end
 - [ ] 5.10 Docs, commit, PR and merge
@@ -313,6 +313,15 @@ Pages use Fit to page, at a 16:9 ratio.
 - **Your call:** the commits carry `vasairobert@yahoo.com`. Either accept it, or use the GitHub noreply address for future commits.
 - Optional: add a `LICENSE` file.
 - **You:** Settings → Change visibility → Public.
+- **Done on 2026-11-05, except the visibility change:**
+  - **Fixtures:** the 3 real jobs (1 Jobicy, 2 Arbeitnow) were replaced with made-up ones in the same format; all 459 tests pass. The old commits keep those 3 public postings, which you accepted. The Himalayas fixture was made-up from its first commit, so no Himalayas data is anywhere in the history.
+  - **History scan** of all 124 commits, on every branch, printing only the file names that matched:
+    - no Databricks token, no private key, no Bearer token, no secret variable with a value, and no `.env` or credentials file ever committed;
+    - the flagged `TOKEN` lines in `transform/skills.py` and its tests are the word-splitting regex and test cases.
+  - **Public, by your choice:**
+    - **the e-mail** `vasairobert@yahoo.com` on 116 commits, which stays;
+    - **the Databricks host and SQL warehouse HTTP path** in `expressions.tmdl` (decision 8). They identify the workspace but grant nothing without a token.
+  - **No `LICENSE` file:** the code is readable, with all rights reserved.
 
 ### 5.8 GitHub Pages
 - `site/index.html` with:
@@ -322,6 +331,10 @@ Pages use Fit to page, at a 16:9 ratio.
   - no JobPosting structured data (Himalayas' terms).
 - `.github/workflows/pages.yml` deploys `site/` on a push to `main` that changes it.
 - **You:** Settings → Pages → Source: GitHub Actions.
+- **Written on 2026-11-05:**
+  - **`site/index.html`:** report and credits only, as you chose, in the report's colours. Until 5.6, a placeholder stands where the iframe goes. A comment there shows where to paste the embed code, and the screenshot line to use if the embed ever stops.
+  - **`pages.yml`:** uses the current major versions of the actions (checkout v7, configure-pages v6, upload-pages-artifact v5, deploy-pages v5). It can also be started by hand from the Actions tab.
+  - **First deploy:** happens after the merge to `main`, because the `github-pages` environment only accepts deploys from the default branch.
 
 ### 5.9 Verify
 1. `pytest`, `dbt build` and the history checks (5.2) pass.
