@@ -357,6 +357,14 @@ Pages use Fit to page, at a 16:9 ratio.
    - data can't be exported;
    - the credits show.
 5. The numbers change after the next nightly refresh.
+- **Checked on 2026-11-05:**
+  - **Tests and build:** `pytest` passes (459 tests). The nightly `dbt build` ran green with the new trend models and their unit test (18:04–18:13 UTC).
+  - **The public link,** in a private window with no sign-in:
+    - it opens on Skills overview, and the hidden tooltip page has no tab;
+    - the cards match gold: 29,449 listed jobs, 24,577 with skills, and Python 24.2%, AWS 19.4%, CI/CD 18.1%, SQL 17.9%, Azure 15.7%;
+    - Salaries shows 9,314 jobs with a salary and a $135,000 median;
+    - the heatmap tooltips work, data can't be exported, and the credits show on every page.
+  - **Still to confirm:** the first scheduled refresh, on 2026-11-06 at 19:00 UTC, and that the numbers move after it.
 
 ## Concepts you'll meet
 - **Semantic model:** Power BI's layer of tables, relationships and measures that every visual queries. **Import** keeps a compressed copy, refreshed on a schedule.

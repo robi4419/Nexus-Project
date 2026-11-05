@@ -31,10 +31,14 @@ Things to handle:
      ▼
  GOLD (dbt)  dim_date · dim_skill · dim_location · dim_company · dim_industry · dim_seniority
              fct_job_postings · fct_job_skills · bridge_job_locations · bridge_job_industries · bridge_job_types
-             agg_skill_co_occurrence · agg_skill_weekly_trend
-     │  (5) Power BI Desktop, Databricks connector (Import)
+             bridge_job_sources · agg_skill_co_occurrence · agg_skill_weekly_trend
+             hist_himalayas_* (frozen counts that outlive expired Himalayas jobs)
+     │  (5) Power BI semantic model (Import, Databricks connector), refreshed by the Power BI service at 19:00 UTC
      ▼
- Power BI dashboards (filters: country, industry, level, job type, date), measures in DAX
+ Power BI report (filters: country, industry, level, job type, date), measures in DAX
+     │  (6) Publish to web, embedded in GitHub Pages
+     ▼
+ https://robi4419.github.io/Nexus-Project/
 ```
 
 Design principles:
@@ -104,11 +108,12 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Himalayas jobs without a parent category kept when their title is clearly Tech (about 400 a day), with an industry from the same rules in silver.
 
 ### Phase 5: Dashboards
-- [ ] Himalayas' weekly history kept as frozen counts (incremental dbt models), so the weekly trend covers all three sources after Himalayas jobs expire.
-- [ ] Power BI semantic model in TMDL on the gold tables: relationships from the primary and foreign keys (fact–bridge relationships filtering both ways), hierarchies from `dim_location` and `dim_date`, measures in DAX. Job rows without titles, links or companies: the report shows aggregates only.
-- [ ] Four report pages: skills overview, rising skills, salaries, skills asked together. Filters for region and country, industry, seniority, job type and date; jobs listed now by default; source credits on every page.
-- [ ] Save as a PBIP project in `dashboards/`.
-- [ ] Publish to web from your own Microsoft tenant (Pro trial first), refreshed daily at 19:00 UTC, embedded in a GitHub Pages site. The repository becomes public.
+- [x] Himalayas' weekly history kept as frozen counts (incremental dbt models), so the weekly trend covers all three sources after Himalayas jobs expire.
+- [x] Power BI semantic model in TMDL on the gold tables: relationships from the primary and foreign keys (fact–bridge relationships filtering both ways), hierarchies from `dim_location` and `dim_date`, measures in DAX. Job rows without titles, links or companies: the report shows aggregates only.
+- [x] Four report pages: skills overview, rising skills, salaries, skills asked together. Filters for region and country, industry, seniority, job type and date; jobs listed now by default; source credits on every page.
+- [x] Save as a PBIP project in `dashboards/`.
+- [x] Publish to web from your own Microsoft tenant (Pro trial first), refreshed daily at 19:00 UTC, embedded in a GitHub Pages site. The repository becomes public.
+- [x] Along the way: skills come only from the description's lines about the job, a job counts once however often it's posted, and the weekly trend counts each job once per opening across the three boards (Phase 5, decisions 10 to 13).
 
 ### Phase 6: GitHub and CI (can start alongside Phase 1)
 - [ ] Feature branches and PRs.
