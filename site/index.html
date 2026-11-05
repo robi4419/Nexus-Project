@@ -26,21 +26,18 @@
     main { max-width: 1280px; margin: 0 auto; padding: 32px 16px 24px; }
     h1 { margin: 0 0 8px; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 600; color: var(--teal); }
     .intro { margin: 0 0 24px; max-width: 70ch; color: var(--muted); }
-    /* The report pages are 16:9; Publish to web adds a page bar of about 36px under them. */
+    /* The report pages are 16:9, and Publish to web adds a page bar of about 36px under them. The width is the page's
+       content width: the window minus the 16px gutters, at most 1280 - 32px. */
     .report {
       position: relative;
       width: 100%;
-      aspect-ratio: 16 / 9.35;
+      height: calc(min(100vw - 32px, 1248px) * 9 / 16 + 36px);
       border: 1px solid var(--border);
       border-radius: 8px;
       background: #fff;
       overflow: hidden;
     }
     .report iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-    .placeholder {
-      display: flex; align-items: center; justify-content: center;
-      height: 100%; padding: 16px; text-align: center; color: var(--muted);
-    }
     footer { margin-top: 20px; font-size: 0.9rem; color: var(--muted); }
     footer p { margin: 4px 0; }
     a { color: var(--rust); }
@@ -56,10 +53,13 @@
     </p>
 
     <div class="report">
-      <!-- 5.6: replace the placeholder below with the iframe from File > Embed report > Publish to web, keeping its
-           src and title. If the embed ever stops, put a screenshot here instead:
+      <!-- The embed code from Power BI's Publish to web (5.6). If the embed ever stops (for example when the Pro licence
+           lapses), replace the iframe with a screenshot:
            <img src="report.png" alt="Screenshot of the report" style="width:100%;height:100%;object-fit:contain"> -->
-      <p class="placeholder">The report will appear here once it's published.</p>
+      <iframe
+        title="Tech job skills report (Power BI)"
+        src="https://app.powerbi.com/view?r=eyJrIjoiOTdlYTk0ZmItOGFjNS00NWI0LWE2MzQtNzdkMGM2YTQzNDk4IiwidCI6IjVhZmVlOWYzLTQ4OWMtNDE3OC1hZjBkLTdhYjk5MjExZmEyNCJ9&embedImagePlaceholder=true"
+        allowfullscreen></iframe>
     </div>
 
     <footer>

@@ -15,8 +15,8 @@
 - [x] 5.2 Himalayas history: frozen daily counts in dbt, and a weekly trend for all three sources
 - [x] 5.3 You: Power BI Desktop, a Databricks token for Power BI, and an empty PBIP project in `dashboards/`
 - [x] 5.4 Semantic model in TMDL: tables, relationships, hierarchies, DAX measures; refreshed and checked against gold
-- [ ] 5.5 Report pages (you build them, I guide): skills overview, rising skills, salaries, skills asked together
-- [ ] 5.6 Account and publishing: tenant, Pro trial, Publish to web, daily refresh
+- [x] 5.5 Report pages (you build them, I guide): skills overview, rising skills, salaries, skills asked together
+- [x] 5.6 Account and publishing: tenant, Pro trial, Publish to web, daily refresh
 - [x] 5.7 Make the repository public: made-up fixtures, history scan, author email, licence
 - [ ] 5.8 GitHub Pages site with the iframe
 - [ ] 5.9 Verify end to end
@@ -291,11 +291,11 @@ Pages use Fit to page, at a 16:9 ratio.
   - **Weekly share line:** the latest week's top 10 skills, or the picked ones. Its title follows what it shows.
   - **A note** on how a week counts jobs (decisions 12 and 13), and on Himalayas' title fallback from 31 October.
 
-  **Open, to decide on 2026-11-10 when the week of 2 November appears:** whether the trend should use mix-adjusted shares.
+  **Decided on 2026-11-05: the trend keeps combined shares for now,** not mix-adjusted ones. The investigation that raised the question:
   - **What happened** (investigated 2026-11-05): from 3 November, Himalayas posts and updates about 2,000 jobs a day instead of about 6,000. Fresh tech postings fell from 1,700–2,400 a day to 650–800, after a mass re-bump of two-week-old jobs on 1–2 November.
   - **Not an API change:** the fields, `pubDate`, the sort order, the page size and the release notes are unchanged. The feed's `totalCount` fell from about 128,000 to 112,841.
   - **The effect:** Himalayas went from 73% of the week's new jobs to 42% so far. The combined shares then show fake falls for tech skills (CI/CD −5.9 pp, AWS −5.6 pp) and fake rises for skills common on Arbeitnow.
-  - **The proposed fix:** each skill's share computed within each board group and combined with fixed weights, so one board's volume can't move it.
+  - **Not done for now:** mix-adjusted shares, where each skill's share is computed within each board group and combined with fixed weights, so one board's volume can't move it. Until then, a swing in one board's volume shows up as movers.
 
   The dropdown filters only the line, and clicking a bar shows that skill's line. The two bar charts don't filter each other. The trend counts all three boards together, so the page has no Source slicer. Checked against gold after the 2026-11-04 build: the 20 movers and the 10 lines match.
 
@@ -306,6 +306,18 @@ Pages use Fit to page, at a 16:9 ratio.
 4. In Desktop, publish to My workspace.
 5. In the service, enter the token in the model's settings and schedule a daily refresh at 19:00 UTC.
 6. Use File → Embed report → Publish to web, with a placeholder image. Copy the iframe code.
+- **Done on 2026-11-05:**
+  - **The account:** a Microsoft 365 Business Basic trial created the tenant `vasairobert.onmicrosoft.com`. Basic was chosen because it includes no Power BI Pro, so the separate Power BI trial stays available. You're its admin. Turn recurring billing off in the admin center, so the trial expires instead of billing.
+  - **Power BI:** first a free licence, then the trial.
+  - **Publish to web:** already enabled for the whole tenant. "Block public internet access" is off, which Publish to web requires.
+  - **Published** from Desktop to My workspace.
+  - **Credentials:** the first try failed with *403 Unauthorized/Forbidden*. The old `power-bi` token had also been exposed in a screenshot, so it was revoked. The new `power-bi` token was accepted, so Free Edition does accept the Power BI service and no gateway is needed. Desktop needs the new token too (Data source settings).
+  - **Refresh:** daily at 19:00 UTC, with failure e-mails to the owner. A manual refresh succeeded.
+  - **Embed:** the iframe is in `site/index.html`, sized by CSS (16:9 plus the 36px page bar).
+- **Dates to watch:**
+  - **4 Jan 2027:** the `power-bi` token expires. Renew it in the service (Data source credentials) and in Desktop before then.
+  - **About 60 days after the Power BI trial started:** the trial ends, and the public embed most likely stops. Decide between Pro and a screenshot (decision 1).
+  - **25 Nov 2026:** the `Personal Project` token expires. If it's the one in `.env`, renew it, or the nightly pipeline stops.
 
 ### 5.7 Public repository
 - Replace the real jobs in `tests/fixtures/jobicy_page.json` (1) and `arbeitnow_page.json` (2) with made-up ones; `pytest` must stay green.
