@@ -223,6 +223,13 @@
                   "Value": "'Pay vs demand: the 30 skills with the most salaried jobs'"
                 }
               }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "20D"
+                }
+              }
             }
           }
         }
@@ -352,6 +359,81 @@
             }
           ]
         }
+      },
+      {
+        "name": "0a95c4d03a5ea4a6802e",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Skill"
+                  }
+                },
+                "Property": "Category"
+              }
+            },
+            "Function": 3
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e06d6254105baaa84acd",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Salary 25th percentile"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a988abef0b9a89771d41",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Salary 75th percentile"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "22dbcb801c13dd5757ec",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs with salary"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "00b125e4860b36ac9da0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Median salary (enough jobs)"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

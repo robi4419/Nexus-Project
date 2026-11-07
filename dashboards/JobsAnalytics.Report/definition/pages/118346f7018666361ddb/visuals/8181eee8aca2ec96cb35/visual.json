@@ -308,5 +308,37 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "077d713d5479a91625a9",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "852413e9a4e0b2eb1c8a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs with skill"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

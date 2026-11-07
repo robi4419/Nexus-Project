@@ -283,6 +283,20 @@
                   "Value": "'Best paid skills'"
                 }
               }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "20D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -464,6 +478,20 @@
             }
           ]
         }
+      },
+      {
+        "name": "839a01185b304b0d8004",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs with salary"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

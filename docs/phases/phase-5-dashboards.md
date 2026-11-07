@@ -285,7 +285,13 @@ Pages use Fit to page, at a 16:9 ratio.
   - **a hidden tooltip page** puts each cell into words: the jobs asking for both, the shares in both directions and the lift.
 
   The dropdown filters `Skill pairs` to one skill, so the heatmap takes its axes from two tables related to nothing, `Heatmap rows` and `Heatmap columns`. A Top N filter by `Heatmap rank` picks the rows, and `Heatmap lift` is blank in the columns outside them. The pairs are counted over all jobs, so the page has no job slicers. The Filters pane is hidden from viewers, so the visual-level filters stay as designed.
-- **No drill-through:** Power BI applies a drill-through as a page filter, which leaves a dropdown on the same field offering only the drilled skill, and a drill-through can't set or clear a slicer. The synced dropdown carries a picked skill between pages instead.
+- **No drill-through into Skills asked together itself:** Power BI applies a drill-through as a page filter, which leaves a dropdown on the same field offering only the drilled skill, and a drill-through can't set or clear a slicer. The synced dropdown carries a picked skill between pages instead.
+- **Drill-through into a copy, added on 2026-11-07:**
+  - **The target:** a hidden page, **Asked with**, is a copy of Skills asked together without the dropdown. Its drill-through field is `Skill[Skill]`, with **Keep all filters** off, so a dropdown pick on the source page doesn't come along.
+  - **How to use it:** right-click any skill bar → Drill through → Asked with. For touch screens, a **"See what it's asked with →"** button on Skills overview, Salaries and Rising Skills drills with the selected bar. It's disabled until exactly one bar is selected.
+  - **Tested:** both work in Desktop and on the public report.
+  - **The cost:** the two pages' design has to be kept in step by hand.
+  - **The buttons** sit in a corner where no visual overlaps them. A visual clicked in reading mode rises above anything overlapping it unless *Maintain layer order* is on.
 - **Rising skills, done on 2026-11-04:**
   - **Rising and Falling:** the 10 skills whose share of each week's new jobs rose or fell most, latest complete week against the week before, in percentage points. The tooltips hold both weeks' shares and jobs.
   - **Weekly share line:** the latest week's top 10 skills, or the picked ones. Its title follows what it shows.

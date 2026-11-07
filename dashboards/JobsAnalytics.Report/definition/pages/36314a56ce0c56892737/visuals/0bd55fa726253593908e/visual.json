@@ -325,6 +325,13 @@
                   "Property": "Trend line title"
                 }
               }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "16D"
+                }
+              }
             }
           }
         }
@@ -456,7 +463,7 @@
         }
       },
       {
-        "name": "2da389c2d07bae72db59",
+        "name": "08615f1e99a43e664c34",
         "field": {
           "Column": {
             "Expression": {
@@ -470,7 +477,7 @@
         "type": "Categorical"
       },
       {
-        "name": "fdd19ead060d9482db12",
+        "name": "8dc7bcc54c619a830984",
         "field": {
           "Measure": {
             "Expression": {
@@ -484,7 +491,7 @@
         "type": "Advanced"
       },
       {
-        "name": "80fce859a3cdd00dc671",
+        "name": "ffff0ed10e11ac8c945e",
         "field": {
           "Measure": {
             "Expression": {
@@ -498,7 +505,7 @@
         "type": "Advanced"
       },
       {
-        "name": "c5e857d50b2e6d0ec08e",
+        "name": "0fd6a0d0a89330a5454d",
         "field": {
           "Measure": {
             "Expression": {

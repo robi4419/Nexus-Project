@@ -586,6 +586,20 @@
             }
           ]
         }
+      },
+      {
+        "name": "28a1e8a44626947a7a82",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs with salary"
+          }
+        },
+        "type": "Advanced"
       }
     ],
     "filterSortOrder": "Ascending"

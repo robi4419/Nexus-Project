@@ -2,9 +2,9 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "4f0d44dd17232dc06148",
   "position": {
-    "x": 373.20481927710841,
-    "y": 231.32530120481928,
-    "z": 9000,
+    "x": 372.87392325763506,
+    "y": 231.54267815191855,
+    "z": 7500,
     "height": 811.18072289156623,
     "width": 768,
     "tabOrder": 9000
@@ -124,7 +124,7 @@
             "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'center'"
+                  "Value": "'left'"
                 }
               }
             }
@@ -165,6 +165,19 @@
               "expr": {
                 "Literal": {
                   "Value": "16D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "100D"
                 }
               }
             }
@@ -291,6 +304,34 @@
             }
           ]
         }
+      },
+      {
+        "name": "4831da2d08019b029e9e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs with skill"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "8c893ca8d01e4ac39170",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Share of jobs"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

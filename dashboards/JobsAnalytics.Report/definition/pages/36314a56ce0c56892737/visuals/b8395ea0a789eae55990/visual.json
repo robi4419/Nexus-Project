@@ -172,6 +172,20 @@
                   "Value": "'Rising'"
                 }
               }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "20D"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'left'"
+                }
+              }
             }
           }
         }
@@ -188,6 +202,13 @@
                     }
                   },
                   "Property": "Movers subtitle"
+                }
+              }
+            },
+            "titleWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }
@@ -301,7 +322,7 @@
         }
       },
       {
-        "name": "39d45ce74b5357242c13",
+        "name": "4d83550fb22205052eaa",
         "field": {
           "Measure": {
             "Expression": {
@@ -315,7 +336,7 @@
         "type": "Advanced"
       },
       {
-        "name": "017f3d3c362262b40652",
+        "name": "06de02d6388a5028aeea",
         "field": {
           "Measure": {
             "Expression": {
@@ -329,7 +350,7 @@
         "type": "Advanced"
       },
       {
-        "name": "1596c4aaee785624221e",
+        "name": "6a029c3a5851525bd824",
         "field": {
           "Measure": {
             "Expression": {
@@ -343,7 +364,7 @@
         "type": "Advanced"
       },
       {
-        "name": "80376aaf67525c99d0c1",
+        "name": "67fd7d808b52949e315c",
         "field": {
           "Measure": {
             "Expression": {
@@ -357,7 +378,7 @@
         "type": "Advanced"
       },
       {
-        "name": "4a8a708fb914e66c5290",
+        "name": "8ee300506b6b60cbe374",
         "field": {
           "Measure": {
             "Expression": {
