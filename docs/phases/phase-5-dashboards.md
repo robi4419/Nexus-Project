@@ -19,8 +19,8 @@
 - [x] 5.6 Account and publishing: tenant, Pro trial, Publish to web, daily refresh
 - [x] 5.7 Make the repository public: made-up fixtures, history scan, author email, licence
 - [ ] 5.8 GitHub Pages site with the iframe
-- [ ] 5.9 Verify end to end
-- [ ] 5.10 Docs, commit, PR and merge
+- [x] 5.9 Verify end to end
+- [x] 5.10 Docs, commit, PR and merge (PR #8, merged on 2026-11-05)
 
 ---
 
@@ -289,7 +289,7 @@ Pages use Fit to page, at a 16:9 ratio.
 - **Rising skills, done on 2026-11-04:**
   - **Rising and Falling:** the 10 skills whose share of each week's new jobs rose or fell most, latest complete week against the week before, in percentage points. The tooltips hold both weeks' shares and jobs.
   - **Weekly share line:** the latest week's top 10 skills, or the picked ones. Its title follows what it shows.
-  - **A note** on how a week counts jobs (decisions 12 and 13), and on Himalayas' title fallback from 31 October.
+  - **A note** on how a week counts jobs (decisions 12 and 13), and on Himalayas' title fallback from 31 October. **Removed on 2026-11-07,** when the page was re-laid out: the movers moved to a left column, and a Week slicer above the line chart narrows its weeks. The slicer saves no range, so each new week shows by default.
 
   **Decided on 2026-11-05: the trend keeps combined shares for now,** not mix-adjusted ones. The investigation that raised the question:
   - **What happened** (investigated 2026-11-05): from 3 November, Himalayas posts and updates about 2,000 jobs a day instead of about 6,000. Fresh tech postings fell from 1,700–2,400 a day to 650–800, after a mass re-bump of two-week-old jobs on 1–2 November.
@@ -316,7 +316,7 @@ Pages use Fit to page, at a 16:9 ratio.
   - **Embed:** the iframe is in `site/index.html`, sized by CSS (16:9 plus the 36px page bar).
 - **Dates to watch:**
   - **4 Jan 2027:** the `power-bi` token expires. Renew it in the service (Data source credentials) and in Desktop before then.
-  - **About 60 days after the Power BI trial started:** the trial ends, and the public embed most likely stops. Decide between Pro and a screenshot (decision 1).
+  - **4 Dec 2026:** the Power BI trial ends, and the public embed most likely stops with it. Decide before then between Pro (about $14 a month) and a screenshot (decision 1).
   - **25 Nov 2026:** the `Personal Project` token expires. If it's the one in `.env`, renew it, or the nightly pipeline stops.
 
 ### 5.7 Public repository
@@ -344,7 +344,8 @@ Pages use Fit to page, at a 16:9 ratio.
 - `.github/workflows/pages.yml` deploys `site/` on a push to `main` that changes it.
 - **You:** Settings → Pages → Source: GitHub Actions.
 - **Written on 2026-11-05:**
-  - **`site/index.html`:** report and credits only, as you chose, in the report's colours. Until 5.6, a placeholder stands where the iframe goes. A comment there shows where to paste the embed code, and the screenshot line to use if the embed ever stops.
+  - **Changed on 2026-11-07: the report fills the whole window,** with no margins, title, intro or footer. The source credits, including "Data sourced from Himalayas" with its link, stay visible in the report's own footer on every page, which is what Himalayas' terms require.
+  - **`site/index.html`, first version:** report and credits only, as you chose, in the report's colours. Until 5.6, a placeholder stands where the iframe goes. A comment there shows where to paste the embed code, and the screenshot line to use if the embed ever stops.
   - **`pages.yml`:** uses the current major versions of the actions (checkout v7, configure-pages v6, upload-pages-artifact v5, deploy-pages v5). It can also be started by hand from the Actions tab.
   - **First deploy:** happens after the merge to `main`, because the `github-pages` environment only accepts deploys from the default branch.
 
@@ -364,7 +365,8 @@ Pages use Fit to page, at a 16:9 ratio.
     - the cards match gold: 29,449 listed jobs, 24,577 with skills, and Python 24.2%, AWS 19.4%, CI/CD 18.1%, SQL 17.9%, Azure 15.7%;
     - Salaries shows 9,314 jobs with a salary and a $135,000 median;
     - the heatmap tooltips work, data can't be exported, and the credits show on every page.
-  - **Still to confirm:** the first scheduled refresh, on 2026-11-06 at 19:00 UTC, and that the numbers move after it.
+  - **Confirmed on 2026-11-07:** the first scheduled refresh (2026-11-06, 19:00 UTC) succeeded, and the report's numbers moved.
+  - **Found while checking:** a Desktop session had dropped the Listed now default on Skills overview and Salaries. It had also saved fixed ranges in their date slicers (1 Oct – 5 Nov) and in the new Week slicer (19 – 26 Oct). All three were restored or cleared before the next publish (see the date-slicer pitfall). Before committing report changes, check for saved slicer filters.
 
 ## Concepts you'll meet
 - **Semantic model:** Power BI's layer of tables, relationships and measures that every visual queries. **Import** keeps a compressed copy, refreshed on a schedule.
