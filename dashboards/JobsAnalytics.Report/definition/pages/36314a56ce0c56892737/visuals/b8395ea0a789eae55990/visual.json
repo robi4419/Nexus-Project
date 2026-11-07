@@ -3,10 +3,10 @@
   "name": "b8395ea0a789eae55990",
   "position": {
     "x": 0,
-    "y": 317.93548387096774,
+    "y": 129.93630573248407,
     "z": 3000,
-    "height": 722.58064516129036,
-    "width": 429.41935483870969,
+    "height": 912.61146496815286,
+    "width": 452.484076433121,
     "tabOrder": 3000
   },
   "visual": {
@@ -261,7 +261,7 @@
                         }
                       }
                     ],
-                    "Top": 10
+                    "Top": 20
                   }
                 }
               },
@@ -301,7 +301,7 @@
         }
       },
       {
-        "name": "74aef7257bb13ed07014",
+        "name": "39d45ce74b5357242c13",
         "field": {
           "Measure": {
             "Expression": {
@@ -315,7 +315,7 @@
         "type": "Advanced"
       },
       {
-        "name": "c2a708b8b14c98e0c2bd",
+        "name": "017f3d3c362262b40652",
         "field": {
           "Measure": {
             "Expression": {
@@ -329,7 +329,7 @@
         "type": "Advanced"
       },
       {
-        "name": "6b0570b84760e0b366cd",
+        "name": "1596c4aaee785624221e",
         "field": {
           "Measure": {
             "Expression": {
@@ -343,7 +343,7 @@
         "type": "Advanced"
       },
       {
-        "name": "fe6c05127115b41b92dc",
+        "name": "80376aaf67525c99d0c1",
         "field": {
           "Measure": {
             "Expression": {
@@ -357,7 +357,7 @@
         "type": "Advanced"
       },
       {
-        "name": "3b583c0805c47804040d",
+        "name": "4a8a708fb914e66c5290",
         "field": {
           "Measure": {
             "Expression": {

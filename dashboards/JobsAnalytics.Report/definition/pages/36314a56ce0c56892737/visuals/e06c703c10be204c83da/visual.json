@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "e06c703c10be204c83da",
   "position": {
-    "x": 429.41935483870969,
-    "y": 317.93548387096774,
+    "x": 452.484076433121,
+    "y": 129.93630573248407,
     "z": 4000,
-    "height": 722.58064516129036,
-    "width": 429.41935483870969,
+    "height": 912.61146496815286,
+    "width": 452.484076433121,
     "tabOrder": 4000
   },
   "visual": {
@@ -273,7 +273,7 @@
                         }
                       }
                     ],
-                    "Top": 10
+                    "Top": 20
                   }
                 }
               },
@@ -311,6 +311,76 @@
             }
           ]
         }
+      },
+      {
+        "name": "2ad811dec899297c66e6",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Previous week share"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "070f35276078c4024e71",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Share latest week"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a7902ef31758376d4752",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs week before"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "2e851b2e0b41c9dd20cc",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs latest week"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "cabf75cd546d0d8d4830",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Share change latest week"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

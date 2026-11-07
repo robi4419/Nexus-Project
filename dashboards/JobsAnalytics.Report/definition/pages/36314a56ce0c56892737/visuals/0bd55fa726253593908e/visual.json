@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "0bd55fa726253593908e",
   "position": {
-    "x": 858.83870967741939,
-    "y": 317.93548387096774,
+    "x": 904.968152866242,
+    "y": 310.31847133757964,
     "z": 5000,
-    "height": 723.95698924731187,
-    "width": 1061.1612903225807,
+    "height": 732.22929936305729,
+    "width": 1015.031847133758,
     "tabOrder": 5000
   },
   "visual": {
@@ -456,7 +456,7 @@
         }
       },
       {
-        "name": "31ed86e2050430b67868",
+        "name": "2da389c2d07bae72db59",
         "field": {
           "Column": {
             "Expression": {
@@ -470,7 +470,7 @@
         "type": "Categorical"
       },
       {
-        "name": "e6c7fc67001cb7a5764c",
+        "name": "fdd19ead060d9482db12",
         "field": {
           "Measure": {
             "Expression": {
@@ -484,7 +484,7 @@
         "type": "Advanced"
       },
       {
-        "name": "455109800d6d73396590",
+        "name": "80fce859a3cdd00dc671",
         "field": {
           "Measure": {
             "Expression": {
@@ -498,7 +498,7 @@
         "type": "Advanced"
       },
       {
-        "name": "fb695c766c4b029ace51",
+        "name": "c5e857d50b2e6d0ec08e",
         "field": {
           "Measure": {
             "Expression": {

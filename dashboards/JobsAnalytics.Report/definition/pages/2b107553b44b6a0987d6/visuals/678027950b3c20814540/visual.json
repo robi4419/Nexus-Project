@@ -176,23 +176,5 @@
       "filterChanges": true
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "c60222042e942036cc90",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Seniority"
-              }
-            },
-            "Property": "Seniority"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }
