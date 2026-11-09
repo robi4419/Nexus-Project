@@ -307,7 +307,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Median and 25th-75th precentile'"
+                  "Value": "'Median and 25th-75th percentile'"
                 }
               }
             },

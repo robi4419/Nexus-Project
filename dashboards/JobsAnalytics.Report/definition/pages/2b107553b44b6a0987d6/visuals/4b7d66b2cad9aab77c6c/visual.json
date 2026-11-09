@@ -247,7 +247,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Hover to show Category, Median and 25th-75th precentile'"
+                  "Value": "'Hover to show Category, Median and 25th-75th percentile'"
                 }
               }
             }
