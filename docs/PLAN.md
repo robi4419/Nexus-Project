@@ -116,10 +116,10 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Along the way: skills come only from the description's lines about the job, a job counts once however often it's posted, and the weekly trend counts each job once per opening across the three boards (Phase 5, decisions 10 to 13).
 
 ### Phase 6: GitHub and CI (can start alongside Phase 1)
-- [ ] Feature branches and PRs.
-- [ ] Actions on PR: `ruff`, `pytest`, Airflow DAG import test, `dbt parse`, `sqlfluff`.
-- [ ] Optional: `databricks bundle deploy` on merge to `main`.
-- [ ] README with architecture diagram and setup steps.
+- [x] Feature branches and PRs: one per phase (#1–#8).
+- [ ] Optional, skipped for now (2026-11-09): Actions on PR: `ruff`, `pytest`, Airflow DAG import test, `dbt parse`, `sqlfluff`. The report is live and refreshes on its own; these would only guard future changes.
+- [ ] Optional, skipped for now: `databricks bundle deploy` on merge to `main`. It needs a Databricks token as a GitHub secret.
+- [x] README with diagrams (`docs/tech-stack.svg` for the stack, `docs/architecture.svg` step by step) and setup steps.
 
 ### Phase 7: Polish (optional)
 - [ ] LLM-based skill extraction (`ai_query`) compared with the dictionary approach.

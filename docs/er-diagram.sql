@@ -116,18 +116,18 @@ CREATE TABLE bridge_job_locations (
   CONSTRAINT fk_bridge_job_locations_location_key FOREIGN KEY (location_key) REFERENCES dim_location (location_key)
 );
 
-CREATE TABLE bridge_job_types (
-  job_key text NOT NULL,
-  job_type text NOT NULL,
-  CONSTRAINT pk_bridge_job_types PRIMARY KEY (job_key, job_type),
-  CONSTRAINT fk_bridge_job_types_job_key FOREIGN KEY (job_key) REFERENCES fct_job_postings (job_key)
-);
-
 CREATE TABLE bridge_job_sources (
   job_key text NOT NULL,
   source text NOT NULL,
   CONSTRAINT pk_bridge_job_sources PRIMARY KEY (job_key, source),
   CONSTRAINT fk_bridge_job_sources_job_key FOREIGN KEY (job_key) REFERENCES fct_job_postings (job_key)
+);
+
+CREATE TABLE bridge_job_types (
+  job_key text NOT NULL,
+  job_type text NOT NULL,
+  CONSTRAINT pk_bridge_job_types PRIMARY KEY (job_key, job_type),
+  CONSTRAINT fk_bridge_job_types_job_key FOREIGN KEY (job_key) REFERENCES fct_job_postings (job_key)
 );
 
 CREATE TABLE agg_skill_co_occurrence (

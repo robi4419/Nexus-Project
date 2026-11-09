@@ -6,7 +6,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "WxHqS45PCImeBtwhMx6MP",
+          "id": "FJ0gDZgVScyujYzCZ1mrc",
           "name": "company_key",
           "type": "TEXT",
           "comment": "",
@@ -18,7 +18,7 @@
           "check": ""
         },
         {
-          "id": "cwzt9zaudP3qnHDcGWM7R",
+          "id": "7yv-ISgHg8RLyTgBlFtuq",
           "name": "company_name",
           "type": "TEXT",
           "comment": "",
@@ -30,7 +30,7 @@
           "check": ""
         },
         {
-          "id": "uLJ5sCHmxGQPs1RQjHf4-",
+          "id": "ikyRF428VVN05a4bIEUcO",
           "name": "company_logo_url",
           "type": "TEXT",
           "comment": "",
@@ -42,7 +42,7 @@
           "check": ""
         },
         {
-          "id": "bbItX6oNaklBr80XxWLlM",
+          "id": "Oa-KQzI0FxT82AhXGOiAf",
           "name": "first_published_at",
           "type": "TIMESTAMP",
           "comment": "",
@@ -54,7 +54,7 @@
           "check": ""
         },
         {
-          "id": "lWh9OWY9xq_hAkWAfQtPQ",
+          "id": "gyI7t7wuX71Ono8QFwfQJ",
           "name": "last_published_at",
           "type": "TIMESTAMP",
           "comment": "",
@@ -68,10 +68,9 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "VbahXtkGmjuwxK4yH2MgY",
-      "x": 936,
-      "y": 336,
-      "width": 272
+      "id": "PZ94xl0N4MAhenf4iYdKW",
+      "x": 240,
+      "y": 1056
     },
     {
       "name": "dim_date",
@@ -79,7 +78,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "A6rPkW1R1OabqdpnZoXxq",
+          "id": "q6yd1-v5PGBZW4a7mMneF",
           "name": "date_day",
           "type": "DATE",
           "comment": "",
@@ -91,7 +90,7 @@
           "check": ""
         },
         {
-          "id": "hT1jNi4kqUJusOwPJYums",
+          "id": "r34KmTjuaoqwa8zQEem-w",
           "name": "year",
           "type": "INTEGER",
           "comment": "",
@@ -103,7 +102,7 @@
           "check": ""
         },
         {
-          "id": "tiBO9sAkMq3KJa9KZNCka",
+          "id": "ZyIcFCOg261MP822WWdxB",
           "name": "quarter",
           "type": "INTEGER",
           "comment": "",
@@ -115,7 +114,7 @@
           "check": ""
         },
         {
-          "id": "6aH8CBUS8kvvwZREuhYO2",
+          "id": "R9OpVMguLrIxlKHswQOYf",
           "name": "year_quarter",
           "type": "TEXT",
           "comment": "",
@@ -127,7 +126,7 @@
           "check": ""
         },
         {
-          "id": "ycIDupSXXqRc73tHZ_pEp",
+          "id": "ite04IWhsynePBk_5nP8b",
           "name": "month",
           "type": "INTEGER",
           "comment": "",
@@ -139,7 +138,7 @@
           "check": ""
         },
         {
-          "id": "8My6TdwnPZQJJ2Td1RV13",
+          "id": "qMSjyV_T6mdakbaD1gM8C",
           "name": "month_name",
           "type": "TEXT",
           "comment": "",
@@ -151,7 +150,7 @@
           "check": ""
         },
         {
-          "id": "AXyXpOzK5bODiGYzROlhU",
+          "id": "7TkVfr5txV36VNK-5FA1N",
           "name": "year_month",
           "type": "TEXT",
           "comment": "",
@@ -163,7 +162,7 @@
           "check": ""
         },
         {
-          "id": "Q1CFTpZD8GucjCCrKoncY",
+          "id": "CQwibcbrJ7NN3UH5KaaWC",
           "name": "month_start",
           "type": "DATE",
           "comment": "",
@@ -175,7 +174,7 @@
           "check": ""
         },
         {
-          "id": "rskGMyFdJ__DBh7M-1f__",
+          "id": "cZkGM2zqnX7JyBCoZHzGC",
           "name": "week_start",
           "type": "DATE",
           "comment": "",
@@ -187,7 +186,7 @@
           "check": ""
         },
         {
-          "id": "nKXKZwV0fHvypI62tjBZM",
+          "id": "6GBTbd6GDUyVH1XOXg9gj",
           "name": "day_of_week",
           "type": "INTEGER",
           "comment": "",
@@ -199,7 +198,7 @@
           "check": ""
         },
         {
-          "id": "Pzy2XPu4J7AykPQ4AiyKs",
+          "id": "i7qfOwcKWaLPsQr60KLov",
           "name": "day_name",
           "type": "TEXT",
           "comment": "",
@@ -211,7 +210,7 @@
           "check": ""
         },
         {
-          "id": "Q4LVkT0t_tR-fJOQNliI0",
+          "id": "RUgOkZO1jsnDCEOEolB8A",
           "name": "is_weekend",
           "type": "BOOLEAN",
           "comment": "",
@@ -225,9 +224,10 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "Dn1PYR_6VXwsbxCeNmYwE",
-      "x": 1008,
-      "y": -240
+      "id": "AAZp9CIw8jq1H-hNYHMA5",
+      "x": 336,
+      "y": 480,
+      "width": 233
     },
     {
       "name": "dim_industry",
@@ -235,7 +235,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "8Z94dkkKhnPpng5SAD_1_",
+          "id": "81K108HcRSFRJzQl5LllB",
           "name": "industry",
           "type": "TEXT",
           "comment": "",
@@ -249,9 +249,9 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "74Hwyx03CX9l1i66slQlT",
-      "x": -264,
-      "y": 216
+      "id": "KHbkiHRRNm-LCKXDp51tv",
+      "x": -960,
+      "y": 936
     },
     {
       "name": "dim_location",
@@ -259,7 +259,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "i1fJh7y7jekEShKVWFrbG",
+          "id": "b72KfRA_9lFB6gqwzdDtj",
           "name": "location_key",
           "type": "TEXT",
           "comment": "",
@@ -271,7 +271,7 @@
           "check": ""
         },
         {
-          "id": "MwwN8I_k1hQCuOYTm2-x7",
+          "id": "nLuLI216SQid6d76qv6YZ",
           "name": "location_name",
           "type": "TEXT",
           "comment": "",
@@ -283,7 +283,7 @@
           "check": ""
         },
         {
-          "id": "EtZdm_O7_Y42hhpFo7IKE",
+          "id": "rPvRGSQvefoTF5xU5i0ws",
           "name": "location_type",
           "type": "TEXT",
           "comment": "",
@@ -295,7 +295,7 @@
           "check": ""
         },
         {
-          "id": "OuGrdFTiQJbJs-PUDuGOn",
+          "id": "BoWEdC1Fa1ZTx-KCZTY11",
           "name": "country_code",
           "type": "TEXT",
           "comment": "",
@@ -307,7 +307,7 @@
           "check": ""
         },
         {
-          "id": "xxjfFkSBJq4QHAlYKtj1T",
+          "id": "SO3t85iqJYxzIv_bzNJOK",
           "name": "region",
           "type": "TEXT",
           "comment": "",
@@ -319,7 +319,7 @@
           "check": ""
         },
         {
-          "id": "q3nxCT8KlkoLiwL_2doMQ",
+          "id": "zIGlp4SPJbQbgaDIsIOO8",
           "name": "country_name",
           "type": "TEXT",
           "comment": "",
@@ -331,7 +331,7 @@
           "check": ""
         },
         {
-          "id": "SVJKC-y1AI677Aa_RX1xm",
+          "id": "wMVt9UdUpybl4Sg5TWrVb",
           "name": "city_name",
           "type": "TEXT",
           "comment": "",
@@ -345,9 +345,9 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "T-9EwEP9AHd2l6e6M6fQf",
-      "x": -264,
-      "y": -120
+      "id": "-6Fi0aLhznHO-vv-JR-y3",
+      "x": -960,
+      "y": 576
     },
     {
       "name": "dim_seniority",
@@ -355,7 +355,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "uCIyKEanIw8sgTFTBl6Mu",
+          "id": "VF4skMGSxTWKmadk6MV6A",
           "name": "seniority",
           "type": "TEXT",
           "comment": "",
@@ -367,7 +367,7 @@
           "check": ""
         },
         {
-          "id": "kMpfYC989pxJW0XjeF6rF",
+          "id": "FW_D02ubfAFb43PpB9zfe",
           "name": "sort_order",
           "type": "INTEGER",
           "comment": "",
@@ -381,9 +381,9 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "1Hko9IVKQjdiBdeyp-io-",
-      "x": 864,
-      "y": 600
+      "id": "JvTfK7BON7rBiy_AVrgIC",
+      "x": 168,
+      "y": 1320
     },
     {
       "name": "dim_skill",
@@ -391,7 +391,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "Cv2x-Czx8Ki4i7cHBIJaS",
+          "id": "xPHRczKG8UIopKMxKtb6n",
           "name": "skill",
           "type": "TEXT",
           "comment": "",
@@ -403,7 +403,7 @@
           "check": ""
         },
         {
-          "id": "7dg_QQbtQjrxsV26oreK4",
+          "id": "xgbbSC_J3G3ehSK3p_rCP",
           "name": "category",
           "type": "TEXT",
           "comment": "",
@@ -415,7 +415,7 @@
           "check": ""
         },
         {
-          "id": "bOdrf35v_Tn-56pgncC9u",
+          "id": "i98k4TCW4e0LBn3sqZ68-",
           "name": "taxonomy_version",
           "type": "TEXT",
           "comment": "",
@@ -429,9 +429,9 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "h7CEOpItMrg-2KMFne3Ve",
-      "x": 1776,
-      "y": 336
+      "id": "C3t__7eP23FV_whXy63sA",
+      "x": 1080,
+      "y": 1056
     },
     {
       "name": "fct_job_postings",
@@ -439,7 +439,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "-0yq54TlCIm6aqr_CwG12",
+          "id": "145duxKAQs4L38iNdelUi",
           "name": "job_key",
           "type": "TEXT",
           "comment": "",
@@ -451,7 +451,7 @@
           "check": ""
         },
         {
-          "id": "-d2nITPVBm9TlWNDsErr2",
+          "id": "TdcZVhl9dIBIqUegZRVV_",
           "name": "company_key",
           "type": "TEXT",
           "comment": "",
@@ -463,7 +463,7 @@
           "check": ""
         },
         {
-          "id": "2BRSa8J1f6NspOdxwQ9hA",
+          "id": "W3kVPEbkPJRGTTEO7S4Wa",
           "name": "seniority",
           "type": "TEXT",
           "comment": "",
@@ -475,7 +475,7 @@
           "check": ""
         },
         {
-          "id": "Gsz5RVeZgkLXqbmk8sTwE",
+          "id": "KS6Bau5Y_9hLevV4f3gWV",
           "name": "published_date",
           "type": "DATE",
           "comment": "",
@@ -487,31 +487,7 @@
           "check": ""
         },
         {
-          "id": "k7Rg6uOnQmhkKVE2Cji9d",
-          "name": "source",
-          "type": "TEXT",
-          "comment": "",
-          "unique": false,
-          "increment": false,
-          "notNull": true,
-          "primary": false,
-          "default": "",
-          "check": ""
-        },
-        {
-          "id": "i8NUuO4BG42JUVrLs9_An",
-          "name": "source_job_id",
-          "type": "TEXT",
-          "comment": "",
-          "unique": false,
-          "increment": false,
-          "notNull": true,
-          "primary": false,
-          "default": "",
-          "check": ""
-        },
-        {
-          "id": "4Cvy5BGUtUos1L80zJV5_",
+          "id": "H1bhI5fPp05VGKriXMbBY",
           "name": "title",
           "type": "TEXT",
           "comment": "",
@@ -523,7 +499,7 @@
           "check": ""
         },
         {
-          "id": "4C2ieCjXZxd_DpFG6MVvZ",
+          "id": "64F56uBv-wd41oJ9ncZys",
           "name": "url",
           "type": "TEXT",
           "comment": "",
@@ -535,7 +511,7 @@
           "check": ""
         },
         {
-          "id": "JjiAEG2pLqiKeXPhZX5VA",
+          "id": "Id9iNj5ONbG_RIJm-TdTV",
           "name": "is_remote",
           "type": "BOOLEAN",
           "comment": "",
@@ -547,7 +523,7 @@
           "check": ""
         },
         {
-          "id": "nox5bhtm0tCzUhEx_DIoL",
+          "id": "qI3l0oKv5oC8phDAvMf5z",
           "name": "is_listed_now",
           "type": "BOOLEAN",
           "comment": "",
@@ -559,7 +535,7 @@
           "check": ""
         },
         {
-          "id": "ZzIDCQRxQ_hYVFmoYdoZd",
+          "id": "EjzE1XByoTHLagjfKMpqJ",
           "name": "published_at",
           "type": "TIMESTAMP",
           "comment": "",
@@ -571,7 +547,7 @@
           "check": ""
         },
         {
-          "id": "ypuREhpkZ8_GU22YdmKDX",
+          "id": "BzKEcFazJcBHiNbICzMyD",
           "name": "published_month",
           "type": "DATE",
           "comment": "",
@@ -583,7 +559,7 @@
           "check": ""
         },
         {
-          "id": "ltSMpKqLH95mAESm0Od6a",
+          "id": "vdsIF7I5TRM2R6W72P-XB",
           "name": "expires_at",
           "type": "TIMESTAMP",
           "comment": "",
@@ -595,7 +571,7 @@
           "check": ""
         },
         {
-          "id": "XXLy--m8co5elAG-0VYAx",
+          "id": "66RAvs_hk4NAWfeT0UkcU",
           "name": "first_seen_at",
           "type": "TIMESTAMP",
           "comment": "",
@@ -607,7 +583,7 @@
           "check": ""
         },
         {
-          "id": "cAFZdX0JH9cTEQTfG7Vdj",
+          "id": "HcF6RXm0D1_9bgJjd2u0p",
           "name": "last_seen_at",
           "type": "TIMESTAMP",
           "comment": "",
@@ -619,8 +595,8 @@
           "check": ""
         },
         {
-          "id": "6Q8qjY9HCac3_4H07Rd24",
-          "name": "times_seen",
+          "id": "wB-QcKsN4YPDDT46qgvD1",
+          "name": "postings",
           "type": "BIGINT",
           "comment": "",
           "unique": false,
@@ -631,7 +607,7 @@
           "check": ""
         },
         {
-          "id": "BxmiEiBIVhNmY7O-r79az",
+          "id": "9BDyR1RSJEzwI9xlNuM-1",
           "name": "salary_min",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -643,7 +619,7 @@
           "check": ""
         },
         {
-          "id": "5MBqEc9wt83grBFmAmqoH",
+          "id": "ULK3p-NhVG8mbRjfvlawb",
           "name": "salary_max",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -655,7 +631,7 @@
           "check": ""
         },
         {
-          "id": "WDG40bVoJgtJ23t6ZoQgU",
+          "id": "nxzNgjw6XaDbt8zvWKzaz",
           "name": "salary_currency",
           "type": "TEXT",
           "comment": "",
@@ -667,7 +643,7 @@
           "check": ""
         },
         {
-          "id": "ia5dGYxiXUT3hd1CpBo3b",
+          "id": "2vBoYNRYptkx9yuThMXxz",
           "name": "salary_period",
           "type": "TEXT",
           "comment": "",
@@ -679,7 +655,7 @@
           "check": ""
         },
         {
-          "id": "UoU_rmMJcDyJZgwF48RJD",
+          "id": "xaN-efiKbIj8yfCvNx8rw",
           "name": "salary_min_usd_yearly",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -691,7 +667,7 @@
           "check": ""
         },
         {
-          "id": "J8FaptI0onhkJ7EXGgdqS",
+          "id": "rHR67Up3UuUduSqlwB1gR",
           "name": "salary_max_usd_yearly",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -703,7 +679,7 @@
           "check": ""
         },
         {
-          "id": "6Cqwef8ASTj6xuJuakxAs",
+          "id": "TPztnVCN3OlCIT4J2bXFp",
           "name": "salary_mid_usd_yearly",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -715,7 +691,7 @@
           "check": ""
         },
         {
-          "id": "Ie1GB-wNuinvn-PIAVbN3",
+          "id": "EMdgPvIIPQi9KRPALG4UX",
           "name": "salary_is_plausible",
           "type": "BOOLEAN",
           "comment": "",
@@ -729,10 +705,10 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "oNs9p8qGwoFHUg2BV5Xxf",
-      "x": 384,
-      "y": -192,
-      "width": 387
+      "id": "jzXyHRnhrG97jOUO0_jaa",
+      "x": -320,
+      "y": 576,
+      "width": 372
     },
     {
       "name": "fct_job_skills",
@@ -740,7 +716,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "i3UDce-c0dR3LqlqG40tP",
+          "id": "4PtRCk2A-OmNFb1FzFNa6",
           "name": "job_key",
           "type": "TEXT",
           "comment": "",
@@ -752,7 +728,7 @@
           "check": ""
         },
         {
-          "id": "mb7UsKAQMu2cT1oUenYvT",
+          "id": "ZsFJ5V0_KTsIXtl7HWyGA",
           "name": "skill",
           "type": "TEXT",
           "comment": "",
@@ -764,7 +740,7 @@
           "check": ""
         },
         {
-          "id": "-_ZRjfFJLpTfXFfldSYSa",
+          "id": "qrgZEWJjXOg7bruASKoTv",
           "name": "mentions",
           "type": "INTEGER",
           "comment": "",
@@ -776,7 +752,7 @@
           "check": ""
         },
         {
-          "id": "XXRCsoRbF09iFuGB2Jqn0",
+          "id": "YqhIOYAFoNNY9_Xrkw4nC",
           "name": "in_title",
           "type": "BOOLEAN",
           "comment": "",
@@ -788,7 +764,7 @@
           "check": ""
         },
         {
-          "id": "tXiX89i_fP2G94FUMcvJl",
+          "id": "_Y_hoDhb4wHQdiZ_4Uqpj",
           "name": "published_date",
           "type": "DATE",
           "comment": "",
@@ -800,7 +776,7 @@
           "check": ""
         },
         {
-          "id": "IXKB0HDdp7lHvfalAaSEJ",
+          "id": "cQsDHMQYgyc6kUMC1kFUR",
           "name": "company_key",
           "type": "TEXT",
           "comment": "",
@@ -812,7 +788,7 @@
           "check": ""
         },
         {
-          "id": "Kbg4a0LToJi2468yihErE",
+          "id": "0Yot9PbunB2eIaKpupf7S",
           "name": "seniority",
           "type": "TEXT",
           "comment": "",
@@ -824,19 +800,7 @@
           "check": ""
         },
         {
-          "id": "01XARvQiT6EmCkNQpVf4e",
-          "name": "source",
-          "type": "TEXT",
-          "comment": "",
-          "unique": false,
-          "increment": false,
-          "notNull": true,
-          "primary": false,
-          "default": "",
-          "check": ""
-        },
-        {
-          "id": "CCkuuBG38gGhSEGRztA0u",
+          "id": "eexXPNGsukRFW_2v5hDsL",
           "name": "is_listed_now",
           "type": "BOOLEAN",
           "comment": "",
@@ -848,7 +812,7 @@
           "check": ""
         },
         {
-          "id": "Yb7jGToCHegtEKOIdiMuj",
+          "id": "dH29UFJqL7osPvN2zl5S7",
           "name": "is_remote",
           "type": "BOOLEAN",
           "comment": "",
@@ -862,10 +826,10 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "fsQZMvmZrDUNk_Sx5MkJS",
-      "x": 1368,
-      "y": 216,
-      "locked": false
+      "id": "Lf8AgqczBI42_Ti98P2b2",
+      "x": 672,
+      "y": 960,
+      "width": 244
     },
     {
       "name": "bridge_job_industries",
@@ -873,7 +837,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "pKg4LGuhhBy4FfX4va0hy",
+          "id": "meS2GQSQop8Z6N9SodTpV",
           "name": "job_key",
           "type": "TEXT",
           "comment": "",
@@ -885,7 +849,7 @@
           "check": ""
         },
         {
-          "id": "RC1Iufmt-7vE7f4cbhhJM",
+          "id": "qNN3dqqaljg6MWRHjYop0",
           "name": "industry",
           "type": "TEXT",
           "comment": "",
@@ -899,9 +863,9 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "lOaSpd_1Xsm83rms4MqPO",
-      "x": 48,
-      "y": 96
+      "id": "9teX0P1oimfVxzJ0V8MaA",
+      "x": -648,
+      "y": 720
     },
     {
       "name": "bridge_job_locations",
@@ -909,7 +873,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "DilpF_0zDSB_92WMrF8g7",
+          "id": "JLQ9HQ0Fo1lgNPNUlmpGi",
           "name": "job_key",
           "type": "TEXT",
           "comment": "",
@@ -921,7 +885,7 @@
           "check": ""
         },
         {
-          "id": "w5LWn4OUZagtujwAh1O5H",
+          "id": "zEJesw5LqPoHHRjPRGs6i",
           "name": "location_key",
           "type": "TEXT",
           "comment": "",
@@ -935,17 +899,17 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "gw6vyVSSHhd_qyv95QbJd",
-      "x": 48,
-      "y": -48
+      "id": "q_ZEPrIDPUr7ewD5Bwt1N",
+      "x": -648,
+      "y": 576
     },
     {
-      "name": "bridge_job_types",
+      "name": "bridge_job_sources",
       "comment": "",
       "color": "#175e7a",
       "fields": [
         {
-          "id": "SYATvBvKX7OEY353XumT7",
+          "id": "DUSqQoF2_Gszzi8VQV9Lz",
           "name": "job_key",
           "type": "TEXT",
           "comment": "",
@@ -957,7 +921,43 @@
           "check": ""
         },
         {
-          "id": "KBeYiBxW6Zy8dck_iDa_p",
+          "id": "dtqZWVhVYOuLTUxQ47CLq",
+          "name": "source",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        }
+      ],
+      "indices": [],
+      "uniqueConstraints": [],
+      "id": "Dn3wE8KBEdf30oL1kdq8W",
+      "x": -648,
+      "y": 864
+    },
+    {
+      "name": "bridge_job_types",
+      "comment": "",
+      "color": "#175e7a",
+      "fields": [
+        {
+          "id": "WeAFs04MgI0FBT2Z1OiUj",
+          "name": "job_key",
+          "type": "TEXT",
+          "comment": "",
+          "unique": false,
+          "increment": false,
+          "notNull": true,
+          "primary": true,
+          "default": "",
+          "check": ""
+        },
+        {
+          "id": "SnajySeUPbkfUNkDnYyHd",
           "name": "job_type",
           "type": "TEXT",
           "comment": "",
@@ -971,9 +971,9 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "Gnsrq9T_CBlh2kUeHzUQI",
-      "x": 48,
-      "y": -192
+      "id": "zfkChflDeAgG-4GmXph1x",
+      "x": -648,
+      "y": 1008
     },
     {
       "name": "agg_skill_co_occurrence",
@@ -981,7 +981,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "XbO639IiyJofy8iKl9Dw4",
+          "id": "D9-2d5gvzuSbueIHWdjAi",
           "name": "skill",
           "type": "TEXT",
           "comment": "",
@@ -993,7 +993,7 @@
           "check": ""
         },
         {
-          "id": "QctKhTwBfrd-aQIq4zN4x",
+          "id": "Ld8dab5J2Rhf-Zt5mxw0m",
           "name": "co_skill",
           "type": "TEXT",
           "comment": "",
@@ -1005,7 +1005,7 @@
           "check": ""
         },
         {
-          "id": "thnEcRCQG07046Mubp0A8",
+          "id": "DLOJIsiLUlJ8GyKDdteMU",
           "name": "jobs_both",
           "type": "BIGINT",
           "comment": "",
@@ -1017,7 +1017,7 @@
           "check": ""
         },
         {
-          "id": "rKRpN8DtVcHdBZa8cNwdY",
+          "id": "PrXtvMe7nUfZ6hH3MtklU",
           "name": "skill_jobs",
           "type": "BIGINT",
           "comment": "",
@@ -1029,7 +1029,7 @@
           "check": ""
         },
         {
-          "id": "cqmojlfbLTl6sWaTnIY_y",
+          "id": "TWVsNXn7aZb4nWSrlojUv",
           "name": "co_skill_jobs",
           "type": "BIGINT",
           "comment": "",
@@ -1041,7 +1041,7 @@
           "check": ""
         },
         {
-          "id": "Yl4XngTauxtgxTgtv5-Ph",
+          "id": "SjdbKWGen675qRSiUpaW4",
           "name": "share_of_skill_jobs",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -1053,7 +1053,7 @@
           "check": ""
         },
         {
-          "id": "SmHEonFNrqc_zefipeO7V",
+          "id": "G9oFZ4NbLKi_dm69c4oRn",
           "name": "lift",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -1067,10 +1067,10 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "sGBuccureoKYbjmizawJq",
-      "x": 1306,
-      "y": 696,
-      "width": 330
+      "id": "dfoEqFOa-g5WetEN2JR9f",
+      "x": 648,
+      "y": 1368,
+      "width": 337
     },
     {
       "name": "agg_skill_weekly_trend",
@@ -1078,7 +1078,7 @@
       "color": "#175e7a",
       "fields": [
         {
-          "id": "a-IywN_4bOR3sCqhswo0k",
+          "id": "AzxtZJ-6-PhvsHQyJ6Yxh",
           "name": "week_start",
           "type": "DATE",
           "comment": "",
@@ -1090,7 +1090,7 @@
           "check": ""
         },
         {
-          "id": "14nW3OeLj7eU2-G9borJJ",
+          "id": "m6YaUJzWQuCb0t7M8_ml9",
           "name": "skill",
           "type": "TEXT",
           "comment": "",
@@ -1102,7 +1102,7 @@
           "check": ""
         },
         {
-          "id": "LR2_doMGxOZhGJbuQymyE",
+          "id": "czNZVXF0Pdhg66WQ2FI0Z",
           "name": "jobs",
           "type": "BIGINT",
           "comment": "",
@@ -1114,7 +1114,7 @@
           "check": ""
         },
         {
-          "id": "FMZACE62CPDLxHuT6lsIZ",
+          "id": "zQx5HMCwSEmXUusveXfsC",
           "name": "week_jobs",
           "type": "BIGINT",
           "comment": "",
@@ -1126,7 +1126,7 @@
           "check": ""
         },
         {
-          "id": "ocOTPFZFe5slRBOshBl6i",
+          "id": "K9cndlYUIl_4pKFnWuvNO",
           "name": "share",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -1138,7 +1138,7 @@
           "check": ""
         },
         {
-          "id": "q5dhjN-TDcKZvXqZAXAfs",
+          "id": "qXwTGhyeQX_1kV4gBsev7",
           "name": "prev_jobs",
           "type": "BIGINT",
           "comment": "",
@@ -1150,7 +1150,7 @@
           "check": ""
         },
         {
-          "id": "zDgR-tHfCHj_ELBT0X7_S",
+          "id": "dlmG-1JLk87oHnY3wkGNB",
           "name": "prev_share",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -1162,7 +1162,7 @@
           "check": ""
         },
         {
-          "id": "aRO3hJzXYKGpNohcRKxMz",
+          "id": "VXsOjyVADAGrvuaAeSN85",
           "name": "share_change",
           "type": "DOUBLE PRECISION",
           "comment": "",
@@ -1176,25 +1176,25 @@
       ],
       "indices": [],
       "uniqueConstraints": [],
-      "id": "a3aN6aYy4B8kORFnJGns2",
-      "x": 1368,
-      "y": -192,
-      "width": 320
+      "id": "wN2_mJ1eu5xuibUrgB55D",
+      "x": 672,
+      "y": 576,
+      "width": 308
     }
   ],
   "relationships": [
     {
       "name": "fk_fct_job_postings_company_key_dim_company",
-      "startTableId": "oNs9p8qGwoFHUg2BV5Xxf",
-      "endTableId": "VbahXtkGmjuwxK4yH2MgY",
+      "startTableId": "jzXyHRnhrG97jOUO0_jaa",
+      "endTableId": "PZ94xl0N4MAhenf4iYdKW",
       "fields": [
         {
-          "startFieldId": "-d2nITPVBm9TlWNDsErr2",
-          "endFieldId": "WxHqS45PCImeBtwhMx6MP"
+          "startFieldId": "TdcZVhl9dIBIqUegZRVV_",
+          "endFieldId": "FJ0gDZgVScyujYzCZ1mrc"
         }
       ],
-      "endFieldId": "WxHqS45PCImeBtwhMx6MP",
-      "startFieldId": "-d2nITPVBm9TlWNDsErr2",
+      "endFieldId": "FJ0gDZgVScyujYzCZ1mrc",
+      "startFieldId": "TdcZVhl9dIBIqUegZRVV_",
       "id": 0,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1202,16 +1202,16 @@
     },
     {
       "name": "fk_fct_job_postings_seniority_dim_seniority",
-      "startTableId": "oNs9p8qGwoFHUg2BV5Xxf",
-      "endTableId": "1Hko9IVKQjdiBdeyp-io-",
+      "startTableId": "jzXyHRnhrG97jOUO0_jaa",
+      "endTableId": "JvTfK7BON7rBiy_AVrgIC",
       "fields": [
         {
-          "startFieldId": "2BRSa8J1f6NspOdxwQ9hA",
-          "endFieldId": "uCIyKEanIw8sgTFTBl6Mu"
+          "startFieldId": "W3kVPEbkPJRGTTEO7S4Wa",
+          "endFieldId": "VF4skMGSxTWKmadk6MV6A"
         }
       ],
-      "endFieldId": "uCIyKEanIw8sgTFTBl6Mu",
-      "startFieldId": "2BRSa8J1f6NspOdxwQ9hA",
+      "endFieldId": "VF4skMGSxTWKmadk6MV6A",
+      "startFieldId": "W3kVPEbkPJRGTTEO7S4Wa",
       "id": 1,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1219,16 +1219,16 @@
     },
     {
       "name": "fk_fct_job_postings_published_date_dim_date",
-      "startTableId": "oNs9p8qGwoFHUg2BV5Xxf",
-      "endTableId": "Dn1PYR_6VXwsbxCeNmYwE",
+      "startTableId": "jzXyHRnhrG97jOUO0_jaa",
+      "endTableId": "AAZp9CIw8jq1H-hNYHMA5",
       "fields": [
         {
-          "startFieldId": "Gsz5RVeZgkLXqbmk8sTwE",
-          "endFieldId": "A6rPkW1R1OabqdpnZoXxq"
+          "startFieldId": "KS6Bau5Y_9hLevV4f3gWV",
+          "endFieldId": "q6yd1-v5PGBZW4a7mMneF"
         }
       ],
-      "endFieldId": "A6rPkW1R1OabqdpnZoXxq",
-      "startFieldId": "Gsz5RVeZgkLXqbmk8sTwE",
+      "endFieldId": "q6yd1-v5PGBZW4a7mMneF",
+      "startFieldId": "KS6Bau5Y_9hLevV4f3gWV",
       "id": 2,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1236,16 +1236,16 @@
     },
     {
       "name": "fk_fct_job_skills_job_key_fct_job_postings",
-      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
-      "endTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "startTableId": "Lf8AgqczBI42_Ti98P2b2",
+      "endTableId": "jzXyHRnhrG97jOUO0_jaa",
       "fields": [
         {
-          "startFieldId": "i3UDce-c0dR3LqlqG40tP",
-          "endFieldId": "-0yq54TlCIm6aqr_CwG12"
+          "startFieldId": "4PtRCk2A-OmNFb1FzFNa6",
+          "endFieldId": "145duxKAQs4L38iNdelUi"
         }
       ],
-      "endFieldId": "-0yq54TlCIm6aqr_CwG12",
-      "startFieldId": "i3UDce-c0dR3LqlqG40tP",
+      "endFieldId": "145duxKAQs4L38iNdelUi",
+      "startFieldId": "4PtRCk2A-OmNFb1FzFNa6",
       "id": 3,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1253,16 +1253,16 @@
     },
     {
       "name": "fk_fct_job_skills_skill_dim_skill",
-      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
-      "endTableId": "h7CEOpItMrg-2KMFne3Ve",
+      "startTableId": "Lf8AgqczBI42_Ti98P2b2",
+      "endTableId": "C3t__7eP23FV_whXy63sA",
       "fields": [
         {
-          "startFieldId": "mb7UsKAQMu2cT1oUenYvT",
-          "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS"
+          "startFieldId": "ZsFJ5V0_KTsIXtl7HWyGA",
+          "endFieldId": "xPHRczKG8UIopKMxKtb6n"
         }
       ],
-      "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS",
-      "startFieldId": "mb7UsKAQMu2cT1oUenYvT",
+      "endFieldId": "xPHRczKG8UIopKMxKtb6n",
+      "startFieldId": "ZsFJ5V0_KTsIXtl7HWyGA",
       "id": 4,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1270,16 +1270,16 @@
     },
     {
       "name": "fk_fct_job_skills_published_date_dim_date",
-      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
-      "endTableId": "Dn1PYR_6VXwsbxCeNmYwE",
+      "startTableId": "Lf8AgqczBI42_Ti98P2b2",
+      "endTableId": "AAZp9CIw8jq1H-hNYHMA5",
       "fields": [
         {
-          "startFieldId": "tXiX89i_fP2G94FUMcvJl",
-          "endFieldId": "A6rPkW1R1OabqdpnZoXxq"
+          "startFieldId": "_Y_hoDhb4wHQdiZ_4Uqpj",
+          "endFieldId": "q6yd1-v5PGBZW4a7mMneF"
         }
       ],
-      "endFieldId": "A6rPkW1R1OabqdpnZoXxq",
-      "startFieldId": "tXiX89i_fP2G94FUMcvJl",
+      "endFieldId": "q6yd1-v5PGBZW4a7mMneF",
+      "startFieldId": "_Y_hoDhb4wHQdiZ_4Uqpj",
       "id": 5,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1287,16 +1287,16 @@
     },
     {
       "name": "fk_fct_job_skills_company_key_dim_company",
-      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
-      "endTableId": "VbahXtkGmjuwxK4yH2MgY",
+      "startTableId": "Lf8AgqczBI42_Ti98P2b2",
+      "endTableId": "PZ94xl0N4MAhenf4iYdKW",
       "fields": [
         {
-          "startFieldId": "IXKB0HDdp7lHvfalAaSEJ",
-          "endFieldId": "WxHqS45PCImeBtwhMx6MP"
+          "startFieldId": "cQsDHMQYgyc6kUMC1kFUR",
+          "endFieldId": "FJ0gDZgVScyujYzCZ1mrc"
         }
       ],
-      "endFieldId": "WxHqS45PCImeBtwhMx6MP",
-      "startFieldId": "IXKB0HDdp7lHvfalAaSEJ",
+      "endFieldId": "FJ0gDZgVScyujYzCZ1mrc",
+      "startFieldId": "cQsDHMQYgyc6kUMC1kFUR",
       "id": 6,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1304,16 +1304,16 @@
     },
     {
       "name": "fk_fct_job_skills_seniority_dim_seniority",
-      "startTableId": "fsQZMvmZrDUNk_Sx5MkJS",
-      "endTableId": "1Hko9IVKQjdiBdeyp-io-",
+      "startTableId": "Lf8AgqczBI42_Ti98P2b2",
+      "endTableId": "JvTfK7BON7rBiy_AVrgIC",
       "fields": [
         {
-          "startFieldId": "Kbg4a0LToJi2468yihErE",
-          "endFieldId": "uCIyKEanIw8sgTFTBl6Mu"
+          "startFieldId": "0Yot9PbunB2eIaKpupf7S",
+          "endFieldId": "VF4skMGSxTWKmadk6MV6A"
         }
       ],
-      "endFieldId": "uCIyKEanIw8sgTFTBl6Mu",
-      "startFieldId": "Kbg4a0LToJi2468yihErE",
+      "endFieldId": "VF4skMGSxTWKmadk6MV6A",
+      "startFieldId": "0Yot9PbunB2eIaKpupf7S",
       "id": 7,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1321,16 +1321,16 @@
     },
     {
       "name": "fk_bridge_job_industries_job_key_fct_job_postings",
-      "startTableId": "lOaSpd_1Xsm83rms4MqPO",
-      "endTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "startTableId": "9teX0P1oimfVxzJ0V8MaA",
+      "endTableId": "jzXyHRnhrG97jOUO0_jaa",
       "fields": [
         {
-          "startFieldId": "pKg4LGuhhBy4FfX4va0hy",
-          "endFieldId": "-0yq54TlCIm6aqr_CwG12"
+          "startFieldId": "meS2GQSQop8Z6N9SodTpV",
+          "endFieldId": "145duxKAQs4L38iNdelUi"
         }
       ],
-      "endFieldId": "-0yq54TlCIm6aqr_CwG12",
-      "startFieldId": "pKg4LGuhhBy4FfX4va0hy",
+      "endFieldId": "145duxKAQs4L38iNdelUi",
+      "startFieldId": "meS2GQSQop8Z6N9SodTpV",
       "id": 8,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1338,16 +1338,16 @@
     },
     {
       "name": "fk_bridge_job_industries_industry_dim_industry",
-      "startTableId": "lOaSpd_1Xsm83rms4MqPO",
-      "endTableId": "74Hwyx03CX9l1i66slQlT",
+      "startTableId": "9teX0P1oimfVxzJ0V8MaA",
+      "endTableId": "KHbkiHRRNm-LCKXDp51tv",
       "fields": [
         {
-          "startFieldId": "RC1Iufmt-7vE7f4cbhhJM",
-          "endFieldId": "8Z94dkkKhnPpng5SAD_1_"
+          "startFieldId": "qNN3dqqaljg6MWRHjYop0",
+          "endFieldId": "81K108HcRSFRJzQl5LllB"
         }
       ],
-      "endFieldId": "8Z94dkkKhnPpng5SAD_1_",
-      "startFieldId": "RC1Iufmt-7vE7f4cbhhJM",
+      "endFieldId": "81K108HcRSFRJzQl5LllB",
+      "startFieldId": "qNN3dqqaljg6MWRHjYop0",
       "id": 9,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1355,16 +1355,16 @@
     },
     {
       "name": "fk_bridge_job_locations_job_key_fct_job_postings",
-      "startTableId": "gw6vyVSSHhd_qyv95QbJd",
-      "endTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "startTableId": "q_ZEPrIDPUr7ewD5Bwt1N",
+      "endTableId": "jzXyHRnhrG97jOUO0_jaa",
       "fields": [
         {
-          "startFieldId": "DilpF_0zDSB_92WMrF8g7",
-          "endFieldId": "-0yq54TlCIm6aqr_CwG12"
+          "startFieldId": "JLQ9HQ0Fo1lgNPNUlmpGi",
+          "endFieldId": "145duxKAQs4L38iNdelUi"
         }
       ],
-      "endFieldId": "-0yq54TlCIm6aqr_CwG12",
-      "startFieldId": "DilpF_0zDSB_92WMrF8g7",
+      "endFieldId": "145duxKAQs4L38iNdelUi",
+      "startFieldId": "JLQ9HQ0Fo1lgNPNUlmpGi",
       "id": 10,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
@@ -1372,102 +1372,119 @@
     },
     {
       "name": "fk_bridge_job_locations_location_key_dim_location",
-      "startTableId": "gw6vyVSSHhd_qyv95QbJd",
-      "endTableId": "T-9EwEP9AHd2l6e6M6fQf",
+      "startTableId": "q_ZEPrIDPUr7ewD5Bwt1N",
+      "endTableId": "-6Fi0aLhznHO-vv-JR-y3",
       "fields": [
         {
-          "startFieldId": "w5LWn4OUZagtujwAh1O5H",
-          "endFieldId": "i1fJh7y7jekEShKVWFrbG"
+          "startFieldId": "zEJesw5LqPoHHRjPRGs6i",
+          "endFieldId": "b72KfRA_9lFB6gqwzdDtj"
         }
       ],
-      "endFieldId": "i1fJh7y7jekEShKVWFrbG",
-      "startFieldId": "w5LWn4OUZagtujwAh1O5H",
+      "endFieldId": "b72KfRA_9lFB6gqwzdDtj",
+      "startFieldId": "zEJesw5LqPoHHRjPRGs6i",
       "id": 11,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
       "cardinality": "many_to_one"
     },
     {
-      "name": "fk_bridge_job_types_job_key_fct_job_postings",
-      "startTableId": "Gnsrq9T_CBlh2kUeHzUQI",
-      "endTableId": "oNs9p8qGwoFHUg2BV5Xxf",
+      "name": "fk_bridge_job_sources_job_key_fct_job_postings",
+      "startTableId": "Dn3wE8KBEdf30oL1kdq8W",
+      "endTableId": "jzXyHRnhrG97jOUO0_jaa",
       "fields": [
         {
-          "startFieldId": "SYATvBvKX7OEY353XumT7",
-          "endFieldId": "-0yq54TlCIm6aqr_CwG12"
+          "startFieldId": "DUSqQoF2_Gszzi8VQV9Lz",
+          "endFieldId": "145duxKAQs4L38iNdelUi"
         }
       ],
-      "endFieldId": "-0yq54TlCIm6aqr_CwG12",
-      "startFieldId": "SYATvBvKX7OEY353XumT7",
+      "endFieldId": "145duxKAQs4L38iNdelUi",
+      "startFieldId": "DUSqQoF2_Gszzi8VQV9Lz",
       "id": 12,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
       "cardinality": "many_to_one"
     },
     {
-      "name": "fk_agg_skill_co_occurrence_skill_dim_skill",
-      "startTableId": "sGBuccureoKYbjmizawJq",
-      "endTableId": "h7CEOpItMrg-2KMFne3Ve",
+      "name": "fk_bridge_job_types_job_key_fct_job_postings",
+      "startTableId": "zfkChflDeAgG-4GmXph1x",
+      "endTableId": "jzXyHRnhrG97jOUO0_jaa",
       "fields": [
         {
-          "startFieldId": "XbO639IiyJofy8iKl9Dw4",
-          "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS"
+          "startFieldId": "WeAFs04MgI0FBT2Z1OiUj",
+          "endFieldId": "145duxKAQs4L38iNdelUi"
         }
       ],
-      "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS",
-      "startFieldId": "XbO639IiyJofy8iKl9Dw4",
+      "endFieldId": "145duxKAQs4L38iNdelUi",
+      "startFieldId": "WeAFs04MgI0FBT2Z1OiUj",
       "id": 13,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
       "cardinality": "many_to_one"
     },
     {
-      "name": "fk_agg_skill_co_occurrence_co_skill_dim_skill",
-      "startTableId": "sGBuccureoKYbjmizawJq",
-      "endTableId": "h7CEOpItMrg-2KMFne3Ve",
+      "name": "fk_agg_skill_co_occurrence_skill_dim_skill",
+      "startTableId": "dfoEqFOa-g5WetEN2JR9f",
+      "endTableId": "C3t__7eP23FV_whXy63sA",
       "fields": [
         {
-          "startFieldId": "QctKhTwBfrd-aQIq4zN4x",
-          "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS"
+          "startFieldId": "D9-2d5gvzuSbueIHWdjAi",
+          "endFieldId": "xPHRczKG8UIopKMxKtb6n"
         }
       ],
-      "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS",
-      "startFieldId": "QctKhTwBfrd-aQIq4zN4x",
+      "endFieldId": "xPHRczKG8UIopKMxKtb6n",
+      "startFieldId": "D9-2d5gvzuSbueIHWdjAi",
       "id": 14,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
       "cardinality": "many_to_one"
     },
     {
-      "name": "fk_agg_skill_weekly_trend_week_start_dim_date",
-      "startTableId": "a3aN6aYy4B8kORFnJGns2",
-      "endTableId": "Dn1PYR_6VXwsbxCeNmYwE",
+      "name": "fk_agg_skill_co_occurrence_co_skill_dim_skill",
+      "startTableId": "dfoEqFOa-g5WetEN2JR9f",
+      "endTableId": "C3t__7eP23FV_whXy63sA",
       "fields": [
         {
-          "startFieldId": "a-IywN_4bOR3sCqhswo0k",
-          "endFieldId": "A6rPkW1R1OabqdpnZoXxq"
+          "startFieldId": "Ld8dab5J2Rhf-Zt5mxw0m",
+          "endFieldId": "xPHRczKG8UIopKMxKtb6n"
         }
       ],
-      "endFieldId": "A6rPkW1R1OabqdpnZoXxq",
-      "startFieldId": "a-IywN_4bOR3sCqhswo0k",
+      "endFieldId": "xPHRczKG8UIopKMxKtb6n",
+      "startFieldId": "Ld8dab5J2Rhf-Zt5mxw0m",
       "id": 15,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
       "cardinality": "many_to_one"
     },
     {
-      "name": "fk_agg_skill_weekly_trend_skill_dim_skill",
-      "startTableId": "a3aN6aYy4B8kORFnJGns2",
-      "endTableId": "h7CEOpItMrg-2KMFne3Ve",
+      "name": "fk_agg_skill_weekly_trend_week_start_dim_date",
+      "startTableId": "wN2_mJ1eu5xuibUrgB55D",
+      "endTableId": "AAZp9CIw8jq1H-hNYHMA5",
       "fields": [
         {
-          "startFieldId": "14nW3OeLj7eU2-G9borJJ",
-          "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS"
+          "startFieldId": "AzxtZJ-6-PhvsHQyJ6Yxh",
+          "endFieldId": "q6yd1-v5PGBZW4a7mMneF"
         }
       ],
-      "endFieldId": "Cv2x-Czx8Ki4i7cHBIJaS",
-      "startFieldId": "14nW3OeLj7eU2-G9borJJ",
+      "endFieldId": "q6yd1-v5PGBZW4a7mMneF",
+      "startFieldId": "AzxtZJ-6-PhvsHQyJ6Yxh",
       "id": 16,
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "cardinality": "many_to_one"
+    },
+    {
+      "name": "fk_agg_skill_weekly_trend_skill_dim_skill",
+      "startTableId": "wN2_mJ1eu5xuibUrgB55D",
+      "endTableId": "C3t__7eP23FV_whXy63sA",
+      "fields": [
+        {
+          "startFieldId": "m6YaUJzWQuCb0t7M8_ml9",
+          "endFieldId": "xPHRczKG8UIopKMxKtb6n"
+        }
+      ],
+      "endFieldId": "xPHRczKG8UIopKMxKtb6n",
+      "startFieldId": "m6YaUJzWQuCb0t7M8_ml9",
+      "id": 17,
       "updateConstraint": "No action",
       "deleteConstraint": "No action",
       "cardinality": "many_to_one"

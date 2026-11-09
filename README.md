@@ -4,6 +4,8 @@ A daily data pipeline for the remote job market. It collects job postings from J
 
 **Live report:** https://robi4419.github.io/Nexus-Project/, with four pages (skills overview, rising skills, salaries, skills asked together), refreshed every night.
 
+![The tech stack: public APIs send JSON over HTTPS to Apache Airflow 3 (Python, requests, the Databricks SDK and provider), which runs in Docker Compose with Celery, Redis and PostgreSQL. Airflow writes raw files to a Unity Catalog volume, runs a Databricks Job whose Apache Spark notebooks (PySpark, Auto Loader) write Delta Lake tables, and runs dbt Core (dbt-databricks, dbt_utils, Jinja), which sends SQL to a serverless SQL warehouse. The Power BI service in a Microsoft 365 tenant imports from it, Power BI Desktop publishes to it, and the report is embedded in a GitHub Pages site. GitHub holds the code and the GeoNames cities, provides the Docker image and DAGs, deploys the Databricks Asset Bundle, and GitHub Actions deploys the site. Failed tasks alert through Gmail; development uses pytest, python-dotenv and DrawDB.](docs/tech-stack.svg)
+
 **Stack:** Apache Airflow 3 (orchestration, in Docker) · Databricks (bronze and silver: Auto Loader, PySpark, Unity Catalog) · dbt (the gold star schema, with contracts and tests) · Power BI (the report, published to the web) · GitHub Pages and Actions
 
 See [docs/PLAN.md](docs/PLAN.md) for the architecture and the development plan, and [`docs/phases/`](docs/phases/) for each phase's decisions.
@@ -12,24 +14,14 @@ See [docs/PLAN.md](docs/PLAN.md) for the architecture and the development plan, 
 
 Every evening, with no manual step:
 
-```
-18:00 UTC  ingest_jobicy ───────┐
-18:00 UTC  ingest_arbeitnow ────┼─ raw JSON in a Unity Catalog Volume ─►  transform_and_build
-18:00 UTC  ingest_himalayas ────┘  (once all three have landed)              Databricks Job transform_jobs:
-17:00 UTC  ingest_fx_rates (weekdays)                                          bronze (Auto Loader) → silver
-                                                                               (clean, dedupe, locations, salaries
-                                                                               in USD, skills) → data-quality checks
-                                                                             dbt: deps → source freshness → build
-                                                                               (gold star schema and its tests)
-19:00 UTC  the Power BI service refreshes the report's model from gold ─► the public report on GitHub Pages
-any failed run ─► email
-```
+![How Nexus-Project works, step by step: one Airflow DAG per source (running in Docker) lands raw JSON in a Databricks volume; once all three job sources have landed, transform_and_build runs the Databricks Job (bronze with Auto Loader, then silver in PySpark, then checks), a dbt source freshness check and dbt build (staging, intermediate, marts and history: gold). The Power BI service refreshes its model from gold at 19:00 UTC, and the report is published to the web and embedded in a GitHub Pages site.](docs/architecture.svg)
 
 ## Data sources and credits
 
 - Job postings from [Jobicy](https://jobicy.com), [Arbeitnow](https://www.arbeitnow.com) and [Himalayas](https://himalayas.app). Data sourced from Himalayas is credited with a link. Every Apply link goes to the original posting, through Himalayas' `applicationLink` for its jobs, and Himalayas jobs are deleted once they expire, as its API terms require. The public report shows aggregates only.
 - Exchange rates from the European Central Bank, via [Frankfurter](https://frankfurter.dev).
 - City names from [GeoNames](https://www.geonames.org) (CC BY 4.0).
+- Logos in the architecture diagram from [Simple Icons](https://simpleicons.org) (CC0). The trademarks belong to their owners.
 
 ## Repository layout
 
@@ -46,7 +38,7 @@ any failed run ─► email
 | `.github/workflows/` | Deploys `site/` to GitHub Pages on a push to `main` |
 | `scripts/` | One-off helpers: build the GeoNames reference data, export the marts' DDL for the ER diagram |
 | `tests/` | pytest suite |
-| `docs/` | Plan, per-phase docs and the ER diagram |
+| `docs/` | Plan, per-phase docs, the ER diagram, and the tech-stack and step-by-step diagrams (`tech-stack.svg`, `architecture.svg`) |
 | `docker-compose.yaml` | Local Airflow stack (Postgres, Redis, scheduler, worker, API server, …) |
 
 ## Getting started
