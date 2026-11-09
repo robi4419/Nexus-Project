@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1068" width="1000" height="1068" role="img"
   aria-labelledby="title desc" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-  <title id="title">Nexus-Project architecture, step by step</title>
+  <title id="title">SkillScout architecture, step by step</title>
   <desc id="desc">Every evening Airflow, running in Docker, runs one ingestion DAG per source: it makes sure the landing
   volume exists, fetches the API and lands raw JSON, purges expired Himalayas files, and checks the run, which updates
   an Asset. Once all three job sources have landed, transform_and_build runs the Databricks Job transform_jobs (bronze
@@ -17,7 +17,7 @@
     </marker>
   </defs>
   <rect width="1000" height="1068" rx="16" fill="#f9f7f2"/>
-  <text x="24" y="38" font-size="20" font-weight="700" fill="#324e55" text-anchor="start">Nexus-Project: from job boards to a public Power BI report</text>
+  <text x="24" y="38" font-size="20" font-weight="700" fill="#324e55" text-anchor="start">SkillScout: from job boards to a public Power BI report</text>
   <text x="24" y="60" font-size="12.5" font-weight="normal" fill="#55666b" text-anchor="start">Every evening, with no manual step · times in UTC</text>
   <path d="M 742 33 L 780 33" fill="none" stroke="#55666b" stroke-width="1.6" marker-end="url(#arrow)"/>
   <text x="790" y="37" font-size="11.5" font-weight="normal" fill="#55666b" text-anchor="start">data</text>

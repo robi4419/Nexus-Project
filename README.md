@@ -1,4 +1,4 @@
-# Nexus-Project
+# SkillScout
 
 A daily data pipeline for the remote job market. It collects job postings from Jobicy, Arbeitnow and Himalayas, plus ECB exchange rates. It cleans them, extracts the skills and tools each posting asks for, and builds a star schema for a Power BI report you can filter by country, industry, seniority, job type and date.
 
@@ -14,7 +14,7 @@ See [docs/PLAN.md](docs/PLAN.md) for the architecture and the development plan, 
 
 Every evening, with no manual step:
 
-![How Nexus-Project works, step by step: one Airflow DAG per source (running in Docker) lands raw JSON in a Databricks volume; once all three job sources have landed, transform_and_build runs the Databricks Job (bronze with Auto Loader, then silver in PySpark, then checks), a dbt source freshness check and dbt build (staging, intermediate, marts and history: gold). The Power BI service refreshes its model from gold at 19:00 UTC, and the report is published to the web and embedded in a GitHub Pages site.](docs/architecture.svg)
+![How SkillScout works, step by step: one Airflow DAG per source (running in Docker) lands raw JSON in a Databricks volume; once all three job sources have landed, transform_and_build runs the Databricks Job (bronze with Auto Loader, then silver in PySpark, then checks), a dbt source freshness check and dbt build (staging, intermediate, marts and history: gold). The Power BI service refreshes its model from gold at 19:00 UTC, and the report is published to the web and embedded in a GitHub Pages site.](docs/architecture.svg)
 
 ## Data sources and credits
 
