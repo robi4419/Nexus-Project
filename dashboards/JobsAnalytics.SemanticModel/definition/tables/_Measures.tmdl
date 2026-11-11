@@ -401,6 +401,24 @@ table _Measures
 		displayFolder: Trend
 		lineageTag: 9b397c71-006a-4444-b92f-24d2be2c6b14
 
+	/// The trend line's y-axis maximum: at least 5%, so a rare skill's moves of a few jobs don't fill the chart; above that,
+	/// 10% over the highest line, or the highest chance bar when one skill is picked.
+	measure 'Trend axis max' =
+			VAR ShownSkills = COUNTROWS ( ALLSELECTED ( Skill[Skill] ) )
+			VAR Highest =
+			    MAXX (
+			        'Weekly skill trend',
+			        IF (
+			            ShownSkills = 1,
+			            MAX ( 'Weekly skill trend'[share], COALESCE ( 'Weekly skill trend'[chance_high], 0 ) ),
+			            'Weekly skill trend'[share]
+			        )
+			    )
+			RETURN MAX ( 0.05, Highest * 1.1 )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 64c34bb8-4255-4f72-add6-de709b98efa6
+
 	column Value
 		dataType: int64
 		isHidden

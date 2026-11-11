@@ -327,6 +327,18 @@
                   "Value": "0D"
                 }
               }
+            },
+            "end": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Trend axis max"
+                }
+              }
             }
           }
         }
