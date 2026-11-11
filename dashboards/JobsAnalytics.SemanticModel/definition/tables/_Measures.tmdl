@@ -92,27 +92,27 @@ table _Measures
 		displayFolder: Trend
 		lineageTag: 5068cfc8-aa20-4ac6-9e99-11809edc7da4
 
-	/// Share of the week's jobs asking for the skill.
-	measure 'Week share' = DIVIDE ( [Trend jobs with skill], [Trend jobs] )
+	/// Share of the week's new jobs asking for the skill, with each board's own share weighted by fixed weights
+	/// ('Trend board weights', decision 14), so a board posting more or fewer jobs in a week doesn't move it. Blank unless
+	/// the filters leave one week and one skill.
+	measure 'Week share' = IF ( COUNTROWS ( 'Weekly skill trend' ) = 1, MAX ( 'Weekly skill trend'[share] ) )
 		formatString: 0.0%
 		displayFolder: Trend
 		lineageTag: 2da8fc77-4574-4f64-8a93-32108ae38827
 
 	/// Week share in the week before.
-	measure 'Previous week share' =
-			VAR ThisWeek = MAX ( 'Weekly skill trend'[Week] )
-			RETURN
-			    CALCULATE ( [Week share], 'Weekly skill trend'[Week] = ThisWeek - 7 )
+	measure 'Previous week share' = IF ( COUNTROWS ( 'Weekly skill trend' ) = 1, MAX ( 'Weekly skill trend'[prev_share] ) )
 		formatString: 0.0%
 		displayFolder: Trend
 		lineageTag: 0ea87e5f-e036-4995-afef-a239f75ec5ac
 
-	/// Week share minus the previous week's, in percentage points: +1.3 pp means 1.3 more of every 100 jobs in the week
-	/// ask for the skill. Blank in the first week.
+	/// The weighted change of each board's own share since the week before, in percentage points: +1.3 pp means 1.3 more
+	/// of every 100 jobs in the week ask for the skill. Week share minus the previous week's, except in a week a board
+	/// has no new jobs, which then doesn't count as a change. Blank in the first week.
 	measure 'Share change' =
-			VAR Previous = [Previous week share]
+			VAR Change = IF ( COUNTROWS ( 'Weekly skill trend' ) = 1, MAX ( 'Weekly skill trend'[share_change] ) )
 			RETURN
-			    IF ( NOT ISBLANK ( Previous ), ( [Week share] - Previous ) * 100 )
+			    IF ( NOT ISBLANK ( Change ), Change * 100 )
 		formatString: +0.0" pp";-0.0" pp";0.0" pp"
 		displayFolder: Trend
 		lineageTag: e94b5cc8-e562-4733-9af2-34ad9e254e66
@@ -332,7 +332,7 @@ table _Measures
 			VAR Latest = [Latest week]
 			RETURN
 			    "Week of " & FORMAT ( Latest, "d mmm" ) & " vs " & FORMAT ( Latest - 7, "d mmm" )
-			        & ", in percentage points of each week's new jobs"
+			        & ", in percentage points of each week's new jobs, with fixed board weights"
 		displayFolder: Trend
 		lineageTag: b5269904-d3bb-4457-b392-0fdba39aed3e
 
@@ -359,6 +359,47 @@ table _Measures
 			    )
 		displayFolder: Trend
 		lineageTag: bf784cfb-22c6-4c21-8d65-f402991bb54f
+
+	/// Low end of the chance band (decision 14): where Week share would fall by chance (95%) if no board's own share had
+	/// changed since the week before, so a point below it is a real fall. Only when the chart shows one skill, because
+	/// ten bands hide the lines. Blank in the first week.
+	measure 'Chance range low' =
+			VAR ShownSkills = COUNTROWS ( ALLSELECTED ( Skill[Skill] ) )
+			RETURN
+			    IF ( ShownSkills = 1 && COUNTROWS ( 'Weekly skill trend' ) = 1, MAX ( 'Weekly skill trend'[chance_low] ) )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: d2a46b59-e1aa-4717-a129-885782767a1d
+
+	/// High end of the chance band: a point above it is a real rise.
+	measure 'Chance range high' =
+			VAR ShownSkills = COUNTROWS ( ALLSELECTED ( Skill[Skill] ) )
+			RETURN
+			    IF ( ShownSkills = 1 && COUNTROWS ( 'Weekly skill trend' ) = 1, MAX ( 'Weekly skill trend'[chance_high] ) )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 47e23ff3-cc6c-434c-9098-0f7d4dd8ab24
+
+	/// The weekly trend's board weights as text, largest first, e.g. "Himalayas 64% · Arbeitnow 27% · Jobicy 10%".
+	measure 'Board weights' =
+			CONCATENATEX (
+			    ALL ( 'Trend board weights' ),
+			    VAR Board = 'Trend board weights'[board]
+			    RETURN
+			        UPPER ( LEFT ( Board, 1 ) ) & MID ( Board, 2, 50 ) & " " & FORMAT ( 'Trend board weights'[weight], "0%" ),
+			    " · ",
+			    'Trend board weights'[weight], DESC
+			)
+		displayFolder: Trend
+		lineageTag: 13d68417-4640-4230-9b96-9eec06209c4b
+
+	/// The trend line's subtitle: what the share is, the board weights, and how to read the chance band.
+	measure 'Trend subtitle' =
+			
+			"In percent of each week's new jobs, with each board's own share weighted: " & [Board weights]
+			    & ". Pick one skill to see, from the second week on, the range its share would land in by chance if nothing had changed since the week before. A point outside its bar is a real change."
+		displayFolder: Trend
+		lineageTag: 9b397c71-006a-4444-b92f-24d2be2c6b14
 
 	column Value
 		dataType: int64

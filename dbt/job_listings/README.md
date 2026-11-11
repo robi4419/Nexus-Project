@@ -9,7 +9,7 @@ reasons are in [`docs/phases/phase-3-dbt-models.md`](../../docs/phases/phase-3-d
 | Layer | Folder | Materialized as | Schema | Models |
 |---|---|---|---|---|
 | staging | `models/staging/` | views | `gold_staging` | `stg_silver__*`: one per silver table, plus surrogate keys |
-| intermediate | `models/intermediate/` | views | `gold_staging` | `int_job_postings` (which job each posting is, salary midpoint and plausibility), `int_job_skills`, `int_job_skill_pairs`, `int_job_openings` (the weeks each job's openings began) |
+| intermediate | `models/intermediate/` | views | `gold_staging` | `int_job_postings` (which job each posting is, salary midpoint and plausibility), `int_job_skills`, `int_job_skill_pairs`, `int_job_openings` (the weeks each job's openings began), `int_skill_weekly_by_board` and `int_skill_weekly_weighted` (each board's weekly counts, and the trend's board-weighted shares) |
 | marts | `models/marts/` | tables with enforced contracts | `gold` | `dim_*`, `fct_*`, `bridge_*`, `agg_*` |
 | history | `models/history/` | incremental tables, appended to and never rebuilt | `gold` | `hist_himalayas_*`: Himalayas counts per day first seen, and per week the jobs also on Jobicy or Arbeitnow, kept after the jobs expire |
 | seed | `seeds/` | table | `gold_staging` | `seniority_levels`: the seniority scale and its sort order |

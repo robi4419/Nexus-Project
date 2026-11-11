@@ -87,7 +87,7 @@ models:
       - name: in_title
         description: "True when the skill is in the title of any of the job's postings."
   - name: int_job_openings
-    description: "One row per job x scope x week in which an opening of the job began (Phase 5, decisions 12 and 13). Each posting is a listing: Jobicy and Arbeitnow on the publish date, Himalayas on the day first seen. A listing starts a new opening when none of the job's earlier listings is still live: Jobicy and Arbeitnow listings count as live for 8 weeks, Himalayas ones until they expire. Feeds the weekly trend and the Himalayas overlap history."
+    description: "One row per job x scope x week in which an opening of the job began (Phase 5, decisions 12 to 14). Each posting is a listing: Jobicy and Arbeitnow on the publish date, Himalayas on the day first seen. A listing starts a new opening when none of the job's earlier listings in the same scope is still live: Jobicy and Arbeitnow listings count as live for 8 weeks, Himalayas ones until they expire. Feeds the weekly trend (each board's own share) and the Himalayas overlap history (the trend's job counts)."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -97,11 +97,11 @@ models:
         description: "{{ doc('job_key') }}"
         data_tests: [not_null]
       - name: scope
-        description: "Which listings decide the openings: jobicy_arbeitnow or himalayas (only that board group's listings), or all_boards (every listing, so a job on several boards opens once)."
+        description: "Which listings decide the openings: jobicy, arbeitnow or himalayas (one board's, for each board's own share in the weekly trend), jobicy_arbeitnow (those two boards'), or all_boards (every listing, so a job on several boards opens once)."
         data_tests:
           - accepted_values:
               arguments:
-                values: ["jobicy_arbeitnow", "himalayas", "all_boards"]
+                values: ["jobicy", "arbeitnow", "himalayas", "jobicy_arbeitnow", "all_boards"]
       - name: week_start
         description: "Monday of the week the opening began (as in dim_date)."
         data_tests: [not_null]
@@ -122,10 +122,60 @@ models:
         description: "The alphabetically first skill of the pair."
       - name: skill_b
         description: "The alphabetically second skill of the pair."
+  - name: int_skill_weekly_by_board
+    description: "One row per complete week x board x skill (Phase 5, decision 14): the openings that began on the board that week (board_jobs) and those asking for the skill (skill_jobs). Jobicy and Arbeitnow come from their own scopes in int_job_openings, Himalayas from the frozen hist_himalayas_*_by_day counts. A job on several boards counts on each. The weeks are those hist_himalayas_overlap_jobs_by_week has stored; every board and skill has a row each week, 0 when it had no jobs."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["week_start", "board", "skill"]
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "skill_jobs <= board_jobs"
+    columns:
+      - name: week_start
+        description: "Monday of the week (as in dim_date)."
+        data_tests: [not_null]
+      - name: board
+        description: "The job board."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["jobicy", "arbeitnow", "himalayas"]
+      - name: skill
+        description: "{{ doc('skill') }}"
+        data_tests: [not_null]
+      - name: skill_jobs
+        description: "Openings that began on the board that week asking for the skill; 0 when none."
+      - name: board_jobs
+        description: "All openings that began on the board that week, with or without skills; 0 when it had none, which leaves the board out of that week's share."
+  - name: int_skill_weekly_weighted
+    description: "One row per complete week x skill (Phase 5, decision 14): the share of new jobs asking for the skill, with each board's own share combined by the fixed weights in agg_trend_board_weights, so a board posting more or fewer jobs in a week doesn't move it. Feeds agg_skill_weekly_trend."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ["week_start", "skill"]
+    columns:
+      - name: week_start
+        description: "Monday of the week (as in dim_date)."
+        data_tests: [not_null]
+      - name: skill
+        description: "{{ doc('skill') }}"
+        data_tests: [not_null]
+      - name: share
+        description: "sum(weight x board's own share) / sum(weight), over the boards with new jobs that week; a board with none is left out and the other weights scale up to 1. Rounded to 6 decimals."
+        data_tests: [not_null]
+      - name: prev_share
+        description: "share in the previous week. NULL in the first week."
+      - name: share_change
+        description: "The same weighted sum, over the boards with new jobs in both weeks, of each board's change in its own share: share - prev_share, except in a week a board is missing, which then doesn't count as a change. A fraction (0.012 = +1.2 percentage points). NULL in the first week."
+      - name: chance_low
+        description: "Low end of the range the share would fall in by chance (95%) if no board's own share had changed since the week before: (share - share_change) - 1.96 x the standard error of the weighted change, from each board's share over the two weeks together. Never below 0. NULL in the first week."
+      - name: chance_high
+        description: "High end of the same range. NULL in the first week."
 
 unit_tests:
   - name: int_job_openings_count_a_job_again_once_its_listings_lapse
-    description: "a: Jobicy reposts it 9 weeks later, a new opening. b: reposted every few weeks, so one listing is always live: one opening. c: Himalayas first, Arbeitnow a week later: one opening over all boards, one per board group. d: a Himalayas posting expires early and the job is posted again: two openings."
+    description: "a: Jobicy reposts it 9 weeks later, a new opening. b: reposted every few weeks, so one listing is always live: one opening; per board, Jobicy counts it again once its own listing lapsed. c: Himalayas first, Arbeitnow a week later: one opening over all boards, one per board. d: a Himalayas posting expires early and the job is posted again: two openings."
     model: int_job_openings
     given:
       - input: ref('int_job_postings')
@@ -141,16 +191,48 @@ unit_tests:
           - {job_key: d, source: himalayas, published_date: 2026-11-19, first_seen_at: 2026-11-20 18:00:00, expires_at: 2027-01-19 00:00:00}
     expect:
       rows:
+        - {job_key: a, scope: jobicy, week_start: 2026-10-05}
+        - {job_key: a, scope: jobicy, week_start: 2026-12-07}
         - {job_key: a, scope: jobicy_arbeitnow, week_start: 2026-10-05}
         - {job_key: a, scope: jobicy_arbeitnow, week_start: 2026-12-07}
         - {job_key: a, scope: all_boards, week_start: 2026-10-05}
         - {job_key: a, scope: all_boards, week_start: 2026-12-07}
+        - {job_key: b, scope: jobicy, week_start: 2026-10-05}
+        - {job_key: b, scope: jobicy, week_start: 2026-12-14}
+        - {job_key: b, scope: arbeitnow, week_start: 2026-11-02}
         - {job_key: b, scope: jobicy_arbeitnow, week_start: 2026-10-05}
         - {job_key: b, scope: all_boards, week_start: 2026-10-05}
         - {job_key: c, scope: himalayas, week_start: 2026-10-19}
+        - {job_key: c, scope: arbeitnow, week_start: 2026-10-26}
         - {job_key: c, scope: jobicy_arbeitnow, week_start: 2026-10-26}
         - {job_key: c, scope: all_boards, week_start: 2026-10-19}
         - {job_key: d, scope: himalayas, week_start: 2026-10-19}
         - {job_key: d, scope: himalayas, week_start: 2026-11-16}
         - {job_key: d, scope: all_boards, week_start: 2026-10-19}
         - {job_key: d, scope: all_boards, week_start: 2026-11-16}
+
+  - name: int_skill_weekly_weighted_combines_boards_with_fixed_weights
+    description: "Weights 0.5, 0.25 and 0.25. Week 2: every board has jobs in both weeks, so share_change is share - prev_share and the band is centred on prev_share; the +5 pp is inside it, because the boards are small. Week 3: Jobicy has no jobs, so it's left out of the share (the other weights scale up to 1) and of the change. The share rises only because Jobicy, the lowest board, is missing; share_change is -5 pp, from the two boards with jobs in both weeks."
+    model: int_skill_weekly_weighted
+    given:
+      - input: ref('int_skill_weekly_by_board')
+        rows:
+          - {week_start: 2026-10-19, board: himalayas, skill: X, skill_jobs: 50, board_jobs: 100}
+          - {week_start: 2026-10-19, board: arbeitnow, skill: X, skill_jobs: 10, board_jobs: 40}
+          - {week_start: 2026-10-19, board: jobicy, skill: X, skill_jobs: 5, board_jobs: 40}
+          - {week_start: 2026-10-26, board: himalayas, skill: X, skill_jobs: 60, board_jobs: 100}
+          - {week_start: 2026-10-26, board: arbeitnow, skill: X, skill_jobs: 10, board_jobs: 40}
+          - {week_start: 2026-10-26, board: jobicy, skill: X, skill_jobs: 5, board_jobs: 40}
+          - {week_start: 2026-11-02, board: himalayas, skill: X, skill_jobs: 40, board_jobs: 100}
+          - {week_start: 2026-11-02, board: arbeitnow, skill: X, skill_jobs: 20, board_jobs: 40}
+          - {week_start: 2026-11-02, board: jobicy, skill: X, skill_jobs: 0, board_jobs: 0}
+      - input: ref('agg_trend_board_weights')
+        rows:
+          - {board: himalayas, jobs: 2, weight: 0.5}
+          - {board: arbeitnow, jobs: 1, weight: 0.25}
+          - {board: jobicy, jobs: 1, weight: 0.25}
+    expect:
+      rows:
+        - {week_start: 2026-10-19, skill: X, share: 0.34375, prev_share: null, share_change: null, chance_low: null, chance_high: null}
+        - {week_start: 2026-10-26, skill: X, share: 0.39375, prev_share: 0.34375, share_change: 0.05, chance_low: 0.252547, chance_high: 0.434953}
+        - {week_start: 2026-11-02, skill: X, share: 0.433333, prev_share: 0.39375, share_change: -0.05, chance_low: 0.366976, chance_high: 0.59969}

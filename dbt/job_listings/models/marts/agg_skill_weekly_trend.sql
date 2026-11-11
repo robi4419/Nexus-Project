@@ -1,9 +1,11 @@
--- One row per complete week x skill (Phase 5, decisions 12 and 13). A job counts once per opening, in the week the
--- opening began on any board (int_job_openings): a repost while one of its listings is still live doesn't count again.
--- A week's jobs are:
+-- One row per complete week x skill (Phase 5, decisions 12 to 14).
+-- The counts count a job once per opening, in the week the opening began on any board (int_job_openings): a repost while
+-- one of its listings is still live doesn't count again. A week's jobs are:
 --   the openings Jobicy or Arbeitnow began that week, counted from silver, which keeps their postings;
 -- + the openings Himalayas began that week, from the frozen counts, because it deletes expired jobs (decision 4);
 -- - the openings those two count twice, frozen when the week was complete.
+-- The shares, change and chance band come from int_skill_weekly_weighted, which combines each board's own share with
+-- fixed weights (decision 14), so a share isn't exactly jobs / week_jobs.
 -- The weeks are those hist_himalayas_overlap_jobs_by_week has stored.
 with jobicy_arbeitnow_jobs as (
   select job_key, week_start
@@ -55,18 +57,21 @@ grid as (
   select wt.week_start, s.skill, wt.week_jobs
   from week_totals as wt
   cross join {{ ref('dim_skill') }} as s
-),
-weekly as (
-  select grid.week_start, grid.skill, coalesce(sc.jobs, 0) as jobs, grid.week_jobs,
-    coalesce(sc.jobs, 0) / grid.week_jobs as share
-  from grid
-  left join skill_counts as sc
-    on grid.week_start = sc.week_start
-    and grid.skill = sc.skill
 )
 select
-  weekly.*,
-  lag(jobs) over (partition by skill order by week_start) as prev_jobs,
-  lag(share) over (partition by skill order by week_start) as prev_share,
-  share - lag(share) over (partition by skill order by week_start) as share_change
-from weekly
+  grid.week_start,
+  grid.skill,
+  coalesce(sc.jobs, 0) as jobs,
+  grid.week_jobs,
+  ww.share,
+  ww.prev_share,
+  ww.share_change,
+  ww.chance_low,
+  ww.chance_high
+from grid
+left join skill_counts as sc
+  on grid.week_start = sc.week_start
+  and grid.skill = sc.skill
+join {{ ref('int_skill_weekly_weighted') }} as ww
+  on ww.week_start = grid.week_start
+  and ww.skill = grid.skill

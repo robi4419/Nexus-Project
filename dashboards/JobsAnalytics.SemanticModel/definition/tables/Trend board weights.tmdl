@@ -1,0 +1,33 @@
+/// One row per job board: its weight in the weekly trend (gold.agg_trend_board_weights, Phase 5 decision 14), its share
+/// of all the boards' new jobs over the trend's weeks. Only the 'Board weights' text uses it, so it has no relationships.
+table 'Trend board weights'
+	lineageTag: 6c509203-db19-499a-8b9a-00424ca143a2
+
+	column board
+		dataType: string
+		isHidden
+		lineageTag: 532c869a-5c23-44b6-a89d-1c9561030a97
+		summarizeBy: none
+		sourceColumn: board
+
+	column weight
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		lineageTag: c926f53d-132b-41b7-b77c-2cfea418cbf3
+		summarizeBy: none
+		sourceColumn: weight
+
+	partition 'Trend board weights' = m
+		mode: import
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
+				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
+				    Data = Gold{[Name = "agg_trend_board_weights", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Data, {"board", "weight"})
+				in
+				    Columns
+
+	annotation PBI_ResultType = Table
+
