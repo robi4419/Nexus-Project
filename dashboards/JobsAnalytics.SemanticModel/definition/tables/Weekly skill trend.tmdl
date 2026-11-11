@@ -1,6 +1,7 @@
-/// One row per complete week x skill (gold.agg_skill_weekly_trend): each job once, in the week it was first listed on
-/// any board (Phase 5, decision 12). Himalayas weeks come from frozen counts (decision 4). The job filters don't apply;
-/// use the Trend measures.
+/// One row per complete week x skill (gold.agg_skill_weekly_trend). The counts count each job once per opening, in the
+/// week it began on any board (Phase 5, decisions 12 and 13). The shares, change and chance band combine each board's own
+/// share with fixed weights (decision 14, 'Trend board weights'), so a share isn't exactly the two counts divided. The job
+/// filters don't apply; use the Trend measures.
 table 'Weekly skill trend'
 	lineageTag: 9620112e-6589-4d8b-b3aa-32fcfff36ff7
 
@@ -37,6 +38,50 @@ table 'Weekly skill trend'
 		summarizeBy: none
 		sourceColumn: week_jobs
 
+	/// Share of the week's new jobs asking for the skill, with each board's own share weighted (decision 14).
+	column share
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		lineageTag: ba27e8f6-c4bd-49dd-9a5c-35a49f6871b8
+		summarizeBy: none
+		sourceColumn: share
+
+	/// share in the previous week; blank in the first week.
+	column prev_share
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		lineageTag: 323edb40-73f0-40a8-a2c5-5b5d19da88d7
+		summarizeBy: none
+		sourceColumn: prev_share
+
+	/// The weighted change of each board's own share since the previous week, as a fraction; blank in the first week.
+	column share_change
+		dataType: double
+		isHidden
+		lineageTag: 1f6b5788-63d6-483b-b83d-de1babc9a500
+		summarizeBy: none
+		sourceColumn: share_change
+
+	/// Low end of the range the share would fall in by chance (95%) if no board's own share had changed.
+	column chance_low
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		lineageTag: d6b2e448-a926-4feb-83f6-f550f114feb8
+		summarizeBy: none
+		sourceColumn: chance_low
+
+	/// High end of the same range.
+	column chance_high
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		lineageTag: bc845d5c-e8d2-4d53-917e-9b1d71c12315
+		summarizeBy: none
+		sourceColumn: chance_high
+
 	partition 'Weekly skill trend' = m
 		mode: import
 		source =
@@ -44,7 +89,7 @@ table 'Weekly skill trend'
 				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
 				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
 				    Data = Gold{[Name = "agg_skill_weekly_trend", Kind = "Table"]}[Data],
-				    Columns = Table.SelectColumns(Data, {"week_start", "skill", "jobs", "week_jobs"})
+				    Columns = Table.SelectColumns(Data, {"week_start", "skill", "jobs", "week_jobs", "share", "prev_share", "share_change", "chance_low", "chance_high"})
 				in
 				    Columns
 

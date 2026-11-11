@@ -21,6 +21,7 @@
 - [ ] 5.8 GitHub Pages site with the iframe
 - [x] 5.9 Verify end to end
 - [x] 5.10 Docs, commit, PR and merge (PR #8, merged on 2026-11-05)
+- [ ] 5.11 Board weights in the weekly trend (decision 14), on the branch `trend-board-weights`
 
 ---
 
@@ -180,6 +181,41 @@
       - **a 4-week window:** it would recount roles that are only bumped;
       - **counting again 8 weeks after the last counted week, however often the job was reposted:** the Himalayas history can't do that without remembering expired jobs.
     - **Left behind:** dbt doesn't drop the old view `gold_staging.int_job_first_listings`.
+14. **(2026-11-11) The weekly trend combines the three boards with fixed weights.**
+    - **Why:** a skill's weekly share moved with the mix of boards, not only with demand.
+      - **The boards differ:** a Himalayas job mentions about 7 skills, a Jobicy job about 4 and an Arbeitnow job about 3.
+      - **Himalayas' volume swings with its feed:** its runs saw about 20,000 updated jobs on 1 and 2 November and about 4,000 on 3–5 November, against 11,000–13,000 before. Every run read back to its cutoff, so nothing was missed; the feed itself was that uneven.
+      - **The result:** Himalayas went from 72% of the new jobs in the week of 26 October to 53% in the week of 2 November, and nearly every top skill fell 2–4 pp. CI/CD fell from 16.9% to 12.9%, but within each board it moved far less: Arbeitnow 7.6 → 6.9%, Jobicy 8.8 → 7.2%, Himalayas 20.2 → 18.1%. About half of the fall was the mix alone.
+    - **The rule:** each board's own weekly share of a skill (its new jobs asking for the skill ÷ its new jobs) is combined with fixed weights: share = Σ weight × board's share. A board's weekly volume then only changes how precise its share is, never the line.
+    - **The weights** are each board's share of all new jobs over the trend's complete weeks, recomputed on every build.
+      - Every week in a build uses the same weights, so the weeks stay comparable. A new week shifts the whole line only slightly.
+      - Weighting by volume keeps the line close to the Skills overview's shares, and gives the smallest board, Jobicy (about 1,400 jobs a week), the least say.
+    - **A week where a board has no new jobs** (a week-long outage) uses the other boards, with their weights scaled up to 100%. The change from the week before uses only the boards with jobs in both weeks, so the missing board doesn't show up as a change.
+    - **Counted per board, as openings (decision 13):** Jobicy and Arbeitnow from silver, through a scope per board in `int_job_openings`; Himalayas from the frozen history (decision 4).
+      - **A job on two boards counts in each board's own share,** because it's part of both boards' samples. There's nothing to subtract, because the shares are never added up as counts.
+      - **The difference is small:** jobs on more than one board are 1–3% of a week's jobs, and when decision 12 switched from counting per board to counting once, shares moved by at most 0.3 pp.
+      - **Counting each job strictly once inside the weighted share** would need the board that listed it first, which can't be recovered for expired Himalayas jobs without new history tables.
+    - **The job counts stay as they are:** `jobs` and `week_jobs` still count each opening once across the boards (decisions 12 and 13), for the tooltips, so a week's share is no longer exactly `jobs ÷ week_jobs`.
+      - **The overlap history keeps being built, for these counts only;** the weighted share doesn't use it. It also still decides which weeks are complete.
+      - **Why not retire it:** it costs nothing extra, a gap in a history table can never be filled, and "each job counts once" stays true for every number the report shows.
+    - **The chance band moves into the model.** For each week, it's where the share would land by chance, at 95%, if no board's own share had changed since the week before: the previous week's share ± 1.96 × √(Σ weight² × q × (1 − q) × (1/n this week + 1/n the week before)), with n each board's new jobs per week and q its share over the two weeks together. Pooling the two weeks keeps the range from shrinking to nothing when a rare skill had no jobs the week before.
+      - **Power BI draws it as a bar at each week** (error bars), and only when one skill is picked. A shaded ribbon looked wrong: each week's range is centred on the week before, so the ribbon trailed the line by a week, and its stretch between two weeks meant nothing. With bars, a point outside its own bar is a real change.
+    - **Rejected:**
+      - **Averaging each board's week-over-week change, weighted by that week's volume:** also free of the bias and slightly more precise, but the line needs levels, and levels chained from changes drift.
+      - **Equal weights:** Jobicy's small weekly samples would weigh as much as Himalayas'.
+      - **Himalayas only:** it drops 40% of the jobs, and changes within Himalayas would still show.
+      - **Weighting by board × industry as well:** the groups get small and noisy.
+      - **Keeping the trend and adding a note:** the Rising skills ranking would keep showing the mix.
+    - **Not fixed by weights:** a change in the kind of jobs one board posts. Himalayas' own CI/CD share fell from 23.2% to 20.2% to 18.1% over the three weeks, AWS from 24.1% to 21.8% to 20.2%. Checked in 5.11, step 1, there are two causes:
+      - **The title fallback (Phase 4, decision 8), a one-off step, accepted.** From 31 October, about 12% of Himalayas' new jobs are kept for their title alone. They mention fewer skills and much less DevOps, so Himalayas' CI/CD share is about 1 pp lower with them. From the week of 2 November, every week includes them, so weeks compare like with like again. Leaving them out of the trend would need a flag in silver and split history counts, which can only be backfilled while those jobs are live (until mid-December).
+      - **A batch of different jobs from Himalayas' feed,** first seen from 30 October to 3 November, about 5,000 of them on 1 November alone. They mention 5.2–6.4 skills instead of about 7.2, and CI/CD in 12–20% instead of 20–25%. They're real postings, so the trend keeps them. A single-week comparison will always show such a batch; 4-week windows (fix 3, once there's more history) would smooth it.
+    - **Measured** (2026-11-11, read-only rehearsal after the nightly run; 5.11, step 3):
+      - **Weights:** Himalayas 63.7% (27,881 jobs over the three weeks), Arbeitnow 26.6% (11,639), Jobicy 9.7% (4,245).
+      - **CI/CD:** 17.5% → 15.7% → 14.0%, against 17.3% → 16.9% → 12.9% before. Its own share on each board in the week of 2 November equals the independent count from silver (Himalayas 18.1%, Arbeitnow 6.9%, Jobicy 7.2%).
+      - **The week of 2 November, before → after:** SQL −2.3 → 0.0 pp, Azure −2.8 → −0.5, AWS −3.7 → −1.3, CI/CD −4.1 → −1.7, Kubernetes −2.3 → −1.0.
+      - **Top 5 fallers:** CI/CD, AWS, Azure, Kubernetes, SQL before; CI/CD, Node.js, AWS, React, PostgreSQL after, each outside its chance band (the batch of 30 October – 3 November).
+      - **Top 5 risers:** Excel, Microsoft Office, HubSpot, GDPR, Stripe before; Microsoft Office, Excel, Machine Learning, LLMs, Vulnerability Management after. LLMs (+0.5 pp) is inside its band.
+      - **Unchanged:** `jobs` and `week_jobs` in all 1,152 rows (3 weeks × 384 skills). No share is empty, and no band is inverted.
 
 ## How it fits
 
@@ -374,6 +410,62 @@ Pages use Fit to page, at a 16:9 ratio.
   - **Confirmed on 2026-11-07:** the first scheduled refresh (2026-11-06, 19:00 UTC) succeeded, and the report's numbers moved.
   - **Found while checking:** a Desktop session had dropped the Listed now default on Skills overview and Salaries. It had also saved fixed ranges in their date slicers (1 Oct – 5 Nov) and in the new Week slicer (19 – 26 Oct). All three were restored or cleared before the next publish (see the date-slicer pitfall). Before committing report changes, check for saved slicer filters.
 
+### 5.11 Board weights in the weekly trend (decision 14)
+On the branch `trend-board-weights`. The nightly run builds dbt from this folder (`./dbt` is mounted into Airflow), so:
+- dbt files change only between runs: after the chain is green (about 18:30 UTC) and before 18:00 the next day;
+- from the build in step 4 until the merge, the branch stays checked out, so the nightly run keeps building the new models;
+- the report is published to the service only after the merge, so the published model never expects columns that gold lacks.
+
+Already on the branch: the trend line chart's changes of 2026-11-11, made in Desktop: the y-axis from 0, straight lines, and a chance band (`Chance range low` and `Chance range high`) shown only when one skill is picked. Step 5 moves the band's formula into dbt.
+
+1. **Check the title fallback (read-only, counts only).** From bronze's raw Himalayas records, compare the jobs kept by category with those kept by title since 31 October: skills per job, and the shares of the top 10 skills. If they differ a lot, that's a separate decision, not part of this branch.
+   - **Done on 2026-11-11** (Himalayas postings by first-seen week; a posting is kept by title when no copy in bronze has a parent category):
+
+     | Week | Kept by | Postings | Skills per posting | CI/CD | AWS | Python | Kubernetes |
+     |---|---|---|---|---|---|---|---|
+     | 19 Oct | category | 9,054 | 7.23 | 22.9% | 23.7% | 29.3% | 13.5% |
+     | 26 Oct | category | 13,360 | 6.61 | 20.5% | 21.8% | 26.2% | 13.0% |
+     | 26 Oct | title | 1,210 | 5.13 | 10.1% | 13.7% | 20.2% | 7.0% |
+     | 2 Nov | category | 7,060 | 6.40 | 18.7% | 20.5% | 26.5% | 12.0% |
+     | 2 Nov | title | 1,005 | 4.71 | 8.6% | 12.5% | 20.1% | 6.3% |
+
+   - By first-seen day, the category-kept postings mention about 7.2 skills from 21 to 28 October, 5.2–6.4 from 30 October to 3 November (4,986 postings on 1 November), and mostly 6.6–7.1 from 4 to 10 November. CI/CD is back at about 25% on 9 and 10 November.
+   - **Decided:** the title fallback stays in the trend as a one-off step, and the batch stays as real data (decision 14, "Not fixed by weights").
+2. **dbt:**
+   - `int_job_openings`: two more scopes, `jobicy` and `arbeitnow`, each looking only at its own board's listings, with the same rule. The existing scopes stay, so the overlap history doesn't change. Update the scope's accepted values and the unit test's expected rows.
+   - New view `int_skill_weekly_by_board`: one row per complete week × board × skill, with `skill_jobs` and `board_jobs`.
+     - Jobicy and Arbeitnow come from their scopes and `int_job_skills`.
+     - Himalayas comes from `hist_himalayas_jobs_by_day` and `hist_himalayas_skills_by_day`.
+     - The weeks are those `hist_himalayas_overlap_jobs_by_week` has stored, as now.
+   - New mart `agg_trend_board_weights`: one row per board, with `board`, `jobs` over the trend's weeks, and `weight`. It has a contract and tests: the primary key, each weight between 0 and 1, and the weights summing to 1.
+   - New view `int_skill_weekly_weighted`: one row per week × skill, with `share`, `prev_share`, `share_change`, `chance_low` and `chance_high`, including the missing-board rule. A unit test pins it with made-up rows: three boards over two weeks, then a week with one board missing.
+   - `agg_skill_weekly_trend` keeps `jobs` and `week_jobs` (each opening once) and takes its shares, change and chance band from `int_skill_weekly_weighted`. `prev_jobs` goes. The contract checks that the share is between 0 and 1, and that `chance_low` ≤ `chance_high`.
+   - Descriptions in the YAML and `_docs.md`, and the model list in the dbt README.
+3. **Rehearse, read-only,** with `dbt show` over the day's data, as for decisions 12 and 13:
+   - The weights sum to 1. A rough count from silver on 2026-11-11 expects about 63% Himalayas, 27% Arbeitnow and 10% Jobicy.
+   - Each board's share matches an independent count from silver. For example, CI/CD in the week of 2 November: Himalayas 18.1%, Arbeitnow 6.9%, Jobicy 7.2%.
+   - CI/CD's weighted line is about 17.5% → 15.7% → 14.0%, against 17.2% → 16.9% → 12.9% now.
+   - `jobs` and `week_jobs` are unchanged from the current mart.
+   - The top 5 risers and fallers before and after go into decision 14's Measured line.
+4. **Build:** with the branch checked out, trigger `transform_and_build` by hand after the nightly run, as in decision 11's rollout. All tests pass, and the new columns are in gold.
+   - **Done on 2026-11-11:** triggered at 18:22 UTC, green at 18:31. `dbt build`: PASS=153, WARN=0, ERROR=0, including both unit tests and `assert_trend_board_weights_sum_to_one`.
+5. **Power BI (close Desktop first, because I edit the TMDL):**
+   - `Weekly skill trend` imports `share`, `prev_share`, `share_change`, `chance_low` and `chance_high`, hidden.
+   - The new table `Trend board weights` (`board`, `weight`) feeds a measure that names the weights, such as "Boards weighted: Himalayas 63% · Arbeitnow 27% · Jobicy 10%".
+   - Measures:
+     - `Week share`, `Previous week share` and `Share change` read the new columns, so the ranking measures that build on them follow;
+     - `Chance range low` and `Chance range high` read the band, still only when one skill is shown;
+     - the count measures stay.
+   - The trend line's subtitle and the movers' subtitle name the weights.
+   - **You:** refresh in Desktop, compare with the rehearsal, clear test selections, and save. I check the saved files for slicer filters.
+   - **Done on 2026-11-11:**
+     - **The model:** the five trend columns and `Trend board weights` imported. The measures read them, and `Board weights` and `Trend subtitle` are new.
+     - **The trend line:** the y-axis starts at 0, the lines are straight, and the legend replaces the series labels. The chance range shows as a bar at each week, not a shaded ribbon (decision 14), and the subtitle, a measure, names the weights and explains the bars.
+     - **Checked in Desktop:** the subtitle reads "Himalayas 64% · Arbeitnow 27% · Jobicy 10%"; nothing picked shows 10 lines without bars; Microsoft Office falls below its range on 26 October and rises above it on 2 November.
+     - **Saved by Desktop and undone:** a fixed start date (19 October) in the Week slicer, the opening page switched to Rising Skills, and layout noise (the Filters pane width, sub-pixel moves of the movers charts, an empty filter on the skill dropdown).
+6. **Docs, commit, PR and merge.** Then publish to the service, and confirm that the next scheduled refresh succeeds.
+   - Docs: decision 14's Measured line, `PLAN.md`, the repo layout, and a pitfall about board mix.
+
 ## Concepts you'll meet
 - **Semantic model:** Power BI's layer of tables, relationships and measures that every visual queries. **Import** keeps a compressed copy, refreshed on a schedule.
 - **PBIP, TMDL and PBIR:** a Power BI project saved as folders of text. TMDL describes the model, PBIR the report pages, so git can show what changed.
@@ -407,6 +499,8 @@ Pages use Fit to page, at a 16:9 ratio.
 - **A chart's Top N filter also filters its title measure.** On the trend line, `ISFILTERED ( Skill[Skill] )` was true with nothing picked, so the title said "the picked skills". `Trend line title` compares the skills shown with the latest week's top 10 instead.
 - **Selections in different visuals intersect.** A bar clicked in Rising and one Ctrl+clicked in Falling leave no skill, so the trend line is empty; Ctrl+click adds skills only within one visual or slicer. The two charts were kept, and the trend line's title says what happened and points to the dropdown. `COUNTROWS` of an empty table is blank, which counts as 0 in a comparison, so the title tests `ISEMPTY` first.
 - **A `%` format makes a difference of shares read as growth:** 0.02 shows as "+2.0%". Share changes are multiplied by 100 and formatted `+0.0" pp"`.
+- **A share pooled over several boards moves with the boards' mix.** A Himalayas job mentions about 7 skills and an Arbeitnow job about 3, so a week with fewer Himalayas jobs lowers nearly every skill. The weekly trend weights each board's own share (decision 14); any new chart that pools the boards across weeks has the same trap.
+- **Spark's `greatest()` and `least()` skip NULLs:** `greatest(NULL, 0)` is 0, not NULL. The first week's chance band came out as 0 until a `case` kept it NULL.
 
 ## Repo layout additions
 
@@ -417,7 +511,11 @@ dbt/job_listings/models/history/
     hist_himalayas_overlap_jobs_by_week.sql    ← jobs also on Jobicy or Arbeitnow, per week (decision 12)
     hist_himalayas_overlap_skills_by_week.sql  ← … per week × skill
     _history__models.yml
-dbt/job_listings/models/intermediate/int_job_openings.sql  ← the weeks each job's openings began (decision 13)
+dbt/job_listings/models/intermediate/int_job_openings.sql  ← the weeks each job's openings began (decision 13), per board too (decision 14)
+dbt/job_listings/models/intermediate/int_skill_weekly_by_board.sql  ← each board's weekly counts (decision 14)
+dbt/job_listings/models/intermediate/int_skill_weekly_weighted.sql  ← the board-weighted share, change and chance band
+dbt/job_listings/models/marts/agg_trend_board_weights.sql           ← the board weights
+dbt/job_listings/tests/assert_trend_board_weights_sum_to_one.sql
 dashboards/
     JobsAnalytics.pbip
     JobsAnalytics.SemanticModel/definition/   ← TMDL: tables, relationships, measures

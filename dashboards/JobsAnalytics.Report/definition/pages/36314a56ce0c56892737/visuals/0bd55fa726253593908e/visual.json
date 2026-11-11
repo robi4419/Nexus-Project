@@ -189,7 +189,7 @@
             "interpolationSmooth": {
               "expr": {
                 "Literal": {
-                  "Value": "'monotoneX'"
+                  "Value": "'cardinal'"
                 }
               }
             },
@@ -206,6 +206,27 @@
                   "Value": "4D"
                 }
               }
+            },
+            "lineChartType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'linear'"
+                }
+              }
+            },
+            "interpolationSmoothParam": {
+              "expr": {
+                "Literal": {
+                  "Value": "80D"
+                }
+              }
+            },
+            "interpolationStep": {
+              "expr": {
+                "Literal": {
+                  "Value": "'before'"
+                }
+              }
             }
           }
         }
@@ -216,7 +237,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
@@ -292,6 +313,20 @@
                   "Value": "true"
                 }
               }
+            },
+            "invertAxis": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "start": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
             }
           }
         }
@@ -302,10 +337,112 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             }
+          }
+        }
+      ],
+      "error": [
+        {
+          "properties": {
+            "enabled": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "shadeShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "markerShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "barShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "shadeTransparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "85D"
+                }
+              }
+            },
+            "barWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Week share"
+          }
+        },
+        {
+          "properties": {
+            "errorRange": {
+              "kind": "ErrorRange",
+              "explicit": {
+                "isRelative": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "false"
+                    }
+                  }
+                },
+                "lowerBound": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_Measures"
+                        }
+                      },
+                      "Property": "Chance range low"
+                    }
+                  }
+                },
+                "upperBound": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_Measures"
+                        }
+                      },
+                      "Property": "Chance range high"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 0
+                }
+              }
+            ],
+            "metadata": "_Measures.Week share",
+            "highlightMatching": 1
           }
         }
       ]
@@ -341,8 +478,13 @@
           "properties": {
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'In percent of each week''s new jobs: those first listed that week on any board.'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Trend subtitle"
                 }
               }
             },
@@ -363,6 +505,7 @@
     "filters": [
       {
         "name": "c87b81559898e80b1409",
+        "ordinal": 0,
         "field": {
           "Column": {
             "Expression": {
@@ -463,35 +606,8 @@
         }
       },
       {
-        "name": "08615f1e99a43e664c34",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Weekly skill trend"
-              }
-            },
-            "Property": "Week"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "8dc7bcc54c619a830984",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Trend jobs with skill"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
         "name": "ffff0ed10e11ac8c945e",
+        "ordinal": 1,
         "field": {
           "Measure": {
             "Expression": {
@@ -505,7 +621,38 @@
         "type": "Advanced"
       },
       {
+        "name": "8dc7bcc54c619a830984",
+        "ordinal": 2,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Trend jobs with skill"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "08615f1e99a43e664c34",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Weekly skill trend"
+              }
+            },
+            "Property": "Week"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
         "name": "0fd6a0d0a89330a5454d",
+        "ordinal": 4,
         "field": {
           "Measure": {
             "Expression": {
@@ -518,6 +665,7 @@
         },
         "type": "Advanced"
       }
-    ]
+    ],
+    "filterSortOrder": "Custom"
   }
 }

@@ -649,7 +649,7 @@ models:
             expression: "lift > 0"
 
   - name: agg_skill_weekly_trend
-    description: "One row per complete week x skill (every skill, 0 when not asked for), for rising-skill charts. A job counts once per opening, in the week the opening began on any board (int_job_openings; Phase 5, decisions 12 and 13): Jobicy and Arbeitnow by publish date, Himalayas by the day first seen (its pubDate is the last update). A repost on any board while one of the job's listings is still live (8 weeks for Jobicy and Arbeitnow, until expiry for Himalayas) doesn't count again; a later one is a new opening. Jobicy and Arbeitnow are counted from silver; Himalayas from the frozen counts in hist_himalayas_*_by_day, because it deletes expired jobs, which would fake a decline (decision 4); openings both count are subtracted through hist_himalayas_overlap_*. The weeks are those hist_himalayas_overlap_jobs_by_week has stored: from 2026-10-19, each once its Sunday is two days old. Dashboard filters don't apply."
+    description: "One row per complete week x skill (every skill, 0 when not asked for), for rising-skill charts. The counts count a job once per opening, in the week the opening began on any board (int_job_openings; Phase 5, decisions 12 and 13): Jobicy and Arbeitnow by publish date, Himalayas by the day first seen (its pubDate is the last update). A repost on any board while one of the job's listings is still live (8 weeks for Jobicy and Arbeitnow, until expiry for Himalayas) doesn't count again; a later one is a new opening. Jobicy and Arbeitnow are counted from silver; Himalayas from the frozen counts in hist_himalayas_*_by_day, because it deletes expired jobs, which would fake a decline (decision 4); openings both count are subtracted through hist_himalayas_overlap_*. The shares, change and chance band combine each board's own share with fixed weights (int_skill_weekly_weighted, decision 14), so a board posting more or fewer jobs in a week doesn't move them, and a share isn't exactly jobs / week_jobs. The weeks are those hist_himalayas_overlap_jobs_by_week has stored: from 2026-10-19, each once its Sunday is two days old. Dashboard filters don't apply."
     constraints:
       - type: primary_key
         name: pk_agg_skill_weekly_trend
@@ -658,6 +658,9 @@ models:
       - type: check
         name: chk_agg_skill_weekly_trend_jobs_in_week
         expression: "jobs <= week_jobs"
+      - type: check
+        name: chk_agg_skill_weekly_trend_chance_band
+        expression: "chance_low is null or chance_low <= chance_high"
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -711,18 +714,56 @@ models:
             expression: "week_jobs > 0"
       - name: share
         data_type: double
-        description: "Share of the week's jobs asking for the skill: jobs / week_jobs. Unlike jobs, it doesn't rise just because a week was busy."
+        description: "Share of the week's new jobs asking for the skill, with each board's own share weighted by agg_trend_board_weights (decision 14). Unlike jobs, it doesn't rise just because a week was busy, nor move because one board posted more. Rounded to 6 decimals."
         constraints:
           - type: not_null
           - type: check
             name: chk_agg_skill_weekly_trend_share
             expression: "share >= 0 and share <= 1"
-      - name: prev_jobs
-        data_type: bigint
-        description: "jobs in the previous week. NULL in the first week."
       - name: prev_share
         data_type: double
         description: "share in the previous week. NULL in the first week."
       - name: share_change
         data_type: double
-        description: "share - prev_share, as a fraction (0.012 = +1.2 percentage points). Rising skills have the largest values; filter on jobs or prev_jobs to skip skills too rare to trust. NULL in the first week."
+        description: "The weighted change of each board's own share since the previous week, over the boards with new jobs in both weeks: share - prev_share, except in a week a board is missing. A fraction (0.012 = +1.2 percentage points). Rising skills have the largest values. NULL in the first week."
+      - name: chance_low
+        data_type: double
+        description: "Low end of the range the share would fall in by chance (95%) if no board's own share had changed since the previous week; a share below it is a real fall. Never below 0. NULL in the first week."
+      - name: chance_high
+        data_type: double
+        description: "High end of the same range; a share above it is a real rise. NULL in the first week."
+
+  - name: agg_trend_board_weights
+    description: "One row per job board: its weight in the weekly trend (Phase 5, decision 14), which is its share of all the boards' new jobs over the trend's complete weeks, a job on several boards counting on each. Recomputed on every build and the same for every week, so the weeks stay comparable. The weights add up to 1 (tests/assert_trend_board_weights_sum_to_one.sql)."
+    constraints:
+      - type: primary_key
+        name: pk_agg_trend_board_weights
+        columns: [board]
+        warn_unenforced: false
+    columns:
+      - name: board
+        data_type: string
+        description: "The job board."
+        constraints:
+          - type: not_null
+        data_tests:
+          - unique
+          - accepted_values:
+              arguments:
+                values: ["jobicy", "arbeitnow", "himalayas"]
+      - name: jobs
+        data_type: bigint
+        description: "The board's new jobs (openings) over the trend's complete weeks."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_trend_board_weights_jobs
+            expression: "jobs > 0"
+      - name: weight
+        data_type: double
+        description: "jobs / all the boards' jobs: the board's weight in every week's share."
+        constraints:
+          - type: not_null
+          - type: check
+            name: chk_agg_trend_board_weights_weight
+            expression: "weight > 0 and weight <= 1"

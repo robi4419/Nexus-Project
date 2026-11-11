@@ -114,6 +114,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Save as a PBIP project in `dashboards/`.
 - [x] Publish to web from your own Microsoft tenant (Pro trial first), refreshed daily at 19:00 UTC, embedded in a GitHub Pages site. The repository becomes public.
 - [x] Along the way: skills come only from the description's lines about the job, a job counts once however often it's posted, and the weekly trend counts each job once per opening across the three boards (Phase 5, decisions 10 to 13).
+- [ ] The weekly trend combines the three boards with fixed weights, so a board posting more or fewer jobs in a week no longer moves every skill (Phase 5, decision 14, task 5.11).
 
 ### Phase 6: GitHub and CI (can start alongside Phase 1)
 - [x] Feature branches and PRs: one per phase (#1–#8).
