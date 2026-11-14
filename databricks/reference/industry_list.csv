@@ -1,0 +1,44 @@
+industry,industry_group,sort_order
+Backend,Software,1
+Frontend,Software,2
+Full-stack,Software,3
+Mobile,Software,4
+Enterprise Applications,Software,5
+Solutions & Implementation,Software,6
+"Software Engineering, general",Software,7
+"Software, unspecified",Software,8
+Data Analytics & BI,Data,9
+Data Engineering,Data,10
+Machine Learning & AI,Data,11
+"Data, unspecified",Data,12
+"DevOps, Cloud & SRE",Infrastructure & Security,13
+IT Infrastructure & Administration,Infrastructure & Security,14
+Cybersecurity,Infrastructure & Security,15
+"Infrastructure & Security, unspecified",Infrastructure & Security,16
+QA & Testing,Quality & Support,17
+Technical Support,Quality & Support,18
+"Quality & Support, unspecified",Quality & Support,19
+Hardware & Embedded,Hardware,20
+UI & UX Design,Design,21
+Creative & Design,Design,22
+"Design, unspecified",Design,23
+Product Management,Product & Projects,24
+Project & Program Management,Product & Projects,25
+"Product & Projects, unspecified",Product & Projects,26
+Sales & Business Development,Business,27
+Marketing,Business,28
+Customer Support & Success,Business,29
+Finance & Accounting,Business,30
+HR & Recruiting,Business,31
+Legal & Compliance,Business,32
+Operations & Management,Business,33
+Content & Editorial,Business,34
+Admin & Assistance,Business,35
+"Business, unspecified",Business,36
+Engineering & Manufacturing,Other fields,37
+Research & Science,Other fields,38
+Healthcare & Medical,Other fields,39
+Education & Training,Other fields,40
+Logistics & Supply Chain,Other fields,41
+"Other fields, unspecified",Other fields,42
+Not classified,Not classified,43
