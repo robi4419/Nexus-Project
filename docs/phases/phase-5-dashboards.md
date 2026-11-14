@@ -537,12 +537,16 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
   - **How it works:** it refuses to overwrite a saved version, stops before saving if posting inputs score more than a point below job inputs, and reads the saved file back to compare answers. Its first cell installs the pinned scikit-learn.
   - **Done on 2026-11-14:** model `2026-11-14-3100`, trained on all 3,100 labels and scored on all 200 test jobs, with scikit-learn 1.9.1. The pinned install works on serverless compute.
     - **The recorded scores are the labelling ones:** industry right 87.0%, best answer 79.5%; at 50%, 81.5% answered and 93.9% of those right; the group answered for 89.5% and right for 92.2% of those.
-- [ ] **4. Predict every night.**
+- [x] **4. Predict every night.**
   - `databricks/notebooks/08_silver_industries.py` and the task `silver_industries`, after `silver_skills` and before `checks`: `silver.job_industry_predictions` with `source`, `source_job_id`, `industry`, `industry_probability`, `industry_group`, `group_probability`, `model_version`.
   - `02_reference.py` loads `industry_list.csv` into `silver.ref_industry_list`.
   - `06_checks.py`: one prediction per posting and probabilities between 0 and 1 (errors); the shares under 50% for industry and for group, per source (info).
   - You deploy the bundle; one nightly run; check the counts.
-  - **Deployed on 2026-11-14; no run with a model yet.** The live Job has the task, and `checks` waits for it. `silver.job_industry_predictions` and `silver.ref_industry_list` appear with the first run.
+  - **Done on 2026-11-14,** with a run of the Job started by hand at 13:28 UTC (5.8 minutes in all; the new task took 35 seconds):
+    - **One prediction for each of the 64,369 postings,** all from model `2026-11-14-3100`, every name in `silver.ref_industry_list` (43 rows). All checks passed.
+    - **At 50%:** 86.9% of postings get the model's industry, 5.5% a group only, 7.5% nothing. Under 50% for the industry, per board: Arbeitnow 16.4%, Himalayas 11.4%, Jobicy 11.3%.
+    - **"Not classified" is also an answer the model gives:** 1,390 postings (2.2% of all) get it at 50% or more. So about 9.7% of postings would show "Not classified", and 84.8% a real industry.
+    - **Every one of the 34 industries is given** to some posting at 50% or more. The largest: Sales & Business Development (5,543), Software Engineering, general (5,084), Product Management (3,723).
     - **Until a first model exists, the task skips itself** and the checks skip the predictions, so deploying before training can't break a nightly run. Step 5 turns the skip into a failure.
     - **The likeliest industry and the likeliest group are found separately,** so a posting's industry needn't belong to its group (three Software industries at 20% each, against Marketing at 30%). That can only happen below 50%, where dbt doesn't show the industry.
   - **Order for the first time:** deploy the bundle, upload the labels with `--write`, run `train_industry_model.py` in the workspace, then the next nightly run predicts.
