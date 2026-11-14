@@ -83,9 +83,17 @@ resources:
           notebook_task:
             notebook_path: ../notebooks/05_silver_skills.py
 
+        - task_key: silver_industries
+          description: Rebuild silver.job_industry_predictions, the saved industry model's answer for every posting, from its title and skills
+          depends_on:
+            - task_key: silver_skills
+          notebook_task:
+            notebook_path: ../notebooks/08_silver_industries.py
+
         - task_key: checks
           description: Run data-quality checks on bronze and silver; fails the run if any error check fails
           depends_on:
             - task_key: silver_skills
+            - task_key: silver_industries
           notebook_task:
             notebook_path: ../notebooks/06_checks.py

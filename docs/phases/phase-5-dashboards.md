@@ -530,13 +530,19 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
     - **Tests:** 13 new ones pass, on made-up jobs.
     - **The same scores** (3,100 labels, 200 test jobs, read-only): industry right 87.0%, best answer 79.5%; at 50%, 81.5% answered and 93.9% of those right; the group answered for 89.5% and right for 92.2% of those.
     - **Posting-level inputs change nothing:** 11 of the 200 test jobs have several postings, none has a different title or skill set on the posting that speaks for it, and all 200 answers are identical.
-- [ ] **2. The labels in Databricks.** `scripts/upload_industry_labels.py` reads the working folder's files and replaces `silver.industry_labels`: `job_key`, `industry`, `also_acceptable` (test set only), `split` (`train` or `test`), `batch`, `unsure`, `labelled_on`. You run it.
+- [ ] **2. The labels in Databricks.** `scripts/upload_industry_labels.py` reads the working folder's files and replaces `silver.industry_labels`: `job_key`, `industry`, `also_acceptable` (test set only), `split` (`train` or `test`), `batch`, `unsure`, `uploaded_at`. You run it.
+  - **Written on 2026-11-14:** without `--write` it only counts; with it, the table is replaced in one statement, and labels of jobs no longer in gold are left out. A job in both sets stays a test job. The dry run found all 3,300 labelled jobs (3,100 to train on, 200 test jobs) in gold. The upload time stands in for a labelling date, which the working folder doesn't keep.
 - [ ] **3. Train and save.** `databricks/notebooks/train_industry_model.py`, run by hand, not part of the nightly Job: fits on the `train` labels with each job's title and skills from gold, scores on `test`, also with posting-level inputs, saves the model to `/Volumes/<catalog>/silver/models/industry/<version>/` and adds a row to `silver.industry_models`.
+  - **Written on 2026-11-14, not yet run.** It refuses to overwrite a saved version, stops before saving if posting inputs score more than a point below job inputs, and reads the saved file back to compare answers. Its first cell installs the pinned scikit-learn; that install hasn't been tried on serverless compute yet.
 - [ ] **4. Predict every night.**
   - `databricks/notebooks/08_silver_industries.py` and the task `silver_industries`, after `silver_skills` and before `checks`: `silver.job_industry_predictions` with `source`, `source_job_id`, `industry`, `industry_probability`, `industry_group`, `group_probability`, `model_version`.
   - `02_reference.py` loads `industry_list.csv` into `silver.ref_industry_list`.
   - `06_checks.py`: one prediction per posting and probabilities between 0 and 1 (errors); the shares under 50% for industry and for group, per source (info).
   - You deploy the bundle; one nightly run; check the counts.
+  - **Written on 2026-11-14, not yet deployed.** `databricks bundle validate` passes.
+    - **Until a first model exists, the task skips itself** and the checks skip the predictions, so deploying before training can't break a nightly run. Step 5 turns the skip into a failure.
+    - **The likeliest industry and the likeliest group are found separately,** so a posting's industry needn't belong to its group (three Software industries at 20% each, against Marketing at 30%). That can only happen below 50%, where dbt doesn't show the industry.
+  - **Order for the first time:** deploy the bundle, upload the labels with `--write`, run `train_industry_model.py` in the workspace, then the next nightly run predicts.
 - [ ] **5. Switch gold.**
   - `int_job_industries` with the four rules and `industry_source` (`hand label`, `model`, `model, group only`, `not classified`), and a dbt unit test with made-up rows. The threshold is the dbt variable `industry_sure`.
   - `fct_job_postings` gets `industry` and `industry_source`; `dim_industry` comes from `silver.ref_industry_list`, with `industry_group` and `sort_order`.
@@ -606,6 +612,11 @@ dbt/job_listings/models/intermediate/int_skill_weekly_by_board.sql  ← each boa
 dbt/job_listings/models/intermediate/int_skill_weekly_weighted.sql  ← the board-weighted share, change and chance band
 dbt/job_listings/models/marts/agg_trend_board_weights.sql           ← the board weights
 dbt/job_listings/tests/assert_trend_board_weights_sum_to_one.sql
+transform/industry_model.py                       ← the industry list and the model (decision 15)
+databricks/reference/industry_list.csv            ← every industry a job can show, with its group
+databricks/notebooks/train_industry_model.py      ← trains, scores and saves the model; run by hand
+databricks/notebooks/08_silver_industries.py      ← the saved model's answer for every posting, nightly
+scripts/upload_industry_labels.py                 ← the hand labels from the working folder into silver.industry_labels
 dashboards/
     JobsAnalytics.pbip
     JobsAnalytics.SemanticModel/definition/   ← TMDL: tables, relationships, measures

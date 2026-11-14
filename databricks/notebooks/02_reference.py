@@ -3,7 +3,8 @@
 # MAGIC # Reference data
 # MAGIC
 # MAGIC Loads the version-controlled lookup files `databricks/reference/*.csv` (uploaded by the bundle) into
-# MAGIC `<catalog>.silver.ref_locations`, `ref_countries`, `ref_industries`, `ref_job_types`, `ref_levels` and `ref_skills`.
+# MAGIC `<catalog>.silver.ref_locations`, `ref_countries`, `ref_industries`, `ref_job_types`, `ref_levels`,
+# MAGIC `ref_industry_list` and `ref_skills`.
 # MAGIC The tables are replaced on every run,
 # MAGIC so changing a mapping only takes editing the CSV and running `databricks bundle deploy`.
 # MAGIC
@@ -81,6 +82,11 @@ for file_name, target, table in [
     mapping = read_reference_csv(file_name)
     mapping[target] = [value or None for value in mapping[target]]
     replace_table(mapping, table)
+
+# Every value a job's industry can take, with its group (Phase 5, decision 15). dim_industry is built from it.
+industry_list = read_reference_csv("industry_list.csv")
+industry_list["sort_order"] = industry_list["sort_order"].astype(int)
+replace_table(industry_list, "ref_industry_list")
 
 from transform.skills import SkillMatcher
 

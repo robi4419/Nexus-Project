@@ -215,6 +215,61 @@ for table in ["job_industries", "job_types", "job_locations", "job_skills"]:
         """,
     )
 
+# The industry model's answers (Phase 5, decision 15). Until a first model is trained, the task silver_industries
+# writes no table, and there is nothing to check.
+has_predictions = spark.catalog.tableExists(f"{silver}.job_industry_predictions")
+if has_predictions:
+    check(
+        "error",
+        "job_industry_predictions: exactly one row per job",
+        f"""
+        SELECT format_string('%d rows for %d jobs, %d jobs without one', p.rows, j.jobs, m.missing) AS value,
+            p.rows = j.jobs AND p.rows = p.keys AND m.missing = 0 AS passed
+        FROM (
+            SELECT count(*) AS rows, count(DISTINCT source, source_job_id) AS keys
+            FROM {silver}.job_industry_predictions
+        ) AS p
+        CROSS JOIN (SELECT count(*) AS jobs FROM {silver}.jobs) AS j
+        CROSS JOIN (
+            SELECT count(*) AS missing
+            FROM {silver}.jobs
+            LEFT ANTI JOIN {silver}.job_industry_predictions USING(source, source_job_id)
+        ) AS m
+        """,
+    )
+
+    # A group's probability is the sum over its industries, so it can't be below the industry's.
+    check(
+        "error",
+        "job_industry_predictions: probabilities between 0 and 1, the group's at least the industry's",
+        f"""
+        SELECT count_if(
+                industry_probability IS NULL OR group_probability IS NULL
+                OR industry_probability NOT BETWEEN 0 AND 1 OR group_probability NOT BETWEEN 0 AND 1.000001
+                OR group_probability < industry_probability - 0.000001
+            ) AS value, value = 0 AS passed
+        FROM {silver}.job_industry_predictions
+        """,
+    )
+
+    # The likeliest industry and the likeliest group are found separately, so the industry needn't be in that group:
+    # three Software industries at 20% each make Software the group while a 30% Marketing is the industry.
+    check(
+        "error",
+        "job_industry_predictions: every industry and group is in ref_industry_list, from one model version",
+        f"""
+        SELECT format_string('%d unknown industries, %d unknown groups, %d model versions',
+                count_if(i.industry IS NULL), count_if(g.industry_group IS NULL),
+                count(DISTINCT p.model_version)) AS value,
+            count_if(i.industry IS NULL) = 0 AND count_if(g.industry_group IS NULL) = 0
+                AND count(DISTINCT p.model_version) = 1 AS passed
+        FROM {silver}.job_industry_predictions AS p
+        LEFT JOIN (SELECT DISTINCT industry FROM {silver}.ref_industry_list) AS i ON i.industry = p.industry
+        LEFT JOIN (SELECT DISTINCT industry_group FROM {silver}.ref_industry_list) AS g
+            ON g.industry_group = p.industry_group
+        """,
+    )
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -308,6 +363,17 @@ check("info", "jobs: share with seniority Unspecified", share_by_source("j.senio
 # nothing.
 check("info", "jobs: share without an industry", share_by_source("x.found IS NULL", found_in("job_industries")))
 check("info", "jobs: share without a job type", share_by_source("x.found IS NULL", found_in("job_types")))
+
+if has_predictions:
+    # 0.5 is the probability from which a job shows the model's answer (the dbt variable industry_sure).
+    predictions = f"""
+        LEFT JOIN {silver}.job_industry_predictions AS p
+            ON p.source = j.source AND p.source_job_id = j.source_job_id
+    """
+    check("info", "jobs: share whose industry the model is under 50% sure of",
+          share_by_source("p.industry_probability < 0.5", predictions))
+    check("info", "jobs: share whose industry group the model is under 50% sure of",
+          share_by_source("p.group_probability < 0.5", predictions))
 
 # COMMAND ----------
 
