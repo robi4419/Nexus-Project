@@ -73,16 +73,27 @@ models:
           - type: not_null
 
   - name: dim_industry
-    description: "One row per industry used by at least one job, from silver.job_industries. The sources' industry names are mapped to one shared list (industries.csv)."
+    description: "One row per value a job's industry can take (Phase 5, decision 15), from silver.ref_industry_list: the labelling guide's 34 industries, a '<Group>, unspecified' row for each group of several industries, and Not classified. Includes values no job has yet. Drill-down hierarchy: industry_group > industry; sort both by sort_order."
     columns:
       - name: industry
         data_type: string
-        description: "{{ doc('industry') }} Primary key, referenced by bridge_job_industries."
+        description: "{{ doc('industry') }} Primary key, referenced by fct_job_postings."
         constraints:
           - type: not_null
           - type: primary_key
             name: pk_dim_industry
             warn_unenforced: false
+        data_tests: [unique]
+      - name: industry_group
+        data_type: string
+        description: "{{ doc('industry_group') }}"
+        constraints:
+          - type: not_null
+      - name: sort_order
+        data_type: int
+        description: "Position for sorting: the guide's order of groups and of the industries inside each, a group's unspecified row after its industries, Not classified last."
+        constraints:
+          - type: not_null
         data_tests: [unique]
 
   - name: dim_seniority
@@ -183,7 +194,7 @@ models:
 
   # ---------- Facts ----------
   - name: fct_job_postings
-    description: "One row per job, the centre of the star: the postings of one company and title (or one long description), on any board and in any location, are one job (Phase 5, decision 11). Joins dim_company, dim_seniority and dim_date directly; sources, locations, industries and types come through the bridges, skills through fct_job_skills. Count jobs with count(*) here, but with count(distinct job_key) after joining a bridge. The reconciliation with silver is the singular test assert_fct_job_postings_one_row_per_job."
+    description: "One row per job, the centre of the star: the postings of one company and title (or one long description), on any board and in any location, are one job (Phase 5, decision 11). Joins dim_company, dim_seniority, dim_industry and dim_date directly; sources, locations and types come through the bridges, skills through fct_job_skills. Count jobs with count(*) here, but with count(distinct job_key) after joining a bridge. The reconciliation with silver is the singular test assert_fct_job_postings_one_row_per_job. After each build, a post-hook deletes the hand labels (silver.industry_labels) of jobs no longer here."
     columns:
       - name: job_key
         data_type: string
@@ -249,6 +260,30 @@ models:
         description: "{{ doc('url') }} From the same posting as title."
         constraints:
           - type: not_null
+      - name: industry
+        data_type: string
+        description: "{{ doc('industry') }} Foreign key to dim_industry. From the same posting as title."
+        constraints:
+          - type: not_null
+          - type: foreign_key
+            name: fk_fct_job_postings_industry
+            to: ref('dim_industry')
+            to_columns: [industry]
+            warn_unenforced: false
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_industry')
+                field: industry
+      - name: industry_source
+        data_type: string
+        description: "{{ doc('industry_source') }}"
+        constraints:
+          - type: not_null
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["hand label", "model", "model, group only", "not classified"]
       - name: is_remote
         data_type: boolean
         description: "{{ doc('is_remote') }} True when any of the job's postings is remote."
@@ -456,7 +491,7 @@ models:
                 field: location_key
 
   - name: bridge_job_industries
-    description: "One row per job x industry. Joins fct_job_postings to dim_industry; count jobs across it with count(distinct job_key)."
+    description: "One row per job with its industry, copied from fct_job_postings. Kept only until the report filters on fct_job_postings.industry (Phase 5, task 5.12, step 6); a job had several industries here before decision 15."
     constraints:
       - type: primary_key
         name: pk_bridge_job_industries

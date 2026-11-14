@@ -7,5 +7,7 @@ data_tests:
     description: "Warns (doesn't fail) when more than max_implausible_salary_share (dbt_project.yml, 5%) of the jobs with a yearly USD salary have an implausible one: outside 5,000 to 1,500,000, or a minimum above the maximum (decisions 7 and 9). Jobs without a salary don't count. Returns one row with the counts when it warns."
   - name: assert_fct_job_postings_one_row_per_job
     description: "Fails when fct_job_postings doesn't have exactly one row per job_key of int_job_postings (Phase 5, decision 11): a job lost or duplicated while merging its postings. Returns the expected and actual counts."
+  - name: assert_industry_labels_follow_gold
+    description: "Warns (doesn't fail) when hand labels remain whose job is no longer in fct_job_postings (Phase 5, decision 15). The fact's post-hook deletes them after each build, so any left means it refused: more than industry_labels_max_purge_share (dbt_project.yml, 20%) of the labels would have gone at once, which points to a broken build or a changed job_key rule, not to expired jobs. Returns the number of label rows waiting."
   - name: assert_job_skills_cover_posting_skills
     description: "Fails when a skill found in a posting (stg_silver__job_skills) doesn't reach the posting's job in fct_job_skills. Returns the posting x skill rows that don't."

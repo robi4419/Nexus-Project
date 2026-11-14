@@ -8,7 +8,7 @@
 # MAGIC - The model is **not trained here.** `train_industry_model.py` trains and saves it by hand; this task loads the
 # MAGIC   newest version listed in `silver.industry_models`.
 # MAGIC - **No threshold here.** Every posting gets the most likely industry and group with their probabilities; dbt
-# MAGIC   decides from which probability a job shows them (`int_job_industries`).
+# MAGIC   decides from which probability a job shows them (`int_posting_industries`).
 # MAGIC - A group's probability is the sum over its industries, so the model can be sure of "Software" while unsure
 # MAGIC   between Backend and Full-stack.
 # MAGIC
@@ -54,8 +54,8 @@ print(f"Building {silver}.job_industry_predictions, using transform/ from {bundl
 
 # COMMAND ----------
 
-# Until gold reads the predictions (Phase 5, task 5.12, step 5), a missing model only skips this task, so deploying
-# the bundle before the first training can't break the nightly run. From step 5 on it must fail instead.
+# Gold needs a prediction for every posting, so a missing model fails the task (and the run) instead of leaving
+# yesterday's predictions in place.
 newest = None
 if spark.catalog.tableExists(f"{silver}.industry_models"):
     newest = spark.sql(f"""
@@ -65,7 +65,7 @@ if spark.catalog.tableExists(f"{silver}.industry_models"):
         LIMIT 1
     """).first()
 if newest is None:
-    dbutils.notebook.exit(f"No model in {silver}.industry_models yet: nothing predicted")
+    raise Exception(f"No model in {silver}.industry_models: run train_industry_model.py in the workspace first")
 
 from transform.industry_model import IndustryModel
 

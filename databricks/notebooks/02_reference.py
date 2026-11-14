@@ -3,8 +3,8 @@
 # MAGIC # Reference data
 # MAGIC
 # MAGIC Loads the version-controlled lookup files `databricks/reference/*.csv` (uploaded by the bundle) into
-# MAGIC `<catalog>.silver.ref_locations`, `ref_countries`, `ref_industries`, `ref_job_types`, `ref_levels`,
-# MAGIC `ref_industry_list` and `ref_skills`.
+# MAGIC `<catalog>.silver.ref_locations`, `ref_countries`, `ref_job_types`, `ref_levels`, `ref_industry_list` and
+# MAGIC `ref_skills`.
 # MAGIC The tables are replaced on every run,
 # MAGIC so changing a mapping only takes editing the CSV and running `databricks bundle deploy`.
 # MAGIC
@@ -75,7 +75,6 @@ replace_table(read_reference_csv("countries.csv"), "ref_countries")
 
 # Each source's own values -> ours. An empty target means "reviewed, deliberately not mapped": stored as NULL.
 for file_name, target, table in [
-    ("industries.csv", "industry", "ref_industries"),
     ("job_types.csv", "job_type", "ref_job_types"),
     ("levels.csv", "seniority", "ref_levels"),
 ]:

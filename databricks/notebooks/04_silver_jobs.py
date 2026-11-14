@@ -10,8 +10,10 @@
 # MAGIC 2. **History:** when each job was first and last seen, in how many runs, and whether it's still listed.
 # MAGIC 3. **`silver.jobs`:** the latest version of each job, with plain-text description, seniority, `is_remote`,
 # MAGIC    `expires_at` and salary in yearly USD (as-of join to `silver.fx_rates`). Expired Himalayas jobs are left out.
-# MAGIC 4. **Bridge tables:** `silver.job_industries`, `silver.job_types` and `silver.job_locations`. Each source's values
-# MAGIC    are mapped to ours through the `silver.ref_*` tables; locations are found by `transform/locations.py`.
+# MAGIC 4. **Bridge tables:** `silver.job_types` and `silver.job_locations`. Each source's job types are mapped to ours
+# MAGIC    through `silver.ref_job_types`; locations are found by `transform/locations.py`.
+# MAGIC
+# MAGIC A job's industry isn't found here: the task `silver_industries` asks the industry model (Phase 5, decision 15).
 # MAGIC
 # MAGIC Parameters: `catalog` (e.g. `workspace`) and `bundle_root` (the bundle's files folder; when empty, the repo root
 # MAGIC two folders above this notebook is used).
@@ -38,11 +40,10 @@ print(f"Building {catalog}.silver job tables, using transform/ from {bundle_root
 # MAGIC %md
 # MAGIC ## Python functions for SQL
 # MAGIC
-# MAGIC `clean_html(html)`, `derive_seniority(title, fallback_level)` and `title_tech_category(title)` wrap the tested
-# MAGIC functions in `transform/`, so the SQL below can call them like built-in functions. `fallback_level` is the highest
-# MAGIC of the source's own levels, mapped to ours through `silver.ref_levels`. `derive_seniority` returns a struct: read
-# MAGIC its fields with `.seniority` and `.seniority_source`. `title_tech_category` returns the Himalayas Tech category a
-# MAGIC title clearly belongs to, or NULL: the same rules that keep a job without a parent category at landing.
+# MAGIC `clean_html(html)` and `derive_seniority(title, fallback_level)` wrap the tested functions in `transform/`, so the
+# MAGIC SQL below can call them like built-in functions. `fallback_level` is the highest of the source's own levels,
+# MAGIC mapped to ours through `silver.ref_levels`. `derive_seniority` returns a struct: read its fields with
+# MAGIC `.seniority` and `.seniority_source`.
 
 # COMMAND ----------
 
@@ -51,7 +52,6 @@ from pyspark.sql.types import StringType, StructField, StructType
 
 import transform
 from transform.seniority import LEVELS, seniority
-from transform.tech_titles import tech_category
 from transform.text import html_to_text
 
 # Spark runs Python functions on worker processes that don't have our sys.path change, so `import transform` would
@@ -73,7 +73,6 @@ def derive_seniority(title, fallback_level):
 
 spark.udf.register("clean_html", html_to_text, StringType())
 spark.udf.register("derive_seniority", derive_seniority, SENIORITY_TYPE)
-spark.udf.register("title_tech_category", tech_category, StringType())
 
 # Our levels lowest to highest, as a SQL array: array_position() gives each level's rank, so SQL can pick the highest.
 LEVELS_SQL = "array(" + ", ".join(f"'{level}'" for level in LEVELS) + ")"
@@ -85,8 +84,7 @@ display(spark.sql("""
     SELECT clean_html('<p>Python &amp; SQL</p><ul><li>dbt</li></ul>') AS cleaned,
            clean_html('&lt;p&gt;Escaped once more&lt;/p&gt;<p>Find jobs on Arbeitnow</p>') AS cleaned_escaped,
            derive_seniority('Sr. Data Engineer', NULL) AS from_title,
-           derive_seniority('Data Analyst', 'Mid') AS from_source_level,
-           title_tech_category('SAP FICO Consultant') AS tech_category
+           derive_seniority('Data Analyst', 'Mid') AS from_source_level
 """))
 
 # COMMAND ----------
@@ -105,11 +103,11 @@ display(spark.sql("""
 # MAGIC | `is_remote` | true | `remote` | true |
 # MAGIC | `levels_raw` | `[jobLevel]` | `job_types` + `tags` | `seniority` |
 # MAGIC | `locations_raw` | `jobGeo` split at `,` | `location` split at `;` | `locationRestrictions`, empty = `['Worldwide']` |
-# MAGIC | `industries_raw` | `jobIndustry` | `tags` | `parentCategories`; without any, the title's Tech category |
 # MAGIC | `job_types_raw` | `jobType` | `job_types` | `[employmentType]` |
 # MAGIC
 # MAGIC Plus `run_id`, `landed_at`, `title`, `company_name`, `company_logo_url`, `excerpt`, `description_html` and the
-# MAGIC salary fields (Arbeitnow has none).
+# MAGIC salary fields (Arbeitnow has none). The sources' own categories (`jobIndustry`, `tags`, `parentCategories`) aren't
+# MAGIC read as industries any more (Phase 5, decision 15).
 
 # COMMAND ----------
 
@@ -129,8 +127,7 @@ spark.sql(f"""
         )
     ),
     himalayas AS (
-        SELECT run_id, landed_at, job, cast(job:locationRestrictions AS ARRAY<STRING>) AS countries,
-            coalesce(cast(job:parentCategories AS ARRAY<STRING>), {NO_STRINGS}) AS parents
+        SELECT run_id, landed_at, job, cast(job:locationRestrictions AS ARRAY<STRING>) AS countries
         FROM (
             SELECT run_id, landed_at, explode(cast(body:jobs AS ARRAY<VARIANT>)) AS job
             FROM {catalog}.bronze.himalayas_raw
@@ -149,7 +146,6 @@ spark.sql(f"""
         true AS is_remote,  -- a remote-jobs feed
         filter(array(job:jobLevel::STRING), level -> level IS NOT NULL) AS levels_raw,
         transform(split(job:jobGeo::STRING, ','), place -> trim(place)) AS locations_raw,  -- "USA, Canada"
-        cast(job:jobIndustry AS ARRAY<STRING>) AS industries_raw,
         cast(job:jobType AS ARRAY<STRING>) AS job_types_raw,
         job:jobExcerpt::STRING AS excerpt,
         job:jobDescription::STRING AS description_html,
@@ -176,7 +172,6 @@ spark.sql(f"""
         concat(job_types, tags) AS levels_raw,
         -- one place, sometimes several: "Bristol; Cambridge". An empty location stays one (unknown) entry.
         transform(split(coalesce(job:location::STRING, ''), ';'), place -> trim(place)) AS locations_raw,
-        tags AS industries_raw,
         job_types AS job_types_raw,
         CAST(NULL AS STRING) AS excerpt,
         job:description::STRING AS description_html,
@@ -202,10 +197,6 @@ spark.sql(f"""
         coalesce(cast(job:seniority AS ARRAY<STRING>), {NO_STRINGS}) AS levels_raw,
         -- country names; no restriction means the job can be done from anywhere
         CASE WHEN array_size(countries) > 0 THEN countries ELSE array('Worldwide') END AS locations_raw,
-        -- a job landed for its title alone has no parent category: the same title rules give it one (Phase 4, decision 8)
-        CASE WHEN array_size(parents) > 0 THEN parents
-            ELSE array_compact(array(title_tech_category(job:title::STRING)))
-        END AS industries_raw,
         array(job:employmentType::STRING) AS job_types_raw,
         job:excerpt::STRING AS excerpt,
         job:description::STRING AS description_html,
@@ -342,27 +333,23 @@ spark.sql(f"""
 # MAGIC %md
 # MAGIC ## 4. Bridge tables
 # MAGIC
-# MAGIC Industries and job types map each source's values to ours through `silver.ref_industries` and
-# MAGIC `silver.ref_job_types`; values reviewed and deliberately not mapped (an empty target in the CSV) give no row.
+# MAGIC Job types map each source's values to ours through `silver.ref_job_types`; values reviewed and deliberately not
+# MAGIC mapped (an empty target in the CSV) give no row.
 
 # COMMAND ----------
 
-for table, raw_column, mapping, target in [
-    ("job_industries", "industries_raw", "ref_industries", "industry"),
-    ("job_types", "job_types_raw", "ref_job_types", "job_type"),
-]:
-    spark.sql(f"""
-        CREATE OR REPLACE TABLE {catalog}.silver.{table} AS
-        WITH raw AS (
-            SELECT source, source_job_id, explode({raw_column}) AS raw_value
-            FROM latest_observations
-        )
-        SELECT DISTINCT r.source, r.source_job_id, m.{target}
-        FROM raw AS r
-        JOIN {catalog}.silver.{mapping} AS m
-            ON m.source = r.source AND lower(m.raw_value) = lower(r.raw_value)
-        WHERE m.{target} IS NOT NULL
-    """)
+spark.sql(f"""
+    CREATE OR REPLACE TABLE {catalog}.silver.job_types AS
+    WITH raw AS (
+        SELECT source, source_job_id, explode(job_types_raw) AS raw_value
+        FROM latest_observations
+    )
+    SELECT DISTINCT r.source, r.source_job_id, m.job_type
+    FROM raw AS r
+    JOIN {catalog}.silver.ref_job_types AS m
+        ON m.source = r.source AND lower(m.raw_value) = lower(r.raw_value)
+    WHERE m.job_type IS NOT NULL
+""")
 
 # COMMAND ----------
 
@@ -413,7 +400,7 @@ spark.sql(f"""
 
 # COMMAND ----------
 
-for table in ["jobs", "job_industries", "job_types", "job_locations"]:
+for table in ["jobs", "job_types", "job_locations"]:
     print(f"{catalog}.silver.{table}: {spark.table(f'{catalog}.silver.{table}').count()} rows")
 
 display(spark.sql(f"""

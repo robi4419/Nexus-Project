@@ -52,6 +52,10 @@ models:
 vars:
   # Decision 7: warn when more than this share of salaried jobs has an implausible salary.
   max_implausible_salary_share: 0.05
+  # Decision 15: a job shows the model's industry, or else its group, from this probability on.
+  industry_sure: 0.5
+  # Decision 15: the nightly purge of hand labels deletes nothing when more than this share would go in one build.
+  industry_labels_max_purge_share: 0.2
 
 seeds:
   job_listings:

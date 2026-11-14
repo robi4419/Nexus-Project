@@ -91,13 +91,14 @@ There's **no plausibility check** at this layer: implausible values, such as an 
 
 ## Conformed, but not stored in this table
 
-Three more fields are unified per source in the same step, but they feed other tables instead of becoming columns here:
+Two more fields are unified per source in the same step, but they feed other tables instead of becoming columns here:
 
 | Field | Jobicy | Arbeitnow | Himalayas | Feeds |
 |---|---|---|---|---|
 | `levels_raw` | `[jobLevel]` | `job_types` + `tags` | `seniority` | `source_levels` and `seniority` (above) |
-| `industries_raw` | `jobIndustry` | `tags` | `parentCategories`; without any, the title's Tech category (`transform/tech_titles.py`) | `silver.job_industries`, mapped through `industries.csv` |
 | `job_types_raw` | `jobType` | `job_types` | `[employmentType]` | `silver.job_types`, mapped through `job_types.csv` |
+
+The sources' own categories (`jobIndustry`, Arbeitnow's `tags`, `parentCategories`) are no longer read as industries. Each job's industry comes from the industry model, which reads `title` and the job's skills and writes `silver.job_industry_predictions` (Phase 5, decision 15).
 
 ## Which columns can be NULL
 

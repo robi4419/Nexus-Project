@@ -66,7 +66,7 @@ resources:
             notebook_path: ../notebooks/03_silver_fx.py
 
         - task_key: silver_jobs
-          description: Rebuild silver.jobs and its industry, type and location tables from the bronze job tables (only Jobicy until 2b.8)
+          description: Rebuild silver.jobs and its job-type and location tables from the bronze job tables
           depends_on:
             - task_key: bronze_jobicy
             - task_key: bronze_arbeitnow

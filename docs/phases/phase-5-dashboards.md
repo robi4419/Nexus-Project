@@ -246,13 +246,15 @@
       - **Saved as** the fitted scikit-learn parts in one file, in a Unity Catalog Volume. They hold word and letter-group weights, and no job.
       - **`silver.industry_models`** keeps each version's label count and test scores, because the score can't be measured again once the test jobs expire.
     - **Labels of expired Himalayas jobs are deleted.** A label row is a job key and an industry, and the key is the company and title hashed: decision 12 already treated that as the job under another name. A post-hook on `fct_job_postings` deletes the label rows whose job has left gold; only Himalayas jobs ever leave it.
+      - **It deletes nothing when more than 20% of the labels would go in one build** (Robert, 2026-11-14). A normal night takes a handful (5 of 3,300 on 2026-11-14). More than a fifth at once isn't expiry: it is a broken build, or a changed `job_key` rule, which gives every job a new key and would otherwise delete every label. A dbt warning then says how many rows are waiting.
+      - **Not guarded by gold's size,** as first planned (nothing below 80% of the previous night's rows): a changed `job_key` rule leaves gold's size as it was.
     - **Labels are never committed.** The repository is public, and its history can't delete an expired job's key. They are uploaded from the working folder into `silver.industry_labels`, which is kept between runs.
     - **Where it runs:**
       - **Databricks,** a new task after the skills: the model's answer for every posting, with its probabilities, in `silver.job_industry_predictions`. No threshold there.
-      - **dbt,** `int_job_industries`: the job takes the prediction of the posting that gives it its title (decision 11), then the four rules above. `fct_job_postings` gets `industry`, and `dim_industry` gets the group.
+      - **dbt,** `int_posting_industries`: the four rules above for every posting; the job takes the row of the posting that gives it its title (decision 11). `fct_job_postings` gets `industry`, and `dim_industry` gets the group.
       - **Power BI:** Industry filters Job postings directly. The bridge goes: a job has one industry.
     - **In the report:** the Industry slicer shows group › industry, and the Skills overview's category chart becomes **Jobs by industry**. With a skill picked, it shows the industries of that skill's jobs. `Skill[Category]` leaves the model; `skills.csv`, silver and gold keep the column, which organises the skill list.
-    - **Removed:** `silver.job_industries`, `industries.csv`, `ref_industries`, `bridge_job_industries`, and silver's use of the title rules to name an industry. `transform/tech_titles.py` still decides which Himalayas jobs without a category are landed (Phase 4, decision 8).
+    - **Removed:** `silver.job_industries`, `industries.csv`, `ref_industries`, and silver's use of the title rules to name an industry. `bridge_job_industries` goes last, once the published report no longer reads it (task 5.12, step 5). `transform/tech_titles.py` still decides which Himalayas jobs without a category are landed (Phase 4, decision 8).
     - **Rejected:**
       - **Regex rules:** in a first experiment they scored like a model on an older 26-industry list, but Robert wants a method he can explain as "trained on N hand labels, X% right on 200 held-out jobs".
       - **Jobicy's own categories as extra training labels:** they follow departments, not the guide. Business jobs improved, Software fell from 83% to 63%.
@@ -551,17 +553,37 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
     - **The likeliest industry and the likeliest group are found separately,** so a posting's industry needn't belong to its group (three Software industries at 20% each, against Marketing at 30%). That can only happen below 50%, where dbt doesn't show the industry.
   - **Order for the first time:** deploy the bundle, upload the labels with `--write`, run `train_industry_model.py` in the workspace, then the next nightly run predicts.
 - [ ] **5. Switch gold.**
-  - `int_job_industries` with the four rules and `industry_source` (`hand label`, `model`, `model, group only`, `not classified`), and a dbt unit test with made-up rows. The threshold is the dbt variable `industry_sure`.
+  - `int_posting_industries` with the four rules and `industry_source` (`hand label`, `model`, `model, group only`, `not classified`), and a dbt unit test with made-up rows. The threshold is the dbt variable `industry_sure`.
   - `fct_job_postings` gets `industry` and `industry_source`; `dim_industry` comes from `silver.ref_industry_list`, with `industry_group` and `sort_order`.
-  - A post-hook on `fct_job_postings` deletes the label rows whose job has left gold. It does nothing when the fact has under 80% of the rows it had the night before, so a broken build can't empty the labels.
-  - Removed: `bridge_job_industries`, `stg_silver__job_industries`, the `job_industries` source and table, `ref_industries`, `industries.csv`, the `title_tech_category` function in silver, and the old industry checks. Tests and docs follow.
-  - Rehearse read-only with `dbt show`: one row per job, the shares by `industry_source`, and every hand-labelled job showing its label. Then trigger `transform_and_build` by hand.
-  - With your go-ahead, drop what's no longer built: `gold.bridge_job_industries`, `gold_staging.stg_silver__job_industries`, `silver.job_industries`, `silver.ref_industries`.
+  - A post-hook on `fct_job_postings` deletes the label rows whose job has left gold. It does nothing when more than 20% of the labels would go in one build (`industry_labels_max_purge_share`), so neither a broken build nor a changed `job_key` rule can empty the labels; `assert_industry_labels_follow_gold` then warns.
+  - Removed: `stg_silver__job_industries`, the `job_industries` source and table, `ref_industries`, `industries.csv`, the `title_tech_category` function in silver, and the old industry checks. Tests and docs follow.
+  - Rehearse read-only: one row per job, the shares by `industry_source`, and every hand-labelled job showing its label. Then deploy the bundle and trigger `transform_and_build` by hand.
+  - With your go-ahead, drop what's no longer built: `gold_staging.stg_silver__job_industries`, `silver.job_industries`, `silver.ref_industries`.
+  - **Decided on 2026-11-14: `bridge_job_industries` stays until step 6 is published,** rebuilt as one row per job with its new industry. The published report reads `dim_industry` and the bridge every night, so without this its Industry filter would match no jobs between the switch and the new report. With it, the public report shows the new industries from the first build. The bridge and its Power BI table go once the new report is live.
+  - **Decided on 2026-11-14: written after that evening's nightly run,** not in the hours before it.
+  - **Previewed on 2026-11-14, read-only,** on the postings as the afternoon's run left them (54,559 jobs, 44 fewer than gold from the night before):
+    - **One row per job,** each with a prediction, and every shown name is in the industry list.
+    - **By source:** hand label 6.0% (3,297 jobs), model 80.9%, model, group only 5.7%, not classified 7.4%.
+    - **"Not classified" would show for 9.2% of jobs** (5,036): the 7.4%, plus 847 jobs the model is sure are outside the list and 150 labelled so by hand. About 85% of jobs show a real industry.
+    - **By group:** Software 25.1%, Business 23.3%, Data 10.9%, Infrastructure & Security 9.6%, Product & Projects 8.8%, Other fields 5.1%, Quality & Support 3.8%, Design 3.4%, Hardware 0.7%.
+    - **Three labelled jobs have already left:** 3,097 of the 3,100 training labels still have a posting. Labelled jobs expire a few at a time from now on, not only from mid-December; the post-hook will delete their rows at the first build.
+  - **Written and rehearsed on 2026-11-14, after the 18:00 UTC run; not built yet.**
+    - **One model per posting, not per job:** `int_posting_industries` answers for every posting, and the fact joins the posting it already picks for the title. A per-job model would have had to repeat that choice, and the two could drift apart.
+    - **A group only counts when the list has its unspecified row.** A group of one industry (Hardware) has none; there the group's probability is the industry's, so the case can't arise, and the model doesn't depend on that.
+    - **The rehearsal** ran the SQL that `dbt compile` wrote, with the views that don't exist yet as CTEs, read-only:
+      - **The unit test's seven made-up postings** give the expected answers.
+      - **56,376 rows for 56,376 jobs,** none without an industry, every industry in the dimension (43 rows, 10 groups), and every other column of the fact identical to gold as built that evening.
+      - **By source:** model 81.0%, not classified 7.4%, hand label 5.8% (3,295 jobs, each showing its label), model, group only 5.8%.
+      - **The purge:** Databricks accepts the `MERGE` (explained, not run); it would delete 5 label rows, and the warning test reports those 5 until it has.
+    - **The Software skills check** now takes the jobs the model is at least 50% sure are in the Software group: 95.4% of them had a skill (the boards' Software Engineering category gave 92.2%), so the 90% line stays.
+    - **Python tests:** 471 pass; the five that checked `industries.csv` are gone.
+    - **The ER diagram isn't redrawn yet:** it waits for step 7, when the bridge leaves.
 - [ ] **6. Power BI (close Desktop first, because I edit the TMDL).**
   - `Industry`: `Industry`, `Industry group`, sorted by `sort_order`, and a hierarchy group › industry. `Job postings` imports `industry` and relates to it directly; the `Job industries` table and its two relationships go. `Skill` loses `Category`.
   - A measure `Industry note` reads the model's row: trained on how many labels, right for what share of the test jobs.
   - **You:** on Skills overview, the category chart becomes Jobs by industry; the Industry slicer shows the hierarchy; the note sits under the chart. I check the saved files for slicer filters.
 - [ ] **7. Docs, commit, PR and merge.** Then publish to the service and confirm the next scheduled refresh. In the working folder, `batch.py purge` removes entries whose job has left gold.
+  - Once the new report is live: remove `bridge_job_industries` from dbt, drop `gold.bridge_job_industries`, and redraw the ER diagram (`scripts/export_marts_ddl.py`, then DrawDB).
 
 ## Concepts you'll meet
 - **Training and applying a model:** training (`fit`) reads labelled examples and works out weights; applying (`predict`) uses the weights on new jobs. Here training happens by hand, rarely, and applying happens every night.

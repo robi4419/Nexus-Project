@@ -1,11 +1,6 @@
-import csv
-from pathlib import Path
-
 import pytest
 
-from transform.tech_titles import TECH_CATEGORIES, tech_category
-
-INDUSTRIES_CSV = Path(__file__).parent.parent / "databricks" / "reference" / "industries.csv"
+from transform.tech_titles import tech_category
 
 
 # Made-up titles shaped like the Himalayas jobs without a parent category sampled on 2026-10-30 (real Himalayas jobs
@@ -104,18 +99,3 @@ def test_missing_title_and_extra_spaces():
 
 def test_christian_is_not_hris():
     assert tech_category("Christian Ministry Coordinator") is None
-
-
-def test_every_category_maps_to_an_industry():
-    # Silver maps the answer through industries.csv like a Himalayas parent category, so each needs an industry there.
-    with open(INDUSTRIES_CSV, encoding="utf-8", newline="") as file:
-        himalayas = {row["raw_value"]: row["industry"] for row in csv.DictReader(file) if row["source"] == "himalayas"}
-
-    assert {category: himalayas.get(category) for category in TECH_CATEGORIES} == {
-        "Developer": "Software Engineering",
-        "Data Science": "Data Science & Analytics",
-        "Product": "Product & Operations",
-        "Design": "Web, UI & UX Design",
-        "Hardware Engineer": "Hardware & Electronics",
-        "Research & Development": "Research & Science",
-    }

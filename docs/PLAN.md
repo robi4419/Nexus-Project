@@ -24,9 +24,9 @@ Things to handle:
      │      Auto Loader loads each new file once
      ▼
  BRONZE  jobicy_raw · arbeitnow_raw · himalayas_raw · frankfurter_raw   (append-only, one row per landed file, VARIANT)
-     │  (3) same Job: rebuild silver (clean, normalise, dedup, skills, salaries in USD), then checks
+     │  (3) same Job: rebuild silver (clean, normalise, dedup, skills, salaries in USD, industry model), then checks
      ▼
- SILVER  jobs · job_locations · job_industries · job_types · job_skills · fx_rates · ref_* (skills, countries, mappings)
+ SILVER  jobs · job_locations · job_types · job_skills · job_industry_predictions · fx_rates · ref_* (skills, countries, mappings)
      │  (4) Airflow runs dbt build: staging → intermediate → marts, plus tests
      ▼
  GOLD (dbt)  dim_date · dim_skill · dim_location · dim_company · dim_industry · dim_seniority

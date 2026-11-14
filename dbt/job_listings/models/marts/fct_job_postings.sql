@@ -1,3 +1,6 @@
+-- After each build, the hand labels of jobs that have left gold are deleted (macros/purge_industry_labels.sql).
+{{ config(post_hook="{{ purge_industry_labels() }}") }}
+
 -- One row per job: the postings of one company and title (or description) merged, on any board (Phase 5, decision 11).
 with postings as (
   select * from {{ ref('int_job_postings') }}
@@ -33,7 +36,7 @@ jobs as (
 )
 select
   j.job_key, l.company_key, l.seniority, j.published_date,
-  l.title, l.url, j.is_remote, j.is_listed_now, j.published_at,
+  l.title, l.url, i.industry, i.industry_source, j.is_remote, j.is_listed_now, j.published_at,
   trunc(j.published_date, 'MM') as published_month, j.expires_at, j.first_seen_at, j.last_seen_at, j.postings,
   s.salary_min, s.salary_max, s.salary_currency, s.salary_period,
   s.salary_min_usd_yearly, s.salary_max_usd_yearly, s.salary_mid_usd_yearly, s.salary_is_plausible
@@ -44,3 +47,6 @@ join ranked as l
 join ranked as s
   on s.job_key = j.job_key
   and s.salary_rank = 1
+-- the industry comes from the same posting as the title
+join {{ ref('int_posting_industries') }} as i
+  on i.posting_key = l.posting_key

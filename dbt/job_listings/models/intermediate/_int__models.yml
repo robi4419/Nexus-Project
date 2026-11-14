@@ -70,6 +70,21 @@ models:
         description: "{{ doc('salary_mid_usd_yearly') }}"
       - name: salary_is_plausible
         description: "{{ doc('salary_is_plausible') }}"
+  - name: int_posting_industries
+    description: "One row per posting: the industry its job shows when this posting speaks for the job (Phase 5, decision 15). In order: the job's hand label; the model's industry when it is at least industry_sure (dbt_project.yml, 50%) sure of it; '<Group>, unspecified' when it is that sure of the group only; else Not classified. fct_job_postings takes the row of the posting that gives the job its title."
+    columns:
+      - name: posting_key
+        description: "{{ doc('posting_key') }}"
+        data_tests: [unique, not_null]
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [not_null]
+      - name: industry
+        description: "{{ doc('industry') }}"
+        data_tests: [not_null]
+      - name: industry_source
+        description: "{{ doc('industry_source') }}"
+        data_tests: [not_null]
   - name: int_job_skills
     description: "One row per job x skill: the skills of all the job's postings (stg_silver__job_skills through int_job_postings), so a job posted several times counts once. Feeds fct_job_skills, int_job_skill_pairs, the weekly trend and the history."
     data_tests:
@@ -210,6 +225,47 @@ unit_tests:
         - {job_key: d, scope: himalayas, week_start: 2026-11-16}
         - {job_key: d, scope: all_boards, week_start: 2026-10-19}
         - {job_key: d, scope: all_boards, week_start: 2026-11-16}
+
+  - name: int_posting_industries_hand_label_then_model_then_group
+    description: "p1 and p2: job a is hand-labelled, so both its postings show the label, whatever the model says. p3: the model is exactly 50% sure of the industry, which is enough. p4: unsure of the industry but sure of the group, which has an unspecified row. p5: sure of neither. p6: sure of a group that has no unspecified row in the list. p7: no prediction at all."
+    model: int_posting_industries
+    overrides:
+      vars:
+        industry_sure: 0.5
+    given:
+      - input: ref('int_job_postings')
+        rows:
+          - {posting_key: p1, job_key: a}
+          - {posting_key: p2, job_key: a}
+          - {posting_key: p3, job_key: b}
+          - {posting_key: p4, job_key: c}
+          - {posting_key: p5, job_key: d}
+          - {posting_key: p6, job_key: e}
+          - {posting_key: p7, job_key: f}
+      - input: ref('stg_silver__job_industry_predictions')
+        rows:
+          - {posting_key: p1, industry: Marketing, industry_probability: 0.9, industry_group: Business, group_probability: 0.95}
+          - {posting_key: p2, industry: Backend, industry_probability: 0.2, industry_group: Software, group_probability: 0.3}
+          - {posting_key: p3, industry: Backend, industry_probability: 0.5, industry_group: Software, group_probability: 0.8}
+          - {posting_key: p4, industry: Backend, industry_probability: 0.3, industry_group: Software, group_probability: 0.7}
+          - {posting_key: p5, industry: Backend, industry_probability: 0.3, industry_group: Software, group_probability: 0.45}
+          - {posting_key: p6, industry: Marketing, industry_probability: 0.4, industry_group: Hardware, group_probability: 0.6}
+      - input: ref('stg_silver__industry_labels')
+        rows:
+          - {job_key: a, industry: Data Engineering}
+      - input: ref('stg_silver__ref_industry_list')
+        rows:
+          - {industry: "Software, unspecified"}
+          - {industry: "Business, unspecified"}
+    expect:
+      rows:
+        - {posting_key: p1, job_key: a, industry: Data Engineering, industry_source: hand label}
+        - {posting_key: p2, job_key: a, industry: Data Engineering, industry_source: hand label}
+        - {posting_key: p3, job_key: b, industry: Backend, industry_source: model}
+        - {posting_key: p4, job_key: c, industry: "Software, unspecified", industry_source: "model, group only"}
+        - {posting_key: p5, job_key: d, industry: Not classified, industry_source: not classified}
+        - {posting_key: p6, job_key: e, industry: Not classified, industry_source: not classified}
+        - {posting_key: p7, job_key: f, industry: Not classified, industry_source: not classified}
 
   - name: int_skill_weekly_weighted_combines_boards_with_fixed_weights
     description: "Weights 0.5, 0.25 and 0.25. Week 2: every board has jobs in both weeks, so share_change is share - prev_share and the band is centred on prev_share; the +5 pp is inside it, because the boards are small. Week 3: Jobicy has no jobs, so it's left out of the share (the other weights scale up to 1) and of the change. The share rises only because Jobicy, the lowest board, is missing; share_change is -5 pp, from the two boards with jobs in both weeks."

@@ -11,11 +11,9 @@ REFERENCE_DIR = Path(__file__).parent.parent / "databricks" / "reference"
 VOCABULARY = Path(__file__).parent / "fixtures" / "source_vocabulary.json"
 
 SOURCES = {"jobicy", "himalayas", "arbeitnow"}
-# Jobicy's 22 industries are the base list; these four were added in Phase 2b where no Jobicy industry fits.
-NEW_INDUSTRIES = {"Hardware & Electronics", "Research & Science", "Engineering & Manufacturing", "Logistics & Supply Chain"}
 JOB_TYPES = {"Full-Time", "Part-Time", "Contract", "Internship", "Temporary"}
 SENIORITY_LEVELS = {"Intern", "Junior", "Mid", "Senior", "Lead", "Director", "Executive"}
-MAPPING_TARGETS = {"industries.csv": "industry", "job_types.csv": "job_type", "levels.csv": "seniority"}
+MAPPING_TARGETS = {"job_types.csv": "job_type", "levels.csv": "seniority"}
 
 SKILL_CATEGORIES = {
     "Programming Languages",
@@ -204,7 +202,9 @@ def test_known_cities(cities, alias, city, country):
     assert (cities[alias]["city"], cities[alias]["country_code"]) == (city, country)
 
 
-# --- industries.csv, job_types.csv, levels.csv (each source's values -> ours; empty target = reviewed, no mapping) --
+# --- job_types.csv, levels.csv (each source's values -> ours; empty target = reviewed, no mapping) --
+# The sources' own industries aren't mapped any more (Phase 5, decision 15); test_industry_model.py checks
+# industry_list.csv. The fixture's "industries" lists stay as a record of what the sources sent when profiled.
 
 
 @pytest.fixture(scope="module")
@@ -213,13 +213,9 @@ def vocabulary() -> dict:
 
 
 @pytest.mark.parametrize("name", MAPPING_TARGETS)
-def test_mapping_columns_targets_and_unique_values(vocabulary, name):
+def test_mapping_columns_targets_and_unique_values(name):
     target = MAPPING_TARGETS[name]
-    allowed = {
-        "industry": set(vocabulary["jobicy"]["industries"]) | NEW_INDUSTRIES,
-        "job_type": JOB_TYPES,
-        "seniority": SENIORITY_LEVELS,
-    }[target]
+    allowed = {"job_type": JOB_TYPES, "seniority": SENIORITY_LEVELS}[target]
     rows = read_csv(name)
     keys = Counter((row["source"], row["raw_value"].lower()) for row in rows)
 
@@ -230,16 +226,9 @@ def test_mapping_columns_targets_and_unique_values(vocabulary, name):
     assert all(row["raw_value"] and row["raw_value"] == row["raw_value"].strip() for row in rows)
 
 
-def test_jobicy_industries_map_to_themselves(vocabulary):
-    jobicy = {row["raw_value"]: row["industry"] for row in read_csv("industries.csv") if row["source"] == "jobicy"}
-
-    assert jobicy == {industry: industry for industry in vocabulary["jobicy"]["industries"]}
-
-
 @pytest.mark.parametrize(
     ("name", "source", "field"),
     [
-        ("industries.csv", "himalayas", "industries"),
         ("job_types.csv", "jobicy", "job_types"),
         ("job_types.csv", "himalayas", "job_types"),
         ("job_types.csv", "arbeitnow", "job_types"),
@@ -251,15 +240,3 @@ def test_every_observed_value_is_classified(vocabulary, name, source, field):
     listed = {row["raw_value"].lower() for row in read_csv(name) if row["source"] == source}
 
     assert [value for value in vocabulary[source][field] if value.lower() not in listed] == []
-
-
-def test_every_frequent_arbeitnow_tag_is_classified(vocabulary):
-    # A tag can describe an industry ("Finance") or a level ("Team Leader"), so either file counts.
-    listed = {
-        row["raw_value"].lower()
-        for name in ("industries.csv", "levels.csv")
-        for row in read_csv(name)
-        if row["source"] == "arbeitnow"
-    }
-
-    assert [tag for tag in vocabulary["arbeitnow"]["industries"] if tag.lower() not in listed] == []

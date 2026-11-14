@@ -59,12 +59,12 @@ sources:
             data_tests: [not_null]
           - name: location_raw
             data_tests: [not_null]
-      - name: job_industries
-        description: "One row per job x industry listed, mapped to reference industries"
+      - name: job_industry_predictions
+        description: "One row per job: the industry model's likeliest industry and likeliest group, with their probabilities and the model version (Phase 5, decision 15). Rebuilt every run by the task silver_industries."
         data_tests:
           - dbt_utils.unique_combination_of_columns:
               arguments:
-                combination_of_columns: [source, source_job_id, industry]
+                combination_of_columns: [source, source_job_id]
         columns:
           - name: source
             data_tests: [not_null]
@@ -72,6 +72,24 @@ sources:
             data_tests: [not_null]
           - name: industry
             data_tests: [not_null]
+          - name: industry_probability
+            data_tests: [not_null]
+          - name: industry_group
+            data_tests: [not_null]
+          - name: group_probability
+            data_tests: [not_null]
+      - name: industry_labels
+        description: "One row per hand-labelled job, keyed by gold's job_key: its industry, and whether the model trains on it or is tested on it. Uploaded by scripts/upload_industry_labels.py and kept between runs; the post-hook of fct_job_postings deletes the rows of jobs that have left gold."
+        columns:
+          - name: job_key
+            data_tests: [unique, not_null]
+          - name: industry
+            data_tests: [not_null]
+      - name: ref_industry_list
+        description: "One row per value a job's industry can take, with its group and sort order (industry_list.csv)"
+        columns:
+          - name: industry
+            data_tests: [unique, not_null]
       - name: job_types
         description: "One row per job x job_type listed, mapped to reference job types"
         data_tests:
