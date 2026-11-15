@@ -490,49 +490,6 @@ models:
                 to: ref('dim_location')
                 field: location_key
 
-  - name: bridge_job_industries
-    description: "One row per job with its industry, copied from fct_job_postings. Kept only until the report filters on fct_job_postings.industry (Phase 5, task 5.12, step 6); a job had several industries here before decision 15."
-    constraints:
-      - type: primary_key
-        name: pk_bridge_job_industries
-        columns: [job_key, industry]
-        warn_unenforced: false
-    data_tests:
-      - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns: ["job_key", "industry"]
-    columns:
-      - name: job_key
-        data_type: string
-        description: "{{ doc('job_key') }} Foreign key to fct_job_postings."
-        constraints:
-          - type: not_null
-          - type: foreign_key
-            name: fk_bridge_job_industries_job_key
-            to: ref('fct_job_postings')
-            to_columns: [job_key]
-            warn_unenforced: false
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('fct_job_postings')
-                field: job_key
-      - name: industry
-        data_type: string
-        description: "{{ doc('industry') }} Foreign key to dim_industry."
-        constraints:
-          - type: not_null
-          - type: foreign_key
-            name: fk_bridge_job_industries_industry
-            to: ref('dim_industry')
-            to_columns: [industry]
-            warn_unenforced: false
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('dim_industry')
-                field: industry
-
   - name: bridge_job_types
     description: "One row per job x job type. The 5 types describe themselves, so there's no dimension; count jobs across it with count(distinct job_key)."
     constraints:

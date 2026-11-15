@@ -26,6 +26,8 @@ CREATE TABLE dim_date (
 
 CREATE TABLE dim_industry (
   industry text NOT NULL,
+  industry_group text NOT NULL,
+  sort_order integer NOT NULL,
   CONSTRAINT pk_dim_industry PRIMARY KEY (industry)
 );
 
@@ -60,6 +62,8 @@ CREATE TABLE fct_job_postings (
   published_date date NOT NULL,
   title text NOT NULL,
   url text NOT NULL,
+  industry text NOT NULL,
+  industry_source text NOT NULL,
   is_remote boolean NOT NULL,
   is_listed_now boolean NOT NULL,
   published_at timestamp NOT NULL,
@@ -79,7 +83,8 @@ CREATE TABLE fct_job_postings (
   CONSTRAINT pk_fct_job_postings PRIMARY KEY (job_key),
   CONSTRAINT fk_fct_job_postings_company_key FOREIGN KEY (company_key) REFERENCES dim_company (company_key),
   CONSTRAINT fk_fct_job_postings_seniority FOREIGN KEY (seniority) REFERENCES dim_seniority (seniority),
-  CONSTRAINT fk_fct_job_postings_published_date FOREIGN KEY (published_date) REFERENCES dim_date (date_day)
+  CONSTRAINT fk_fct_job_postings_published_date FOREIGN KEY (published_date) REFERENCES dim_date (date_day),
+  CONSTRAINT fk_fct_job_postings_industry FOREIGN KEY (industry) REFERENCES dim_industry (industry)
 );
 
 CREATE TABLE fct_job_skills (
@@ -98,14 +103,6 @@ CREATE TABLE fct_job_skills (
   CONSTRAINT fk_fct_job_skills_published_date FOREIGN KEY (published_date) REFERENCES dim_date (date_day),
   CONSTRAINT fk_fct_job_skills_company_key FOREIGN KEY (company_key) REFERENCES dim_company (company_key),
   CONSTRAINT fk_fct_job_skills_seniority FOREIGN KEY (seniority) REFERENCES dim_seniority (seniority)
-);
-
-CREATE TABLE bridge_job_industries (
-  job_key text NOT NULL,
-  industry text NOT NULL,
-  CONSTRAINT pk_bridge_job_industries PRIMARY KEY (job_key, industry),
-  CONSTRAINT fk_bridge_job_industries_job_key FOREIGN KEY (job_key) REFERENCES fct_job_postings (job_key),
-  CONSTRAINT fk_bridge_job_industries_industry FOREIGN KEY (industry) REFERENCES dim_industry (industry)
 );
 
 CREATE TABLE bridge_job_locations (
@@ -149,10 +146,18 @@ CREATE TABLE agg_skill_weekly_trend (
   jobs bigint NOT NULL,
   week_jobs bigint NOT NULL,
   share double precision NOT NULL,
-  prev_jobs bigint,
   prev_share double precision,
   share_change double precision,
+  chance_low double precision,
+  chance_high double precision,
   CONSTRAINT pk_agg_skill_weekly_trend PRIMARY KEY (week_start, skill),
   CONSTRAINT fk_agg_skill_weekly_trend_week_start FOREIGN KEY (week_start) REFERENCES dim_date (date_day),
   CONSTRAINT fk_agg_skill_weekly_trend_skill FOREIGN KEY (skill) REFERENCES dim_skill (skill)
+);
+
+CREATE TABLE agg_trend_board_weights (
+  board text NOT NULL,
+  jobs bigint NOT NULL,
+  weight double precision NOT NULL,
+  CONSTRAINT pk_agg_trend_board_weights PRIMARY KEY (board)
 );

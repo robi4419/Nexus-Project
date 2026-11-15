@@ -1504,24 +1504,6 @@
                 ]
               }
             }
-          },
-          "2c0c37f251bb59059413": {
-            "singleVisual": {
-              "visualType": "shape",
-              "objects": {}
-            }
-          },
-          "c4cc5429c9001e1b9830": {
-            "singleVisual": {
-              "visualType": "textbox",
-              "objects": {}
-            }
-          },
-          "4314a7e0d3d6ab2cbc20": {
-            "singleVisual": {
-              "visualType": "pageNavigator",
-              "objects": {}
-            }
           }
         }
       }
