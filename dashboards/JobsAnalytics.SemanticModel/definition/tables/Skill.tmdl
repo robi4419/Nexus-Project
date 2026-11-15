@@ -1,4 +1,5 @@
-/// One row per skill in the taxonomy (gold.dim_skill).
+/// One row per skill in the taxonomy (gold.dim_skill). Without the skill's category, which gold keeps: the report shows
+/// the industries of the jobs asking for a skill instead (Phase 5, decision 15).
 table Skill
 	lineageTag: 6e2c323d-17ba-4889-8e7f-f3b13fc66fe2
 
@@ -8,12 +9,6 @@ table Skill
 		summarizeBy: none
 		sourceColumn: skill
 
-	column Category
-		dataType: string
-		lineageTag: 13cb6027-3c09-4f79-a13f-070efdc119ef
-		summarizeBy: none
-		sourceColumn: category
-
 	partition Skill = m
 		mode: import
 		source =
@@ -21,7 +16,7 @@ table Skill
 				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
 				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
 				    Data = Gold{[Name = "dim_skill", Kind = "Table"]}[Data],
-				    Columns = Table.SelectColumns(Data, {"skill", "category"})
+				    Columns = Table.SelectColumns(Data, {"skill"})
 				in
 				    Columns
 

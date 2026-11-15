@@ -64,7 +64,8 @@
                 }
               },
               "queryRef": "_Measures.Madian salary (enough jobs)",
-              "nativeQueryRef": "Median salary (enough jobs)"
+              "nativeQueryRef": "Median salary",
+              "displayName": "Median salary"
             }
           ]
         }

@@ -419,6 +419,21 @@ table _Measures
 		displayFolder: Trend
 		lineageTag: 64c34bb8-4255-4f72-add6-de709b98efa6
 
+	/// Jobs in the current filters, the skill filter included: with skills picked, the jobs asking for any of them; with
+	/// none, all jobs. [Jobs] alone ignores picked skills, which reach the jobs only through CROSSFILTER.
+	measure 'Jobs in selection' = CALCULATE ( [Jobs], CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH ) )
+		formatString: #,0
+		displayFolder: Jobs
+		lineageTag: 5dd68e30-064c-4f63-8d51-0a9193cf8e1c
+
+	/// The industry's share of the jobs in the current filters (skill included), out of all industries: for "Jobs by
+	/// industry". With a skill picked it is the share of that skill's jobs in the industry. With nothing picked in the
+	/// Industry slicer, the industries add up to 100%.
+	measure 'Industry share of jobs' = DIVIDE ( [Jobs in selection], CALCULATE ( [Jobs in selection], REMOVEFILTERS ( Industry ) ) )
+		formatString: 0.0%
+		displayFolder: Jobs
+		lineageTag: f4d312cc-1478-4746-a8aa-ba6055d768a7
+
 	column Value
 		dataType: int64
 		isHidden

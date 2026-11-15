@@ -36,26 +36,6 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Skill"
-                        }
-                      },
-                      "Property": "Category"
-                    }
-                  },
-                  "Function": 3
-                }
-              },
-              "queryRef": "Min(Skill.Category)",
-              "nativeQueryRef": "Category",
-              "displayName": "Category"
-            },
-            {
-              "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
@@ -247,7 +227,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Hover to show Category, Median and 25th-75th percentile'"
+                  "Value": "'Hover to show Median and 25th-75th percentile'"
                 }
               }
             }
@@ -359,25 +339,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "0a95c4d03a5ea4a6802e",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Skill"
-                  }
-                },
-                "Property": "Category"
-              }
-            },
-            "Function": 3
-          }
-        },
-        "type": "Advanced"
       },
       {
         "name": "e06d6254105baaa84acd",

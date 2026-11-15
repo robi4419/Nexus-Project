@@ -30,18 +30,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Median yearly salary in USD over jobs listing a plausible salary for skills with at least 30 salaried jobs. ",
-                    "textStyle": {
-                      "fontSize": "18pt"
-                    }
-                  }
-                ],
-                "indent": 1
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "Salaries come from Himalayas and Jobicy, Arbeitnow lists none.",
+                    "value": "Median yearly salary in USD over jobs listing a plausible salary for skills with at least 30 jobs that list a salary. Salaries come from Himalayas and Jobicy, Arbeitnow lists none.",
                     "textStyle": {
                       "fontSize": "18pt"
                     }

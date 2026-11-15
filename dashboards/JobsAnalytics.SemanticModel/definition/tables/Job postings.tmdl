@@ -1,6 +1,6 @@
 /// One row per job (gold.fct_job_postings): a company's postings of one role, on any board, count once. Without titles,
 /// links, IDs, companies or raw salaries: the report shows aggregates only, and Publish to web exposes the whole model.
-/// The boards a job is on come through 'Job sources'.
+/// The boards a job is on come through 'Job sources'; its one industry is a column here, filtered by Industry.
 table 'Job postings'
 	lineageTag: 3f3dc495-7cae-4282-8419-4d21d27476f5
 
@@ -56,6 +56,14 @@ table 'Job postings'
 		summarizeBy: none
 		sourceColumn: salary_is_plausible
 
+	/// The job's one industry, from a hand label or the model (decision 15). Hidden: filter with the Industry table.
+	column industry
+		dataType: string
+		isHidden
+		lineageTag: 33490371-bcdc-4cc4-b479-084acc850e3b
+		summarizeBy: none
+		sourceColumn: industry
+
 	partition 'Job postings' = m
 		mode: import
 		source =
@@ -63,7 +71,7 @@ table 'Job postings'
 				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
 				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
 				    Data = Gold{[Name = "fct_job_postings", Kind = "Table"]}[Data],
-				    Columns = Table.SelectColumns(Data, {"job_key", "seniority", "published_date", "is_remote", "is_listed_now", "salary_mid_usd_yearly", "salary_is_plausible"})
+				    Columns = Table.SelectColumns(Data, {"job_key", "seniority", "industry", "published_date", "is_remote", "is_listed_now", "salary_mid_usd_yearly", "salary_is_plausible"})
 				in
 				    Columns
 

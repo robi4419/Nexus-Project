@@ -552,7 +552,7 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
     - **Until a first model exists, the task skips itself** and the checks skip the predictions, so deploying before training can't break a nightly run. Step 5 turns the skip into a failure.
     - **The likeliest industry and the likeliest group are found separately,** so a posting's industry needn't belong to its group (three Software industries at 20% each, against Marketing at 30%). That can only happen below 50%, where dbt doesn't show the industry.
   - **Order for the first time:** deploy the bundle, upload the labels with `--write`, run `train_industry_model.py` in the workspace, then the next nightly run predicts.
-- [ ] **5. Switch gold.**
+- [x] **5. Switch gold.**
   - `int_posting_industries` with the four rules and `industry_source` (`hand label`, `model`, `model, group only`, `not classified`), and a dbt unit test with made-up rows. The threshold is the dbt variable `industry_sure`.
   - `fct_job_postings` gets `industry` and `industry_source`; `dim_industry` comes from `silver.ref_industry_list`, with `industry_group` and `sort_order`.
   - A post-hook on `fct_job_postings` deletes the label rows whose job has left gold. It does nothing when more than 20% of the labels would go in one build (`industry_labels_max_purge_share`), so neither a broken build nor a changed `job_key` rule can empty the labels; `assert_industry_labels_follow_gold` then warns.
@@ -578,10 +578,26 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
     - **The Software skills check** now takes the jobs the model is at least 50% sure are in the Software group: 95.4% of them had a skill (the boards' Software Engineering category gave 92.2%), so the 90% line stays.
     - **Python tests:** 471 pass; the five that checked `industries.csv` are gone.
     - **The ER diagram isn't redrawn yet:** it waits for step 7, when the bridge leaves.
-- [ ] **6. Power BI (close Desktop first, because I edit the TMDL).**
+  - **Built on 2026-11-14,** by a `transform_and_build` run started by hand at 21:00 UTC, after `databricks bundle deploy`:
+    - **The Job** passed in 4.7 minutes with the changed notebooks; `silver.job_industries` and `silver.ref_industries` weren't rebuilt.
+    - **dbt:** 181 of 181 passed, with no warning, the new unit test among them.
+    - **Gold is as rehearsed:** 56,376 jobs, each with one industry; model 81.0%, not classified 7.4%, hand label 5.8%, model, group only 5.8%. The bridge has one row per job and agrees with the fact.
+    - **The purge deleted 5 label rows** (one `MERGE`, version 1 of the table): 3,095 training labels and the 200 test jobs remain, none waiting, and all 3,295 show their label in gold.
+    - **Dropped afterwards,** with Robert's go-ahead: `gold_staging.stg_silver__job_industries`, `silver.job_industries` and `silver.ref_industries`. `gold.bridge_job_industries` stays until step 7.
+- [x] **6. Power BI (close Desktop first, because I edit the TMDL).**
   - `Industry`: `Industry`, `Industry group`, sorted by `sort_order`, and a hierarchy group › industry. `Job postings` imports `industry` and relates to it directly; the `Job industries` table and its two relationships go. `Skill` loses `Category`.
-  - A measure `Industry note` reads the model's row: trained on how many labels, right for what share of the test jobs.
-  - **You:** on Skills overview, the category chart becomes Jobs by industry; the Industry slicer shows the hierarchy; the note sits under the chart. I check the saved files for slicer filters.
+  - Two measures for the new chart: `Jobs in selection` (jobs in the filters, picked skills included) and `Industry share of jobs` (that count as a share of all industries').
+  - **You:** on Skills overview, the category chart becomes Jobs by industry; the Industry slicer shows the hierarchy. I check the saved files for slicer filters.
+  - **Dropped on 2026-11-15: the `Industry note` measure** (trained on how many labels, right for what share of the test jobs). Robert doesn't find it useful on the page; decision 15 has the numbers.
+  - **Built in Desktop on 2026-11-15** (Robert), on the model below, which Desktop loaded and refreshed as written:
+    - **Jobs by industry** shows group › industry with `Industry share of jobs`; it and the top-skills chart filter each other (not highlight, whose two bars would be shares of different totals).
+    - **Both Industry slicers** (Skills overview, Salaries) show the hierarchy and stay synced.
+    - **Checked in the saved files:** no slicer or visual has a saved filter condition that the last commit didn't have. The stale `Job industries` node was removed from the model diagram's layout by hand; Desktop had kept it.
+  - **Model written on 2026-11-15:**
+    - **Robert's uncommitted Desktop edits were discarded first** (his choice): a reworded Salaries note, slicer settings, and a Week slicer saved with an end date of 2 Nov, which would have cut the published trend there.
+    - **`Industry group` is sorted by a `Group order` column added in the query** (the lowest sort order in the group). A DAX column computed from the group couldn't sort that same column.
+    - **The Salaries scatter lost its Category tooltip,** edited in its JSON, because the column left the model. The category chart on Skills overview shows a missing field until it is rebuilt.
+    - **To compare in Desktop** (gold on 2026-11-15): 56,376 jobs, 38,980 listed now. Of the listed ones: Software 30.1%, Business 12.9%, Data 12.8%, Infrastructure & Security 11.4%, Product & Projects 10.3%, Not classified 8.9%. Of the 9,600 or so listed Python jobs: Machine Learning & AI 16.2%, Software Engineering, general 13.3%, DevOps, Cloud & SRE 10.8%.
 - [ ] **7. Docs, commit, PR and merge.** Then publish to the service and confirm the next scheduled refresh. In the working folder, `batch.py purge` removes entries whose job has left gold.
   - Once the new report is live: remove `bridge_job_industries` from dbt, drop `gold.bridge_job_industries`, and redraw the ER diagram (`scripts/export_marts_ddl.py`, then DrawDB).
 

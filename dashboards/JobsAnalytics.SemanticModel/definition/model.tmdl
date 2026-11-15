@@ -11,7 +11,7 @@ annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
 
-annotation PBI_QueryOrder = ["DatabricksHost","DatabricksHttpPath","Date","Skill","Location","Industry","Seniority","Job postings","Job skills","Job locations","Job industries","Job types","Job sources","Skill pairs","Weekly skill trend","Trend board weights"]
+annotation PBI_QueryOrder = ["DatabricksHost","DatabricksHttpPath","Date","Skill","Location","Industry","Seniority","Job postings","Job skills","Job locations","Job types","Job sources","Skill pairs","Weekly skill trend","Trend board weights"]
 
 ref table _Measures
 ref table Date
@@ -23,7 +23,6 @@ ref table Source
 ref table 'Job postings'
 ref table 'Job skills'
 ref table 'Job locations'
-ref table 'Job industries'
 ref table 'Job types'
 ref table 'Skill pairs'
 ref table 'Weekly skill trend'

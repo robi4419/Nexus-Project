@@ -17,18 +17,43 @@
           "projections": [
             {
               "field": {
-                "Column": {
+                "HierarchyLevel": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Industry"
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Industry"
+                        }
+                      },
+                      "Hierarchy": "Industry by group"
                     }
                   },
-                  "Property": "Industry"
+                  "Level": "Industry group"
                 }
               },
-              "queryRef": "Industry.Industry",
-              "nativeQueryRef": "Industry",
+              "queryRef": "Industry.Industry by group.Industry group",
+              "nativeQueryRef": "Industry by group Industry group",
               "active": true
+            },
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Industry"
+                        }
+                      },
+                      "Hierarchy": "Industry by group"
+                    }
+                  },
+                  "Level": "Industry"
+                }
+              },
+              "queryRef": "Industry.Industry by group.Industry",
+              "nativeQueryRef": "Industry by group Industry",
+              "active": false
             }
           ]
         }
@@ -370,5 +395,47 @@
       "filterChanges": true
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ea980e125cea708612ca",
+        "field": {
+          "HierarchyLevel": {
+            "Expression": {
+              "Hierarchy": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Industry"
+                  }
+                },
+                "Hierarchy": "Industry by group"
+              }
+            },
+            "Level": "Industry group"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "6a11c132c762bc9b08ba",
+        "field": {
+          "HierarchyLevel": {
+            "Expression": {
+              "Hierarchy": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Industry"
+                  }
+                },
+                "Hierarchy": "Industry by group"
+              }
+            },
+            "Level": "Industry"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

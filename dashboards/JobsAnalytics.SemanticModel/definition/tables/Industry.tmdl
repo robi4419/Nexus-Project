@@ -1,4 +1,6 @@
-/// One row per industry used by at least one job (gold.dim_industry).
+/// One row per industry a job can show (gold.dim_industry): the labelling guide's 34 industries in their 9 groups, a
+/// "Group, unspecified" row for each group of several industries, and "Not classified". Filters 'Job postings' directly:
+/// a job has one industry (Phase 5, decision 15).
 table Industry
 	lineageTag: 7a89acc6-6b74-470f-b982-5d12b4504e35
 
@@ -7,6 +9,44 @@ table Industry
 		lineageTag: ba3e63f7-2acc-4b2c-885c-8c1432e24c03
 		summarizeBy: none
 		sourceColumn: industry
+		sortByColumn: 'Sort order'
+
+	column 'Industry group'
+		dataType: string
+		lineageTag: eae3b7f2-9df2-49b8-ba06-190c809ef4f1
+		summarizeBy: none
+		sourceColumn: industry_group
+		sortByColumn: 'Group order'
+
+	/// The industry's place in the guide's list.
+	column 'Sort order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2a1ef56e-93c9-4403-ada7-7756c8f3b3a2
+		summarizeBy: none
+		sourceColumn: sort_order
+
+	/// The group's place in the guide's list: the lowest sort order among its industries. Added in the query, because a
+	/// DAX column computed from 'Industry group' couldn't sort that same column (a circular dependency).
+	column 'Group order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f9d0691f-e363-4447-8df3-a3ae910d837d
+		summarizeBy: none
+		sourceColumn: group_sort_order
+
+	hierarchy 'Industry by group'
+		lineageTag: b753e29f-418e-4131-b4f8-b30692ee9af1
+
+		level 'Industry group'
+			lineageTag: 4430f9a3-89a5-4dae-9dca-c19bfcbd76ab
+			column: 'Industry group'
+
+		level Industry
+			lineageTag: 25617ae0-1542-4792-9cbf-0fcbfb92fb56
+			column: Industry
 
 	partition Industry = m
 		mode: import
@@ -15,9 +55,12 @@ table Industry
 				    Source = DatabricksMultiCloud.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, QueryTags = null, EnableAutomaticProxyDiscovery = "enabled", Implementation = "2.0", Protocol = null]),
 				    Gold = Source{[Name = "workspace", Kind = "Database"]}[Data]{[Name = "gold", Kind = "Schema"]}[Data],
 				    Data = Gold{[Name = "dim_industry", Kind = "Table"]}[Data],
-				    Columns = Table.SelectColumns(Data, {"industry"})
+				    Columns = Table.SelectColumns(Data, {"industry", "industry_group", "sort_order"}),
+				    GroupOrders = Table.Group(Columns, {"industry_group"}, {{"group_sort_order", each List.Min([sort_order]), Int64.Type}}),
+				    Joined = Table.NestedJoin(Columns, {"industry_group"}, GroupOrders, {"industry_group"}, "group", JoinKind.LeftOuter),
+				    WithGroupOrder = Table.ExpandTableColumn(Joined, "group", {"group_sort_order"})
 				in
-				    Columns
+				    WithGroupOrder
 
 	annotation PBI_ResultType = Table
 

@@ -142,6 +142,13 @@
                   "Value": "true"
                 }
               }
+            },
+            "labelContentLayout": {
+              "expr": {
+                "Literal": {
+                  "Value": "'SingleLine'"
+                }
+              }
             }
           }
         }
@@ -382,6 +389,39 @@
             }
           ]
         }
+      },
+      {
+        "name": "e4e5fed5910968b8e3d6",
+        "field": {
+          "HierarchyLevel": {
+            "Expression": {
+              "Hierarchy": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Location"
+                  }
+                },
+                "Hierarchy": "Place"
+              }
+            },
+            "Level": "Country"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "1168a15226a80668077e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Jobs with salary"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }
