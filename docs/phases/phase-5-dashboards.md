@@ -18,11 +18,11 @@
 - [x] 5.5 Report pages (you build them, I guide): skills overview, rising skills, salaries, skills asked together
 - [x] 5.6 Account and publishing: tenant, Pro trial, Publish to web, daily refresh
 - [x] 5.7 Make the repository public: made-up fixtures, history scan, author email, licence
-- [ ] 5.8 GitHub Pages site with the iframe
+- [x] 5.8 GitHub Pages site with the iframe
 - [x] 5.9 Verify end to end
 - [x] 5.10 Docs, commit, PR and merge (PR #8, merged on 2026-11-05)
-- [ ] 5.11 Board weights in the weekly trend (decision 14), on the branch `trend-board-weights`
-- [ ] 5.12 One industry per job, from a model trained on hand labels (decision 15), on the branch `job-industries`
+- [x] 5.11 Board weights in the weekly trend (decision 14); merged as PR #9
+- [x] 5.12 One industry per job, from a model trained on hand labels (decision 15); merged as PR #10
 
 ---
 
@@ -649,8 +649,17 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
     - **Written into the files afterwards:** "Listed now" as the saved selection of both Jobs shown slicers (a test pick had been saved), the heatmap's filter on the bar chart of Asked with (lost when its visuals were pasted again), and Skills overview as the opening page.
   - **Left as it is:** with no skill picked, the second card on Skills overview shows "--", the card's own sign for blank. `Picked skills share` and `Skill coverage` are in the model but on no card.
   - **Tested by Robert in Desktop:** the Reset button on each page, and the report opens without the bookmark message.
-- [ ] **7. Docs, commit, PR and merge.** Then publish to the service and confirm the next scheduled refresh. In the working folder, `batch.py purge` removes entries whose job has left gold.
+- [x] **7. Docs, commit, PR and merge.** Then publish to the service and confirm the next scheduled refresh. In the working folder, `batch.py purge` removes entries whose job has left gold.
   - Once the new report is live: remove `bridge_job_industries` from dbt, drop `gold.bridge_job_industries`, and redraw the ER diagram (`scripts/export_marts_ddl.py`, then DrawDB).
+  - **Done on 2026-11-15:**
+    - **Merged** as PR #10 (17:37 UTC); the local folder is back on `main`, which the nightly run builds from.
+    - **Published** from Desktop by Robert, replacing the report. Before publishing he rebuilt the top strip on four pages and moved some visuals; those edits are in the commit that removes the bridge.
+    - **The night's chain was green and the 19:00 UTC refresh succeeded** (Robert). The published model no longer reads the bridge.
+    - **The bridge left dbt** after that run: its model and its block in `_marts__models.yml`. `dbt parse` passes, and no model, test or script named it.
+    - **`docs/er-diagram.sql` regenerated:** 14 tables. It also catches up with the fact's `industry` and `industry_source`, `dim_industry`'s group and sort order, the trend's chance range and `agg_trend_board_weights`.
+    - **`gold.bridge_job_industries` dropped,** with Robert's go-ahead: 57,389 rows, one per job, the same as the fact. Gold keeps three bridges: locations, sources and types.
+    - **The diagram redrawn in DrawDB** by Robert: 14 tables, with the fact linked straight to `dim_industry`.
+  - **Left:** `batch.py purge` in the labelling working folder, outside the repo.
 
 ## Concepts you'll meet
 - **Training and applying a model:** training (`fit`) reads labelled examples and works out weights; applying (`predict`) uses the weights on new jobs. Here training happens by hand, rarely, and applying happens every night.

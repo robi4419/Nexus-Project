@@ -17,7 +17,7 @@ reasons are in [`docs/phases/phase-3-dbt-models.md`](../../docs/phases/phase-3-d
 The marts form a star: `fct_job_postings` (one row per job) and `fct_job_skills` (job × skill) in the centre;
 `dim_date`, `dim_skill`, `dim_location`, `dim_company`, `dim_industry` and `dim_seniority` around them; bridges for
 the attributes a job can have several of (boards, places, job types). A job has one industry, a column of the fact
-(Phase 5, decision 15); `bridge_job_industries` only stays until the report reads that column. A job is a company's postings of
+(Phase 5, decision 15), so there is no industry bridge. A job is a company's postings of
 one role: the same company and title, or the same long description, on any board (Phase 5, decision 11). Staging keys
 each posting with `posting_key`; from `int_job_postings` on, `job_key` is the job. Every mart declares its column types,
 `NOT NULL` and `CHECK` constraints (enforced by Databricks) and primary and foreign keys (informational, checked by

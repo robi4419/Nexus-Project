@@ -5,9 +5,9 @@
     "x": 0,
     "y": 0,
     "z": 0,
-    "height": 40,
-    "width": 1920.591133004926,
-    "tabOrder": 8001
+    "height": 39.901477832512313,
+    "width": 1896.6502463054185,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "shape",
@@ -19,6 +19,13 @@
               "expr": {
                 "Literal": {
                   "Value": "'rectangle'"
+                }
+              }
+            },
+            "roundEdge": {
+              "expr": {
+                "Literal": {
+                  "Value": "6L"
                 }
               }
             }
