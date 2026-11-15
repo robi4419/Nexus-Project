@@ -8,7 +8,7 @@ table 'Weekly skill trend'
 	/// Monday of the week.
 	column Week
 		dataType: dateTime
-		formatString: yyyy-mm-dd
+		formatString: d mmm
 		lineageTag: dd0e65b1-241c-493e-b04e-fad3bbb8b293
 		summarizeBy: none
 		sourceColumn: week_start
@@ -81,6 +81,17 @@ table 'Weekly skill trend'
 		lineageTag: bc845d5c-e8d2-4d53-917e-9b1d71c12315
 		summarizeBy: none
 		sourceColumn: chance_high
+
+	/// The week's number, for the Week slider on Rising skills: a number slider snaps to whole weeks and can't skip one,
+	/// which a date slider and week buttons can't do. It is the ISO week number in 2026 (19 Oct 2026 is week 43, 28 Dec
+	/// is week 53): weeks counted from Monday 29 Dec 2025, the start of ISO week 1. From January 2027 it keeps counting
+	/// (54, 55...) instead of restarting at 1, so the slider stays in order; [First week shown] and [Last week shown]
+	/// give the dates.
+	column 'Week number' = QUOTIENT ( DATEDIFF ( DATE ( 2025, 12, 29 ), 'Weekly skill trend'[Week], DAY ), 7 ) + 1
+		dataType: int64
+		formatString: 0
+		lineageTag: 58e6c1ab-a8af-4007-a820-13951bce11ab
+		summarizeBy: none
 
 	partition 'Weekly skill trend' = m
 		mode: import

@@ -9,14 +9,15 @@ reasons are in [`docs/phases/phase-3-dbt-models.md`](../../docs/phases/phase-3-d
 | Layer | Folder | Materialized as | Schema | Models |
 |---|---|---|---|---|
 | staging | `models/staging/` | views | `gold_staging` | `stg_silver__*`: one per silver table, plus surrogate keys |
-| intermediate | `models/intermediate/` | views | `gold_staging` | `int_job_postings` (which job each posting is, salary midpoint and plausibility), `int_job_skills`, `int_job_skill_pairs`, `int_job_openings` (the weeks each job's openings began), `int_skill_weekly_by_board` and `int_skill_weekly_weighted` (each board's weekly counts, and the trend's board-weighted shares) |
+| intermediate | `models/intermediate/` | views | `gold_staging` | `int_job_postings` (which job each posting is, salary midpoint and plausibility), `int_posting_industries` (the industry a posting gives its job: hand label, model or group), `int_job_skills`, `int_job_skill_pairs`, `int_job_openings` (the weeks each job's openings began), `int_skill_weekly_by_board` and `int_skill_weekly_weighted` (each board's weekly counts, and the trend's board-weighted shares) |
 | marts | `models/marts/` | tables with enforced contracts | `gold` | `dim_*`, `fct_*`, `bridge_*`, `agg_*` |
 | history | `models/history/` | incremental tables, appended to and never rebuilt | `gold` | `hist_himalayas_*`: Himalayas counts per day first seen, and per week the jobs also on Jobicy or Arbeitnow, kept after the jobs expire |
 | seed | `seeds/` | table | `gold_staging` | `seniority_levels`: the seniority scale and its sort order |
 
 The marts form a star: `fct_job_postings` (one row per job) and `fct_job_skills` (job × skill) in the centre;
 `dim_date`, `dim_skill`, `dim_location`, `dim_company`, `dim_industry` and `dim_seniority` around them; bridges for
-the attributes a job can have several of (boards, places, industries, job types). A job is a company's postings of
+the attributes a job can have several of (boards, places, job types). A job has one industry, a column of the fact
+(Phase 5, decision 15); `bridge_job_industries` only stays until the report reads that column. A job is a company's postings of
 one role: the same company and title, or the same long description, on any board (Phase 5, decision 11). Staging keys
 each posting with `posting_key`; from `int_job_postings` on, `job_key` is the job. Every mart declares its column types,
 `NOT NULL` and `CHECK` constraints (enforced by Databricks) and primary and foreign keys (informational, checked by
@@ -64,9 +65,13 @@ the dbt in its own image. Running dbt by hand, as below, is for development.
 - **Reconciliation:** `tests/assert_fct_job_postings_one_row_per_job.sql` checks one `fct_job_postings` row per job
   of `int_job_postings`, and `tests/assert_job_skills_cover_posting_skills.sql` that every skill found in a posting
   reaches its job in `fct_job_skills`.
-- **Unit test:** `int_job_openings_count_a_job_again_once_its_listings_lapse` (in `_int__models.yml`) runs
-  `int_job_openings` on four made-up jobs and checks which reposts start a new opening. Run it alone with
+- **Unit tests** (in `_int__models.yml`), each running a model on made-up rows:
+  `int_job_openings_count_a_job_again_once_its_listings_lapse` checks which reposts start a new opening,
+  `int_posting_industries_hand_label_then_model_then_group` the order in which a job's industry is chosen, and
+  `int_skill_weekly_weighted_combines_boards_with_fixed_weights` the trend's board weights. Run one model's alone with
   `test --select "int_job_openings,test_type:unit"`.
+- **Label warning:** `tests/assert_industry_labels_follow_gold.sql` **warns** when hand labels remain whose job has
+  left gold, which means the nightly purge refused to delete them (see below).
 - **Salary warning:** `tests/assert_implausible_salary_share.sql` **warns** (doesn't fail) when more than 5% of the
   salaried jobs have an implausible salary. The limit is the variable `max_implausible_salary_share` in
   `dbt_project.yml`; override it for one run with `--vars "{max_implausible_salary_share: 0.005}"`.
@@ -85,5 +90,12 @@ Catalog as table and column comments on every build.
 - **Never drop the `hist_himalayas_*` tables.** They hold counts of Himalayas jobs that have since been deleted, so
   they can't be rebuilt. `full_refresh: false` makes `--full-refresh` leave them alone; each build only appends what's
   new since the previous one: the jobs first seen, and the weeks completed.
+- **Building `fct_job_postings` deletes hand labels.** Its post-hook (`macros/purge_industry_labels.sql`) deletes the
+  rows of `silver.industry_labels` whose job is no longer in the fact: the labels of expired Himalayas jobs. It is the
+  one place dbt writes outside gold. It deletes nothing when more than 20% of the labels would go in one build
+  (`industry_labels_max_purge_share`), so **changing how `job_key` is computed can't wipe the labels**, but it does
+  orphan them: re-key the labels before such a change.
+- **The industry threshold is a variable.** `industry_sure` in `dbt_project.yml` (0.5) is the probability from which a
+  job shows the model's industry or group; try another with `--vars "{industry_sure: 0.6}"`.
 - **A model or test missing from a run?** dbt reuses its last parse; add `--no-partial-parse` once.
 - **Dates are UTC.**

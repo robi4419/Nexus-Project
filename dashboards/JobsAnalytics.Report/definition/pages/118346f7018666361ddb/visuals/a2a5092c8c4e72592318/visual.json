@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "a2a5092c8c4e72592318",
   "position": {
-    "x": 1141.2048192771085,
-    "y": 231.32530120481928,
-    "z": 10000,
-    "height": 811.18072289156623,
-    "width": 768,
-    "tabOrder": 10000
+    "x": 1150.4926108374384,
+    "y": 236.74876847290639,
+    "z": 3000,
+    "height": 799.35960591133,
+    "width": 758,
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -17,18 +17,43 @@
           "projections": [
             {
               "field": {
-                "Column": {
+                "HierarchyLevel": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Skill"
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Industry"
+                        }
+                      },
+                      "Hierarchy": "Industry by group"
                     }
                   },
-                  "Property": "Category"
+                  "Level": "Industry group"
                 }
               },
-              "queryRef": "Skill.Category",
-              "nativeQueryRef": "Category",
+              "queryRef": "Industry.Industry by group.Industry group",
+              "nativeQueryRef": "Industry by group Industry group",
               "active": true
+            },
+            {
+              "field": {
+                "HierarchyLevel": {
+                  "Expression": {
+                    "Hierarchy": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Industry"
+                        }
+                      },
+                      "Hierarchy": "Industry by group"
+                    }
+                  },
+                  "Level": "Industry"
+                }
+              },
+              "queryRef": "Industry.Industry by group.Industry",
+              "nativeQueryRef": "Industry by group Industry",
+              "active": false
             }
           ]
         },
@@ -42,11 +67,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Share of jobs"
+                  "Property": "Industry share of jobs"
                 }
               },
-              "queryRef": "_Measures.Share of jobs",
-              "nativeQueryRef": "Share of jobs"
+              "queryRef": "_Measures.Industry share of jobs",
+              "nativeQueryRef": "Industry share of jobs"
             }
           ]
         }
@@ -61,13 +86,12 @@
                     "Entity": "_Measures"
                   }
                 },
-                "Property": "Share of jobs"
+                "Property": "Industry share of jobs"
               }
             },
             "direction": "Descending"
           }
-        ],
-        "isDefaultSort": true
+        ]
       }
     },
     "objects": {
@@ -75,6 +99,32 @@
         {
           "properties": {
             "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "switchAxisPosition": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "responsive": {
               "expr": {
                 "Literal": {
                   "Value": "true"
@@ -91,15 +141,20 @@
           "properties": {
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'Skill categories by share of jobs'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Industry chart title"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "24D"
+                  "Value": "20D"
                 }
               }
             },
@@ -119,7 +174,34 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Click a group to filter the skills. For its industries, right-click the group and choose Drill down; the ↑ arrow at the chart''s top right goes back up.'"
+                }
+              }
+            },
+            "titleWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stylePreset": [
+        {
+          "properties": {
+            "name": {
+              "expr": {
+                "Literal": {
+                  "Value": "''"
                 }
               }
             }
@@ -128,37 +210,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "2969a05f176a435057d5",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Skill"
-              }
-            },
-            "Property": "Category"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "4d9c220733dcc97228ed",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Share of jobs"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

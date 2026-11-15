@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "40aead235699ee09b905",
   "position": {
-    "x": 1692.2292993630574,
-    "y": 24.458598726114648,
-    "z": 6001,
-    "height": 81.190289741581822,
-    "width": 216.50743931088488,
-    "tabOrder": 6001
+    "x": 1663.8916256157636,
+    "y": 57.192118226600982,
+    "z": 7000,
+    "height": 78.472906403940883,
+    "width": 243.39901477832512,
+    "tabOrder": 7000
   },
   "visual": {
     "visualType": "actionButton",
@@ -51,7 +51,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
@@ -74,8 +74,13 @@
           "properties": {
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'See what it''s asked with'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Asked with button text"
                 }
               }
             },
@@ -96,7 +101,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Select a single skill first'"
+                  "Value": "''"
                 }
               }
             },
@@ -138,10 +143,28 @@
                   }
                 }
               }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "100D"
+                }
+              }
             }
           },
           "selector": {
             "id": "disabled"
+          }
+        },
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
           }
         }
       ],
@@ -207,6 +230,13 @@
                   "Value": "'320537a28bc64342ad33'"
                 }
               }
+            },
+            "showDefaultTooltip": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -218,6 +248,33 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
                 }
               }
             }

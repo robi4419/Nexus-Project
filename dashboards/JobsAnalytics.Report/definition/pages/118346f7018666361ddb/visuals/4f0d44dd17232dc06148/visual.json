@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "4f0d44dd17232dc06148",
   "position": {
-    "x": 372.87392325763506,
-    "y": 231.54267815191855,
-    "z": 7500,
-    "height": 811.18072289156623,
-    "width": 768,
-    "tabOrder": 9000
+    "x": 379.06403940886696,
+    "y": 238.07881773399015,
+    "z": 1000,
+    "height": 798.02955665024626,
+    "width": 758,
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -101,6 +101,19 @@
             }
           }
         }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "logAxisScale": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -109,15 +122,20 @@
           "properties": {
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'Top 30 skills by share of jobs'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Top skills title"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "24D"
+                  "Value": "20D"
                 }
               }
             },
@@ -137,14 +155,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "''"
+                  "Value": "'Click a skill to see the industries of its jobs.'"
                 }
               }
             },
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             }
@@ -165,19 +183,6 @@
               "expr": {
                 "Literal": {
                   "Value": "16D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "background": [
-        {
-          "properties": {
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "100D"
                 }
               }
             }
@@ -304,34 +309,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "4831da2d08019b029e9e",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with skill"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "8c893ca8d01e4ac39170",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Share of jobs"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

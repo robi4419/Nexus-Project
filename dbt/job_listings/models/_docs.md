@@ -183,7 +183,15 @@ Region the country belongs to: North America, LATAM, Europe, Middle East & Afric
 {% enddocs %}
 
 {% docs industry %}
-Industry, mapped from each source's own categories to one shared list (industries.csv).
+The job's one industry, by the kind of work (docs/industry-labelling-guide.md): one of 34 industries, "<Group>, unspecified" when only the group is known, or Not classified.
+{% enddocs %}
+
+{% docs industry_group %}
+The group the industry belongs to: Software, Data, Infrastructure & Security, Quality & Support, Hardware, Design, Product & Projects, Business, Other fields or Not classified.
+{% enddocs %}
+
+{% docs industry_source %}
+Where the industry comes from: hand label (the job was labelled by hand), model (the industry model is at least 50% sure of the industry), "model, group only" (it is that sure of the group only) or not classified (it is sure of neither).
 {% enddocs %}
 
 {% docs job_type %}

@@ -24,9 +24,9 @@ Things to handle:
      │      Auto Loader loads each new file once
      ▼
  BRONZE  jobicy_raw · arbeitnow_raw · himalayas_raw · frankfurter_raw   (append-only, one row per landed file, VARIANT)
-     │  (3) same Job: rebuild silver (clean, normalise, dedup, skills, salaries in USD), then checks
+     │  (3) same Job: rebuild silver (clean, normalise, dedup, skills, salaries in USD, industry model), then checks
      ▼
- SILVER  jobs · job_locations · job_industries · job_types · job_skills · fx_rates · ref_* (skills, countries, mappings)
+ SILVER  jobs · job_locations · job_types · job_skills · job_industry_predictions · fx_rates · ref_* (skills, countries, mappings)
      │  (4) Airflow runs dbt build: staging → intermediate → marts, plus tests
      ▼
  GOLD (dbt)  dim_date · dim_skill · dim_location · dim_company · dim_industry · dim_seniority
@@ -115,6 +115,8 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Publish to web from your own Microsoft tenant (Pro trial first), refreshed daily at 19:00 UTC, embedded in a GitHub Pages site. The repository becomes public.
 - [x] Along the way: skills come only from the description's lines about the job, a job counts once however often it's posted, and the weekly trend counts each job once per opening across the three boards (Phase 5, decisions 10 to 13).
 - [ ] The weekly trend combines the three boards with fixed weights, so a board posting more or fewer jobs in a week no longer moves every skill (Phase 5, decision 14, task 5.11).
+- [ ] Every job gets one industry from a model trained on 3,100 hand labels, instead of the boards' own categories; the report's skill-category chart becomes the industries of a skill's jobs (Phase 5, decision 15, task 5.12; rules in [`docs/industry-labelling-guide.md`](industry-labelling-guide.md)).
+- [x] The report counts only jobs with at least one skill, and gets page buttons, a reset button, a week slider that snaps to weeks, and titles that follow clicks (Phase 5, decision 16, task 5.12, step 6b).
 
 ### Phase 6: GitHub and CI (can start alongside Phase 1)
 - [x] Feature branches and PRs: one per phase (#1–#8).

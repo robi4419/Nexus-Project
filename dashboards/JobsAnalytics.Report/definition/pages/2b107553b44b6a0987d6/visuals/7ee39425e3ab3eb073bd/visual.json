@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "7ee39425e3ab3eb073bd",
   "position": {
-    "x": 902.4958402662229,
-    "y": 632.54575707154731,
-    "z": 12000,
-    "height": 410.51580698835272,
-    "width": 503.16139767054904,
-    "tabOrder": 12000
+    "x": 913.51030219351924,
+    "y": 638.61226150394577,
+    "z": 6000,
+    "height": 398.52,
+    "width": 491.16,
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "lineChart",
@@ -46,7 +46,8 @@
                 }
               },
               "queryRef": "_Measures.Madian salary (enough jobs)",
-              "nativeQueryRef": "Median salary (enough jobs)"
+              "nativeQueryRef": "Median salary (enough jobs)",
+              "displayName": "Median salary"
             }
           ]
         },
@@ -437,8 +438,20 @@
           "properties": {
             "text": {
               "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Ladder title"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
                 "Literal": {
-                  "Value": "'Salary ladder'"
+                  "Value": "20D"
                 }
               }
             }
@@ -586,20 +599,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "28a1e8a44626947a7a82",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with salary"
-          }
-        },
-        "type": "Advanced"
       }
     ],
     "filterSortOrder": "Ascending"

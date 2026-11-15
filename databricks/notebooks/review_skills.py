@@ -6,8 +6,9 @@
 # MAGIC reads tables, and it matches with the `skills.csv` uploaded by the last `databricks bundle deploy`.
 # MAGIC
 # MAGIC 1. **Sample:** about `sample_size` jobs **per source**, spread over each source's industries in proportion to their
-# MAGIC    size (at least one per industry; jobs without an industry form their own group). The same `seed` picks the
-# MAGIC    same jobs, so runs before and after a change compare the same postings.
+# MAGIC    size (at least one per industry: the industry model's likeliest one, however sure it is). The same `seed` picks
+# MAGIC    the same jobs while the model's answers stay the same, so runs before and after a change compare the same
+# MAGIC    postings.
 # MAGIC 2. **Matches:** every counted match in the sample with the text around it, to mark right or wrong. Jobs without
 # MAGIC    any match are listed too, since that's where missed skills show up.
 # MAGIC 3. **Seniority:** each sampled job's title, the source's own level values, and the seniority silver derived.
@@ -67,7 +68,7 @@ sample = spark.sql(f"""
         SELECT j.source, j.source_job_id, j.title, j.company_name, j.description_text,
             coalesce(min(i.industry), '(no industry)') AS industry
         FROM {catalog}.silver.jobs AS j
-        LEFT JOIN {catalog}.silver.job_industries AS i
+        LEFT JOIN {catalog}.silver.job_industry_predictions AS i
             ON i.source = j.source AND i.source_job_id = j.source_job_id
         WHERE {source_filter}
         GROUP BY ALL

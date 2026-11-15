@@ -4,7 +4,7 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 0,
+        "x": 97.435854999999918,
         "y": 0
       },
       "nodes": [
@@ -40,18 +40,6 @@
           "nodeIndex": "Industry",
           "size": {
             "height": 104,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 1450.8640798722745,
-            "y": 645.20769332287614
-          },
-          "nodeIndex": "Job industries",
-          "size": {
-            "height": 128,
             "width": 234
           },
           "zIndex": 0
@@ -216,6 +204,19 @@
           },
           "nodeIndex": "Job sources",
           "nodeLineageTag": "5a3143d4-1e00-40b4-83c3-d38f089a9414",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2167.119528457763,
+            "y": 499.77502977302356
+          },
+          "nodeIndex": "Trend board weights",
+          "nodeLineageTag": "6c509203-db19-499a-8b9a-00424ca143a2",
           "size": {
             "height": 128,
             "width": 234

@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "7a16c87299000cc57c97",
   "position": {
-    "x": 0,
-    "y": 0,
-    "z": 12000,
-    "height": 129.7746967071057,
-    "width": 372.686308492201,
-    "tabOrder": 12000
+    "x": 11.970443349753694,
+    "y": 46.551724137931032,
+    "z": 5000,
+    "height": 77.142857142857139,
+    "width": 357.78325123152706,
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "slicer",
@@ -94,7 +94,7 @@
             "textSize": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "13D"
                 }
               }
             },
@@ -140,7 +140,14 @@
             "textSize": {
               "expr": {
                 "Literal": {
-                  "Value": "14D"
+                  "Value": "13D"
+                }
+              }
+            },
+            "padding": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
                 }
               }
             }
@@ -155,7 +162,7 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "20D"
+                  "Value": "8D"
                 }
               }
             },
@@ -209,6 +216,75 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#DDE4E6'"
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
+            "width": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
                 }
               }
             }

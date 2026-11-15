@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "81af158c8d9c09429606",
   "position": {
-    "x": 372.179700499168,
-    "y": 228.41930116472543,
-    "z": 10000,
-    "height": 814.64226289517467,
-    "width": 530.31613976705489,
-    "tabOrder": 10000
+    "x": 383.19030219351924,
+    "y": 234.48226150394581,
+    "z": 4000,
+    "height": 802.64,
+    "width": 518.32,
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -64,7 +64,8 @@
                 }
               },
               "queryRef": "_Measures.Madian salary (enough jobs)",
-              "nativeQueryRef": "Median salary (enough jobs)"
+              "nativeQueryRef": "Median salary",
+              "displayName": "Median salary"
             }
           ]
         }
@@ -478,20 +479,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "839a01185b304b0d8004",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with salary"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

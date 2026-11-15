@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "8181eee8aca2ec96cb35",
   "position": {
-    "x": 372.49438202247188,
-    "y": 129.43820224719101,
-    "z": 8000,
-    "height": 101.78313253012048,
-    "width": 1536,
-    "tabOrder": 8000
+    "x": 379.06403940886696,
+    "y": 135.66502463054186,
+    "z": 2000,
+    "height": 89.113300492610833,
+    "width": 1529.5566502463053,
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -37,11 +37,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Jobs with skill"
+                  "Property": "Jobs asking for picked skills"
                 }
               },
-              "queryRef": "_Measures.Jobs with skill",
-              "nativeQueryRef": "Jobs with skill"
+              "queryRef": "_Measures.Jobs asking for picked skills",
+              "nativeQueryRef": "Jobs asking for picked skills"
             }
           ]
         }
@@ -124,7 +124,35 @@
                   "Value": "true"
                 }
               }
+            },
+            "cellPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "12L"
+                }
+              }
             }
+          }
+        },
+        {
+          "properties": {
+            "backgroundShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "backgroundTransparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "100D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
           }
         }
       ],
@@ -142,6 +170,13 @@
               "expr": {
                 "Literal": {
                   "Value": "'center'"
+                }
+              }
+            },
+            "showBlankAs": {
+              "expr": {
+                "Literal": {
+                  "Value": "'--'"
                 }
               }
             }
@@ -175,7 +210,7 @@
             }
           },
           "selector": {
-            "metadata": "_Measures.Jobs with skill"
+            "metadata": "_Measures.Jobs asking for picked skills"
           }
         }
       ],
@@ -299,7 +334,40 @@
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "8D"
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "width": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -308,37 +376,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "077d713d5479a91625a9",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "852413e9a4e0b2eb1c8a",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs with skill"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

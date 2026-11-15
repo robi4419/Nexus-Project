@@ -5,6 +5,11 @@
   "displayOption": "FitToPage",
   "height": 1080,
   "width": 1920,
+  "pageBinding": {
+    "name": "2b0a2f1e72c684a68486",
+    "type": "Default",
+    "parameters": []
+  },
   "objects": {
     "outspacePane": [
       {
@@ -34,6 +39,11 @@
     {
       "source": "7a16c87299000cc57c97",
       "target": "4f0d44dd17232dc06148",
+      "type": "DataFilter"
+    },
+    {
+      "source": "4f0d44dd17232dc06148",
+      "target": "a2a5092c8c4e72592318",
       "type": "DataFilter"
     }
   ]

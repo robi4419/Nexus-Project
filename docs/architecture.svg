@@ -146,7 +146,7 @@
   <path d="M 364 465 L 426 465" fill="none" stroke="#324e55" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrow-dash)"/>
   <rect x="428" y="590" width="538" height="58" rx="9" fill="#fff3f2"/>
   <text x="440" y="613" font-size="13" font-weight="600" fill="#213439" text-anchor="start">Silver tables</text>
-  <text x="440" y="631" font-size="11.5" font-weight="normal" fill="#55666b" text-anchor="start">jobs · job_skills · job_locations · job_industries · job_types · fx_rates · ref_*</text>
+  <text x="440" y="631" font-size="11.5" font-weight="normal" fill="#55666b" text-anchor="start">jobs · job_skills · job_locations · job_types · job_industry_predictions · fx_rates · ref_*</text>
   <path d="M 869 574 L 869 588" fill="none" stroke="#55666b" stroke-width="1.6" marker-end="url(#arrow)"/>
   <path d="M 364 619 L 426 619" fill="none" stroke="#324e55" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#arrow-dash)"/>
   <rect x="428" y="666" width="538" height="134" rx="12" fill="#fff6f4" stroke="#ff9681" stroke-width="1.3"/>

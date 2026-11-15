@@ -204,7 +204,7 @@ check(
     """,
 )
 
-for table in ["job_industries", "job_types", "job_locations", "job_skills"]:
+for table in ["job_types", "job_locations", "job_skills"]:
     check(
         "error",
         f"{table}: every row belongs to a job",
@@ -214,6 +214,58 @@ for table in ["job_industries", "job_types", "job_locations", "job_skills"]:
         LEFT ANTI JOIN {silver}.jobs USING(source, source_job_id)
         """,
     )
+
+# The industry model's answers (Phase 5, decision 15), which gold turns into each job's one industry.
+check(
+    "error",
+    "job_industry_predictions: exactly one row per job",
+    f"""
+    SELECT format_string('%d rows for %d jobs, %d jobs without one', p.rows, j.jobs, m.missing) AS value,
+        p.rows = j.jobs AND p.rows = p.keys AND m.missing = 0 AS passed
+    FROM (
+        SELECT count(*) AS rows, count(DISTINCT source, source_job_id) AS keys
+        FROM {silver}.job_industry_predictions
+    ) AS p
+    CROSS JOIN (SELECT count(*) AS jobs FROM {silver}.jobs) AS j
+    CROSS JOIN (
+        SELECT count(*) AS missing
+        FROM {silver}.jobs
+        LEFT ANTI JOIN {silver}.job_industry_predictions USING(source, source_job_id)
+    ) AS m
+    """,
+)
+
+# A group's probability is the sum over its industries, so it can't be below the industry's.
+check(
+    "error",
+    "job_industry_predictions: probabilities between 0 and 1, the group's at least the industry's",
+    f"""
+    SELECT count_if(
+            industry_probability IS NULL OR group_probability IS NULL
+            OR industry_probability NOT BETWEEN 0 AND 1 OR group_probability NOT BETWEEN 0 AND 1.000001
+            OR group_probability < industry_probability - 0.000001
+        ) AS value, value = 0 AS passed
+    FROM {silver}.job_industry_predictions
+    """,
+)
+
+# The likeliest industry and the likeliest group are found separately, so the industry needn't be in that group:
+# three Software industries at 20% each make Software the group while a 30% Marketing is the industry.
+check(
+    "error",
+    "job_industry_predictions: every industry and group is in ref_industry_list, from one model version",
+    f"""
+    SELECT format_string('%d unknown industries, %d unknown groups, %d model versions',
+            count_if(i.industry IS NULL), count_if(g.industry_group IS NULL),
+            count(DISTINCT p.model_version)) AS value,
+        count_if(i.industry IS NULL) = 0 AND count_if(g.industry_group IS NULL) = 0
+            AND count(DISTINCT p.model_version) = 1 AS passed
+    FROM {silver}.job_industry_predictions AS p
+    LEFT JOIN (SELECT DISTINCT industry FROM {silver}.ref_industry_list) AS i ON i.industry = p.industry
+    LEFT JOIN (SELECT DISTINCT industry_group FROM {silver}.ref_industry_list) AS g
+        ON g.industry_group = p.industry_group
+    """,
+)
 
 # COMMAND ----------
 
@@ -250,12 +302,15 @@ check(
 """,
 )
 
+# The jobs the industry model is at least 50% sure belong to the Software group (95.4% had a skill on 2026-11-14).
+# The model reads the skills too, so a job without any is a little less likely to count here.
 check(
     "warning",
-    "job_skills: Software Engineering skill coverage of at least 90%",
+    "job_skills: Software jobs' skill coverage of at least 90%",
     f"""
     WITH se_jobs AS (
-        SELECT DISTINCT source, source_job_id FROM {silver}.job_industries WHERE industry = 'Software Engineering'
+        SELECT source, source_job_id FROM {silver}.job_industry_predictions
+        WHERE industry_group = 'Software' AND group_probability >= 0.5
     ),
     jobs_with_skills AS (
         SELECT DISTINCT source, source_job_id FROM {silver}.job_skills
@@ -304,10 +359,18 @@ def found_in(table: str) -> str:
 
 check("info", "job_skills: share of jobs with at least 1 skill", share_by_source("x.found", found_in("job_skills")))
 check("info", "jobs: share with seniority Unspecified", share_by_source("j.seniority = 'Unspecified'"))
-# Expected by design for Arbeitnow (decisions 12 and 13): company-specific tags and contract-only job types map to
-# nothing.
-check("info", "jobs: share without an industry", share_by_source("x.found IS NULL", found_in("job_industries")))
+# Expected by design for Arbeitnow (decisions 12 and 13): contract-only job types map to nothing.
 check("info", "jobs: share without a job type", share_by_source("x.found IS NULL", found_in("job_types")))
+
+# 0.5 is the probability from which a job shows the model's answer (the dbt variable industry_sure).
+predictions = f"""
+    LEFT JOIN {silver}.job_industry_predictions AS p
+        ON p.source = j.source AND p.source_job_id = j.source_job_id
+"""
+check("info", "jobs: share whose industry the model is under 50% sure of",
+      share_by_source("p.industry_probability < 0.5", predictions))
+check("info", "jobs: share whose industry group the model is under 50% sure of",
+      share_by_source("p.group_probability < 0.5", predictions))
 
 # COMMAND ----------
 

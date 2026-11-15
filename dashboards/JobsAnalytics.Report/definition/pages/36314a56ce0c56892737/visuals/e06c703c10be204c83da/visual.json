@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "e06c703c10be204c83da",
   "position": {
-    "x": 452.484076433121,
-    "y": 129.93630573248407,
-    "z": 4000,
-    "height": 912.61146496815286,
-    "width": 452.484076433121,
+    "x": 457.53694581280786,
+    "y": 135.66502463054186,
+    "z": 5000,
+    "height": 900.44334975369452,
+    "width": 432.26600985221671,
     "tabOrder": 4000
   },
   "visual": {
@@ -42,25 +42,12 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Previous week share"
-                }
-              },
-              "queryRef": "_Measures.Previous week share",
-              "nativeQueryRef": "Previous week share"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
                   "Property": "Share latest week"
                 }
               },
               "queryRef": "_Measures.Share latest week",
-              "nativeQueryRef": "Share latest week"
+              "nativeQueryRef": "Share latest week",
+              "displayName": "Share that week"
             },
             {
               "field": {
@@ -70,11 +57,12 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Jobs week before"
+                  "Property": "Share week before"
                 }
               },
-              "queryRef": "_Measures.Jobs week before",
-              "nativeQueryRef": "Jobs week before"
+              "queryRef": "_Measures.Share week before",
+              "nativeQueryRef": "Share week before",
+              "displayName": "Share the week before"
             },
             {
               "field": {
@@ -88,7 +76,23 @@
                 }
               },
               "queryRef": "_Measures.Jobs latest week",
-              "nativeQueryRef": "Jobs latest week"
+              "nativeQueryRef": "Jobs latest week",
+              "displayName": "Jobs that week"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Jobs week before"
+                }
+              },
+              "queryRef": "_Measures.Jobs week before",
+              "nativeQueryRef": "Jobs week before",
+              "displayName": "Jobs the week before"
             }
           ]
         },
@@ -106,7 +110,8 @@
                 }
               },
               "queryRef": "_Measures.Share change latest week",
-              "nativeQueryRef": "Share change latest week"
+              "nativeQueryRef": "Share change latest week",
+              "displayName": "Change in share"
             }
           ]
         }
@@ -332,76 +337,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "21c0a48d50d6395c09b4",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Previous week share"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "0fbea177bb6ea7a3a614",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Share latest week"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "4dec87a271e94d13608c",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs week before"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "8a591d744833495e8614",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jobs latest week"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "73bc0e4084ec1578ebc7",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Share change latest week"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

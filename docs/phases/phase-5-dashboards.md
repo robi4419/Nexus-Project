@@ -22,6 +22,7 @@
 - [x] 5.9 Verify end to end
 - [x] 5.10 Docs, commit, PR and merge (PR #8, merged on 2026-11-05)
 - [ ] 5.11 Board weights in the weekly trend (decision 14), on the branch `trend-board-weights`
+- [ ] 5.12 One industry per job, from a model trained on hand labels (decision 15), on the branch `job-industries`
 
 ---
 
@@ -217,6 +218,70 @@
       - **Top 5 fallers:** CI/CD, AWS, Azure, Kubernetes, SQL before; CI/CD, Node.js, AWS, React, PostgreSQL after, each outside its chance band (the batch of 30 October – 3 November).
       - **Top 5 risers:** Excel, Microsoft Office, HubSpot, GDPR, Stripe before; Microsoft Office, Excel, Machine Learning, LLMs, Vulnerability Management after. LLMs (+0.5 pp) is inside its band.
       - **Unchanged:** `jobs` and `week_jobs` in all 1,152 rows (3 weeks × 384 skills). No share is empty, and no band is inverted.
+15. **(2026-11-14) Every job gets one industry, from a model trained on hand labels.**
+    - **Why:** the industries came from each board's own categories, mapped through `industries.csv`.
+      - **Often wrong:** judged by hand on 200 random jobs, they were right for about 55%. A React Native engineer sat under Data Science & Analytics (Phase 2b's hand-check noticed the same).
+      - **Often missing or several:** half of Arbeitnow's jobs had none, and a job on two boards could have two.
+      - **Skill categories said little:** a skill has one fixed category, while the jobs asking for it spread over many kinds of work.
+    - **The list** is in [`docs/industry-labelling-guide.md`](../industry-labelling-guide.md): 34 industries in 9 groups, plus "Not classified". An industry is the kind of work the job is, not the employer's sector, and the title decides.
+    - **The labels:** 3,100 jobs labelled by hand with that guide (2026-11-13 and 14), plus a test set of 200 random jobs that is never trained on. Claude labelled; Robert settled the rules for the recurring kinds of job the guide left open, which are its last 22 tie-breaks. A recheck of 50 jobs gave the same label on all 50.
+    - **The model** is a logistic regression on the title's words, groups of 3 to 5 letters inside them, and the job's skills (`transform/industry_model.py`). It learns only from the hand labels: no regex decides an industry.
+    - **Measured on the test set** (2026-11-14):
+
+      | Hand labels | Industry right | Best answer only |
+      |---|---|---|
+      | 600 | 77% | 66% |
+      | 1,600 | 84% | 74% |
+      | 2,600 | 88% | 80% |
+      | 3,100 | 87% | 80% |
+
+      "Industry right" counts any industry the guide accepts for the job. Labelling stopped there: the last 1,500 labels bought about 3 points.
+    - **What a job shows:**
+      1. its hand label, if it has one;
+      2. else the model's industry, when the model gives it at least **50%**. The model then answers 82% of the test jobs and is right on 94% of them (at 60%: 74% and 95%). Of all jobs, 87% get an industry;
+      3. else "*Group*, unspecified" ("Software, unspecified"), when the model gives the group at least 50%. A group's probability is the sum over its industries, so the model can be sure of Software while torn between Backend and Full-stack. About 93% of jobs get at least a group;
+      4. else "Not classified".
+    - **The model is trained by hand and saved; the nightly run only applies it.**
+      - **Why:** 1,538 of the 3,100 labelled jobs, and 113 of the 200 test jobs, are only on Himalayas. Their titles are deleted when they expire (Phase 2b, decision 18), from mid-December on, so a model retrained every night would lose half of what it learned from.
+      - **Saved as** the fitted scikit-learn parts in one file, in a Unity Catalog Volume. They hold word and letter-group weights, and no job.
+      - **`silver.industry_models`** keeps each version's label count and test scores, because the score can't be measured again once the test jobs expire.
+    - **Labels of expired Himalayas jobs are deleted.** A label row is a job key and an industry, and the key is the company and title hashed: decision 12 already treated that as the job under another name. A post-hook on `fct_job_postings` deletes the label rows whose job has left gold; only Himalayas jobs ever leave it.
+      - **It deletes nothing when more than 20% of the labels would go in one build** (Robert, 2026-11-14). A normal night takes a handful (5 of 3,300 on 2026-11-14). More than a fifth at once isn't expiry: it is a broken build, or a changed `job_key` rule, which gives every job a new key and would otherwise delete every label. A dbt warning then says how many rows are waiting.
+      - **Not guarded by gold's size,** as first planned (nothing below 80% of the previous night's rows): a changed `job_key` rule leaves gold's size as it was.
+    - **Labels are never committed.** The repository is public, and its history can't delete an expired job's key. They are uploaded from the working folder into `silver.industry_labels`, which is kept between runs.
+    - **Where it runs:**
+      - **Databricks,** a new task after the skills: the model's answer for every posting, with its probabilities, in `silver.job_industry_predictions`. No threshold there.
+      - **dbt,** `int_posting_industries`: the four rules above for every posting; the job takes the row of the posting that gives it its title (decision 11). `fct_job_postings` gets `industry`, and `dim_industry` gets the group.
+      - **Power BI:** Industry filters Job postings directly. The bridge goes: a job has one industry.
+    - **In the report:** the Industry slicer shows group › industry, and the Skills overview's category chart becomes **Jobs by industry**. With a skill picked, it shows the industries of that skill's jobs. `Skill[Category]` leaves the model; `skills.csv`, silver and gold keep the column, which organises the skill list.
+    - **Removed:** `silver.job_industries`, `industries.csv`, `ref_industries`, and silver's use of the title rules to name an industry. `bridge_job_industries` goes last, once the published report no longer reads it (task 5.12, step 5). `transform/tech_titles.py` still decides which Himalayas jobs without a category are landed (Phase 4, decision 8).
+    - **Rejected:**
+      - **Regex rules:** in a first experiment they scored like a model on an older 26-industry list, but Robert wants a method he can explain as "trained on N hand labels, X% right on 200 held-out jobs".
+      - **Jobicy's own categories as extra training labels:** they follow departments, not the guide. Business jobs improved, Software fell from 83% to 63%.
+      - **The description as a model input:** 1 point for four times the training time.
+      - **Retraining every night:** see above.
+      - **Keeping the boards' industries alongside:** two industry filters that disagree.
+      - **Predicting per job inside dbt** (a dbt Python model): it needs its own compute and a library dbt doesn't manage here.
+    - **Left imperfect:**
+      - **The model answers per posting,** with that posting's skills, while it was trained on jobs with the skills of all their postings. Most jobs have one posting (44,179 postings made 38,278 jobs on 2026-11-03); 5.12 measures the difference.
+      - **Infrastructure & Security is the weakest group** (74% of 23 test jobs).
+      - **957 of the 3,100 labels are marked unsure,** mostly one-off titles where two industries are defensible.
+16. **(2026-11-15) The report counts only jobs with at least one skill.**
+    - **Why:** a job where no skill was found says nothing about skills. It only lowered every share by the same factor, and Skills overview needed two cards, Jobs and Jobs with skill, to say so.
+    - **How many** (gold of 2026-11-14): a skill was found in 44,300 of 56,376 jobs (79%), and in 32,904 of the 38,980 listed now (84%).
+    - **The rule** is in the Power BI model; gold and dbt don't change.
+      - `'Job postings'[Has skills]`, a calculated column, is true when the job has a row in `Job skills`.
+      - `[Jobs]` counts only those jobs, and the three salary measures filter on the column. Every share and count built on `[Jobs]` follows.
+      - The other jobs stay in the model, so `[Skill coverage]` can say "Skills found in 84% of 38,980 jobs".
+    - **What follows it:** Skills overview (the cards, every share, Jobs by industry) and Salaries (the cards and every median).
+    - **Measured:** Python goes from 24.6% to 29.1% of the listed jobs. Their median salary stays $135,000.
+    - **What doesn't follow it:**
+      - **Skills asked together** already counted only jobs with skills (`agg_skill_co_occurrence`).
+      - **Rising skills** still divides by all of a week's new jobs. Himalayas' frozen counts (decision 4) hold every job, and can't be recounted for the expired ones. A skill's share there is about a sixth lower than on Skills overview, and the page's subtitle says what it counts.
+      - **Rebasing the trend** would need a new frozen count of Himalayas jobs with skills, backfilled while those jobs are still in silver, so before the mid-December expiries. Not planned.
+    - **Rejected:**
+      - **Leaving the jobs out in Power Query or in gold:** the coverage could no longer be shown.
+      - **Changing only the card:** a bar's jobs divided by the card would no longer equal its share.
 
 ## How it fits
 
@@ -467,7 +532,133 @@ Already on the branch: the trend line chart's changes of 2026-11-11, made in Des
 6. **Docs, commit, PR and merge.** Then publish to the service, and confirm that the next scheduled refresh succeeds.
    - Docs: decision 14's Measured line, `PLAN.md`, the repo layout, and a pitfall about board mix.
 
+### 5.12 One industry per job (decision 15)
+On the branch `job-industries`. As in 5.11, dbt files change only between two nightly runs, and the report is published only after the merge. Each step leaves the nightly run green: steps 1 to 4 only add things, and step 5 switches gold.
+
+Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 come first.
+
+- [x] **1. The model's code.**
+  - `transform/industry_model.py`: the industry list with its groups, `IndustryModel` (`fit`, `proba`, `predict`, `save`, `load`) and `score`. Saved as plain scikit-learn objects with `joblib`, so later changes to our code can't break loading.
+  - `databricks/reference/industry_list.csv`: `industry, industry_group, sort_order`, with a "*Group*, unspecified" row for each group of several industries, and "Not classified". A test keeps it equal to the list in the code.
+  - `tests/test_industry_model.py`, with made-up titles only.
+  - scikit-learn and joblib pinned in `requirements.txt`; the notebooks of steps 3 and 4 pin the same versions.
+  - Check: the ported model scores like the working folder's on the test set.
+  - **Done on 2026-11-14:**
+    - **The port:** scikit-learn 1.9.1 and joblib 1.6.0, the versions the labelling scores were measured with. The skills are joined with `|` and split there again, because the working folder's `lambda` can't be saved; the features are the same.
+    - **Tests:** 13 new ones pass, on made-up jobs.
+    - **The same scores** (3,100 labels, 200 test jobs, read-only): industry right 87.0%, best answer 79.5%; at 50%, 81.5% answered and 93.9% of those right; the group answered for 89.5% and right for 92.2% of those.
+    - **Posting-level inputs change nothing:** 11 of the 200 test jobs have several postings, none has a different title or skill set on the posting that speaks for it, and all 200 answers are identical.
+- [x] **2. The labels in Databricks.** `scripts/upload_industry_labels.py` reads the working folder's files and replaces `silver.industry_labels`: `job_key`, `industry`, `also_acceptable` (test set only), `split` (`train` or `test`), `batch`, `unsure`, `uploaded_at`. You run it.
+  - **How it works:** without `--write` it only counts; with it, the table is replaced in one statement, and labels of jobs no longer in gold are left out. A job in both sets stays a test job. The upload time stands in for a labelling date, which the working folder doesn't keep.
+  - **Done on 2026-11-14:** 3,300 rows (3,100 to train on, 957 of them marked unsure; 200 test jobs). Every one is a job in gold.
+- [x] **3. Train and save.** `databricks/notebooks/train_industry_model.py`, run by hand, not part of the nightly Job: fits on the `train` labels with each job's title and skills from gold, scores on `test`, also with posting-level inputs, saves the model to `/Volumes/<catalog>/silver/models/industry/<version>/` and adds a row to `silver.industry_models`.
+  - **How it works:** it refuses to overwrite a saved version, stops before saving if posting inputs score more than a point below job inputs, and reads the saved file back to compare answers. Its first cell installs the pinned scikit-learn.
+  - **Done on 2026-11-14:** model `2026-11-14-3100`, trained on all 3,100 labels and scored on all 200 test jobs, with scikit-learn 1.9.1. The pinned install works on serverless compute.
+    - **The recorded scores are the labelling ones:** industry right 87.0%, best answer 79.5%; at 50%, 81.5% answered and 93.9% of those right; the group answered for 89.5% and right for 92.2% of those.
+- [x] **4. Predict every night.**
+  - `databricks/notebooks/08_silver_industries.py` and the task `silver_industries`, after `silver_skills` and before `checks`: `silver.job_industry_predictions` with `source`, `source_job_id`, `industry`, `industry_probability`, `industry_group`, `group_probability`, `model_version`.
+  - `02_reference.py` loads `industry_list.csv` into `silver.ref_industry_list`.
+  - `06_checks.py`: one prediction per posting and probabilities between 0 and 1 (errors); the shares under 50% for industry and for group, per source (info).
+  - You deploy the bundle; one nightly run; check the counts.
+  - **Done on 2026-11-14,** with a run of the Job started by hand at 13:28 UTC (5.8 minutes in all; the new task took 35 seconds):
+    - **One prediction for each of the 64,369 postings,** all from model `2026-11-14-3100`, every name in `silver.ref_industry_list` (43 rows). All checks passed.
+    - **At 50%:** 86.9% of postings get the model's industry, 5.5% a group only, 7.5% nothing. Under 50% for the industry, per board: Arbeitnow 16.4%, Himalayas 11.4%, Jobicy 11.3%.
+    - **"Not classified" is also an answer the model gives:** 1,390 postings (2.2% of all) get it at 50% or more. So about 9.7% of postings would show "Not classified", and 84.8% a real industry.
+    - **Every one of the 34 industries is given** to some posting at 50% or more. The largest: Sales & Business Development (5,543), Software Engineering, general (5,084), Product Management (3,723).
+    - **Until a first model exists, the task skips itself** and the checks skip the predictions, so deploying before training can't break a nightly run. Step 5 turns the skip into a failure.
+    - **The likeliest industry and the likeliest group are found separately,** so a posting's industry needn't belong to its group (three Software industries at 20% each, against Marketing at 30%). That can only happen below 50%, where dbt doesn't show the industry.
+  - **Order for the first time:** deploy the bundle, upload the labels with `--write`, run `train_industry_model.py` in the workspace, then the next nightly run predicts.
+- [x] **5. Switch gold.**
+  - `int_posting_industries` with the four rules and `industry_source` (`hand label`, `model`, `model, group only`, `not classified`), and a dbt unit test with made-up rows. The threshold is the dbt variable `industry_sure`.
+  - `fct_job_postings` gets `industry` and `industry_source`; `dim_industry` comes from `silver.ref_industry_list`, with `industry_group` and `sort_order`.
+  - A post-hook on `fct_job_postings` deletes the label rows whose job has left gold. It does nothing when more than 20% of the labels would go in one build (`industry_labels_max_purge_share`), so neither a broken build nor a changed `job_key` rule can empty the labels; `assert_industry_labels_follow_gold` then warns.
+  - Removed: `stg_silver__job_industries`, the `job_industries` source and table, `ref_industries`, `industries.csv`, the `title_tech_category` function in silver, and the old industry checks. Tests and docs follow.
+  - Rehearse read-only: one row per job, the shares by `industry_source`, and every hand-labelled job showing its label. Then deploy the bundle and trigger `transform_and_build` by hand.
+  - With your go-ahead, drop what's no longer built: `gold_staging.stg_silver__job_industries`, `silver.job_industries`, `silver.ref_industries`.
+  - **Decided on 2026-11-14: `bridge_job_industries` stays until step 6 is published,** rebuilt as one row per job with its new industry. The published report reads `dim_industry` and the bridge every night, so without this its Industry filter would match no jobs between the switch and the new report. With it, the public report shows the new industries from the first build. The bridge and its Power BI table go once the new report is live.
+  - **Decided on 2026-11-14: written after that evening's nightly run,** not in the hours before it.
+  - **Previewed on 2026-11-14, read-only,** on the postings as the afternoon's run left them (54,559 jobs, 44 fewer than gold from the night before):
+    - **One row per job,** each with a prediction, and every shown name is in the industry list.
+    - **By source:** hand label 6.0% (3,297 jobs), model 80.9%, model, group only 5.7%, not classified 7.4%.
+    - **"Not classified" would show for 9.2% of jobs** (5,036): the 7.4%, plus 847 jobs the model is sure are outside the list and 150 labelled so by hand. About 85% of jobs show a real industry.
+    - **By group:** Software 25.1%, Business 23.3%, Data 10.9%, Infrastructure & Security 9.6%, Product & Projects 8.8%, Other fields 5.1%, Quality & Support 3.8%, Design 3.4%, Hardware 0.7%.
+    - **Three labelled jobs have already left:** 3,097 of the 3,100 training labels still have a posting. Labelled jobs expire a few at a time from now on, not only from mid-December; the post-hook will delete their rows at the first build.
+  - **Written and rehearsed on 2026-11-14, after the 18:00 UTC run; not built yet.**
+    - **One model per posting, not per job:** `int_posting_industries` answers for every posting, and the fact joins the posting it already picks for the title. A per-job model would have had to repeat that choice, and the two could drift apart.
+    - **A group only counts when the list has its unspecified row.** A group of one industry (Hardware) has none; there the group's probability is the industry's, so the case can't arise, and the model doesn't depend on that.
+    - **The rehearsal** ran the SQL that `dbt compile` wrote, with the views that don't exist yet as CTEs, read-only:
+      - **The unit test's seven made-up postings** give the expected answers.
+      - **56,376 rows for 56,376 jobs,** none without an industry, every industry in the dimension (43 rows, 10 groups), and every other column of the fact identical to gold as built that evening.
+      - **By source:** model 81.0%, not classified 7.4%, hand label 5.8% (3,295 jobs, each showing its label), model, group only 5.8%.
+      - **The purge:** Databricks accepts the `MERGE` (explained, not run); it would delete 5 label rows, and the warning test reports those 5 until it has.
+    - **The Software skills check** now takes the jobs the model is at least 50% sure are in the Software group: 95.4% of them had a skill (the boards' Software Engineering category gave 92.2%), so the 90% line stays.
+    - **Python tests:** 471 pass; the five that checked `industries.csv` are gone.
+    - **The ER diagram isn't redrawn yet:** it waits for step 7, when the bridge leaves.
+  - **Built on 2026-11-14,** by a `transform_and_build` run started by hand at 21:00 UTC, after `databricks bundle deploy`:
+    - **The Job** passed in 4.7 minutes with the changed notebooks; `silver.job_industries` and `silver.ref_industries` weren't rebuilt.
+    - **dbt:** 181 of 181 passed, with no warning, the new unit test among them.
+    - **Gold is as rehearsed:** 56,376 jobs, each with one industry; model 81.0%, not classified 7.4%, hand label 5.8%, model, group only 5.8%. The bridge has one row per job and agrees with the fact.
+    - **The purge deleted 5 label rows** (one `MERGE`, version 1 of the table): 3,095 training labels and the 200 test jobs remain, none waiting, and all 3,295 show their label in gold.
+    - **Dropped afterwards,** with Robert's go-ahead: `gold_staging.stg_silver__job_industries`, `silver.job_industries` and `silver.ref_industries`. `gold.bridge_job_industries` stays until step 7.
+- [x] **6. Power BI (close Desktop first, because I edit the TMDL).**
+  - `Industry`: `Industry`, `Industry group`, sorted by `sort_order`, and a hierarchy group › industry. `Job postings` imports `industry` and relates to it directly; the `Job industries` table and its two relationships go. `Skill` loses `Category`.
+  - Two measures for the new chart: `Jobs in selection` (jobs in the filters, picked skills included) and `Industry share of jobs` (that count as a share of all industries').
+  - **You:** on Skills overview, the category chart becomes Jobs by industry; the Industry slicer shows the hierarchy. I check the saved files for slicer filters.
+  - **Dropped on 2026-11-15: the `Industry note` measure** (trained on how many labels, right for what share of the test jobs). Robert doesn't find it useful on the page; decision 15 has the numbers.
+  - **Built in Desktop on 2026-11-15** (Robert), on the model below, which Desktop loaded and refreshed as written:
+    - **Jobs by industry** shows group › industry with `Industry share of jobs`; it and the top-skills chart filter each other (not highlight, whose two bars would be shares of different totals).
+    - **Both Industry slicers** (Skills overview, Salaries) show the hierarchy and stay synced.
+    - **Checked in the saved files:** no slicer or visual has a saved filter condition that the last commit didn't have. The stale `Job industries` node was removed from the model diagram's layout by hand; Desktop had kept it.
+  - **Model written on 2026-11-15:**
+    - **Robert's uncommitted Desktop edits were discarded first** (his choice): a reworded Salaries note, slicer settings, and a Week slicer saved with an end date of 2 Nov, which would have cut the published trend there.
+    - **`Industry group` is sorted by a `Group order` column added in the query** (the lowest sort order in the group). A DAX column computed from the group couldn't sort that same column.
+    - **The Salaries scatter lost its Category tooltip,** edited in its JSON, because the column left the model. The category chart on Skills overview shows a missing field until it is rebuilt.
+    - **To compare in Desktop** (gold on 2026-11-15): 56,376 jobs, 38,980 listed now. Of the listed ones: Software 30.1%, Business 12.9%, Data 12.8%, Infrastructure & Security 11.4%, Product & Projects 10.3%, Not classified 8.9%. Of the 9,600 or so listed Python jobs: Machine Learning & AI 16.2%, Software Engineering, general 13.3%, DevOps, Cloud & SRE 10.8%.
+- [x] **6b. Report touch-ups before publishing** (2026-11-15; decision 16 and Robert's list). Nothing changes in dbt or Databricks.
+  - **Decided:**
+    - **Jobs counted:** only jobs with at least one skill, on Skills overview and Salaries (decision 16).
+    - **Week picker:** a number slider on the week number, with a card showing the first and last week's start date. A date slider can't snap to weeks, and week buttons would let the line skip weeks.
+    - **Drill-through button:** invisible until exactly one skill is selected, then it names the skill.
+    - **Industry:** the slicer was first taken off Skills overview, where the chart filters. It is back on both pages, synced: Salaries needs it, and the two pages now share one filter panel.
+    - **Also:** page buttons in a strip at the top (the public embed only shows "1 of 4" arrows), a Reset filters button, titles that follow clicks, white panels on a light grey page, and shorter texts.
+  - **Written on 2026-11-15, in the files:**
+    - **Model:**
+      - `Has skills` on `Job postings`; `Week number` on `Weekly skill trend` (19 Oct 2026 is week 43), and `Week` shown as "19 Oct".
+      - 12 new measures: `All jobs`, `Jobs asking for picked skills`, `Picked skills share`, `Skill coverage`, `Last week shown`, `First week shown`, `Share week before`, `Top skills title`, `Industry chart title`, `Ladder title`, `Region salary title` and `Asked with button text`.
+      - The movers measures compare `Last week shown`, the end of the slider's range, with the week before it. The trend subtitle explains the chance bars only when one skill is shown.
+    - **Fixed on the way:** the Rising and Falling tooltips' `Previous week share` had been blank since 5.11, because it needs exactly one week in the filters and those charts have none. They use `Share week before` now.
+    - **Pages:**
+      - **Layout:** the header is 40px shorter and starts below a 40px strip for the page buttons, so the content didn't move. Charts and cards are inset 6px, which leaves 12px between panels.
+      - **Skills overview:** no Industry slicer, and the Source slicer fills its place. The second card shows `Jobs asking for picked skills`. Both chart titles are measures, and their subtitles say what a click does and how to drill down.
+      - **Salaries:** "Median salary" on every chart, and the ladder's and the region chart's titles name the picked skill.
+      - **Text sizes:** page title 26, page subtitle 14, chart titles 20, slicer headers 16.
+      - **Theme:** `dashboards/theme/SkillScout.json` replaces the built-in Frontier. The visuals' own background, border and shadow settings were removed, so the theme decides. `site/index.html` takes the page's colour.
+        - **White panels on a cool light grey page** (`#EEF2F3`), in Segoe UI. The first try kept Frontier's cream and Verdana; Robert found it unpolished, and the cream clashed with the teal bars.
+        - **Eight colours in an order checked by a palette validator,** led by teal (`#008B9A`): every pair of neighbours stays apart for colour-blind readers too. Frontier's first ten failed: its two browns were nearly the same colour, and five colours read as grey. The trend line shows ten skills, so two greys follow the eight.
+      - **The filter column:** Seniority, Source and Listed now are plain lists, because tiles shrank their text to fit. The Listed now slicer shows the new `Listing` column, "Listed now" or "No longer listed" instead of True and False, and still starts on Listed now. One text size for every filter.
+        - **One rounded panel with margins,** like the charts': a text box behind the slicers, which also carries the heading "Filters". *Maintain layer order* is on for it, so a click can't lift it above the slicers. The skill dropdown is its own small panel in the header.
+        - **Salaries' filters are copies of the overview's** (Robert, 2026-11-15). The first copy emptied Salaries' interactions; they were written back, so the picked skill again leaves Best paid skills and Pay vs demand alone.
+        - **Finished in Desktop by Robert:** the spacings, an Industry dropdown on both pages, Seniority as a dropdown, and the slicers grouped with their panel, so the panel moves and copies as one piece.
+    - **To compare in Desktop** (gold of 2026-11-14 18:08 UTC, `Query 1.dax`): Jobs 44,300 of 56,376; listed now 32,904 of 38,980; Python 27.2% of all jobs and 29.1% of the listed ones; 13,234 jobs with a salary, median $137,350, Python $145,500; Europe 18,807; Python's share in the week of 19 Oct 23.6%; last week 2 Nov, so week numbers 43 to 45; 44,822 skill pairs.
+  - **Done in Desktop by Robert on 2026-11-15,** and checked in the saved files:
+    - **The theme** is imported; the report holds its own copy in `StaticResources/RegisteredResources/`, which is updated together with `dashboards/theme/SkillScout.json`.
+    - **Rising skills:** the slicer is on `Week number` (Between, no saved range), with a card for `First week shown` and `Last week shown` beside it.
+    - **The three drill-through buttons** take their text from `Asked with button text`; the Disabled state has no text, fill or icon.
+    - **The top strip** on every page: a teal bar, "SkillScout" and a page navigator, as one group. *Show hidden pages* is off on the four visible pages, so Asked with isn't listed; on Asked with itself it stays on, so that page shows as the selected one.
+    - **Reset filters:** a button in the filter panel of Skills overview and Salaries and beside the week slider on Rising skills, each with its page's bookmark (Data only, all visuals). The bookmarks hold "Listed now" and no date or week number. Skills asked together has no button: it only has the skill dropdown.
+    - **Written into the files afterwards:** "Listed now" as the saved selection of both Jobs shown slicers (a test pick had been saved), the heatmap's filter on the bar chart of Asked with (lost when its visuals were pasted again), and Skills overview as the opening page.
+  - **Left as it is:** with no skill picked, the second card on Skills overview shows "--", the card's own sign for blank. `Picked skills share` and `Skill coverage` are in the model but on no card.
+  - **Tested by Robert in Desktop:** the Reset button on each page, and the report opens without the bookmark message.
+- [ ] **7. Docs, commit, PR and merge.** Then publish to the service and confirm the next scheduled refresh. In the working folder, `batch.py purge` removes entries whose job has left gold.
+  - Once the new report is live: remove `bridge_job_industries` from dbt, drop `gold.bridge_job_industries`, and redraw the ER diagram (`scripts/export_marts_ddl.py`, then DrawDB).
+
 ## Concepts you'll meet
+- **Training and applying a model:** training (`fit`) reads labelled examples and works out weights; applying (`predict`) uses the weights on new jobs. Here training happens by hand, rarely, and applying happens every night.
+- **Logistic regression:** each word, letter group and skill gets a weight for every industry; a job's weights are added up and turned into a probability per industry. The weights can be read, which is why the model can be explained.
+- **Test set:** labelled jobs the model never trains on, so its score on them says how it does on jobs it hasn't seen.
+- **joblib file:** a fitted scikit-learn object written to disk. It can only be read back reliably by the same scikit-learn version, hence the pin.
+- **dbt post-hook:** a SQL statement dbt runs right after building a model.
+- **dbt variable:** a named value in `dbt_project.yml` (`industry_sure: 0.5`) that models read with `var()`.
 - **Semantic model:** Power BI's layer of tables, relationships and measures that every visual queries. **Import** keeps a compressed copy, refreshed on a schedule.
 - **PBIP, TMDL and PBIR:** a Power BI project saved as folders of text. TMDL describes the model, PBIR the report pages, so git can show what changed.
 - **Filter direction:** a relationship passes filters from the one side to the many side. "Both directions" also passes them back; bridges need it.
@@ -502,6 +693,15 @@ Already on the branch: the trend line chart's changes of 2026-11-11, made in Des
 - **A `%` format makes a difference of shares read as growth:** 0.02 shows as "+2.0%". Share changes are multiplied by 100 and formatted `+0.0" pp"`.
 - **A share pooled over several boards moves with the boards' mix.** A Himalayas job mentions about 7 skills and an Arbeitnow job about 3, so a week with fewer Himalayas jobs lowers nearly every skill. The weekly trend weights each board's own share (decision 14); any new chart that pools the boards across weeks has the same trap.
 - **Spark's `greatest()` and `least()` skip NULLs:** `greatest(NULL, 0)` is 0, not NULL. The first week's chance band came out as 0 until a `case` kept it NULL.
+- **Two pages, two populations.** Skills overview and Salaries count jobs with at least one skill; Rising skills counts every new job (decision 16). The same skill's share differs by about a sixth between them.
+- **A number slider saves its range like a date slicer.** Once the Week number slider has been moved, the report saves "43 to 45", and later weeks fall outside it. Clear it before saving.
+- **The week number doesn't restart in January.** It counts weeks from 29 Dec 2025, so it equals the ISO week in 2026 and goes on to 54 in 2027. A restart at 1 would put January before October on the slider.
+- **A visual's own setting beats the theme.** A background, border or title size set on one visual stays when the theme changes. The 5.12 touch-ups removed those, so a look is changed in `dashboards/theme/SkillScout.json` and copied over the report's own copy in `StaticResources/RegisteredResources/` (with Desktop closed), or imported again.
+- **Replacing a visual with a pasted copy drops its interactions.** The copy is a new visual, so "this slicer doesn't filter that chart" (Format → Edit interactions) is gone and the page's list is saved empty. Check `visualInteractions` in the page's `page.json` after pasting.
+- **A tile slicer shrinks its text to fit its tiles.** In the narrow filter column, 14pt items rendered at about half that. A plain list keeps the size it's given.
+- **A bookmark holds the state of the visuals that existed when it was made.** After adding or changing a visual, update the page's Reset bookmark, with every slicer cleared first.
+- **A bookmark made with "Selected visuals" applies to those visuals only.** In the file that is `"applyOnlyToTargetVisuals": true` under `options`; a Reset bookmark must not have it. `targetVisualNames` alone only lists what was selected when the bookmark was saved.
+- **Desktop can write a bookmark option that its own check rejects** (seen on 2026-11-15). The three new bookmarks got `"preserveNewVisualVisibility": true` under `options`, and the next opening reported "issues that could not be resolved". With Desktop closed, delete that line from each `bookmarks/*.bookmark.json`. Later saves didn't write it again; check after adding a bookmark.
 
 ## Repo layout additions
 
@@ -517,11 +717,17 @@ dbt/job_listings/models/intermediate/int_skill_weekly_by_board.sql  ← each boa
 dbt/job_listings/models/intermediate/int_skill_weekly_weighted.sql  ← the board-weighted share, change and chance band
 dbt/job_listings/models/marts/agg_trend_board_weights.sql           ← the board weights
 dbt/job_listings/tests/assert_trend_board_weights_sum_to_one.sql
+transform/industry_model.py                       ← the industry list and the model (decision 15)
+databricks/reference/industry_list.csv            ← every industry a job can show, with its group
+databricks/notebooks/train_industry_model.py      ← trains, scores and saves the model; run by hand
+databricks/notebooks/08_silver_industries.py      ← the saved model's answer for every posting, nightly
+scripts/upload_industry_labels.py                 ← the hand labels from the working folder into silver.industry_labels
 dashboards/
     JobsAnalytics.pbip
     JobsAnalytics.SemanticModel/definition/   ← TMDL: tables, relationships, measures
     JobsAnalytics.SemanticModel/DAXQueries/   ← the check against gold
     JobsAnalytics.Report/                     ← the pages
+    theme/SkillScout.json                     ← the report's theme; import it in Desktop after changing it
 site/
     index.html                            ← public page with the iframe and credits
 .github/workflows/pages.yml               ← deploys site/ to GitHub Pages

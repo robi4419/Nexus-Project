@@ -5,7 +5,8 @@ about 1 in 5 clearly Tech (Phase 4, decision 8). Half of those are enterprise-sy
 Epic); the rest are software, security, IT support, data, product, design, hardware and research jobs.
 
 `tech_category` answers with one of Himalayas' own Tech parent categories, so landing keeps the job like any other
-Tech job, and silver maps the same answer to an industry through `industries.csv`. Left out on purpose:
+Tech job. It only decides which jobs are kept: a job's industry comes from the industry model (Phase 5, decision 15).
+Left out on purpose:
 - AI-training gigs, whose titles name a field but whose work is rating AI output ("Chemist - Fully Remote | Upto
   $70/hr", "Audio Engineer - AI Trainer");
 - non-Tech jobs with a Tech word in the title ("Patent Attorney, Electrical Engineering", "Instructional Designer");

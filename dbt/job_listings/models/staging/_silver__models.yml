@@ -7,7 +7,7 @@ models:
     description: "One row per job posting from silver.jobs (Jobicy, Arbeitnow and Himalayas), with the surrogate key posting_key. Leaves out the raw levels, the raw locations and the description text, keeping only a fingerprint of the description."
     columns:
       - name: posting_key
-        description: "{{ doc('posting_key') }} Joins postings to the skill, location, industry and type models."
+        description: "{{ doc('posting_key') }} Joins postings to the skill, location, type and industry-prediction models."
         data_tests: [unique, not_null]
       - name: description_hash
         description: "md5 hash of the description text, lower-cased with whitespace collapsed, when it's at least 300 characters long (shorter ones may say too little to tell roles apart); NULL otherwise. int_job_postings uses it to find one job posted under several titles."
@@ -121,18 +121,54 @@ models:
         description: "{{ doc('country_code') }}"
       - name: region
         description: "{{ doc('location_region') }}"
-  - name: stg_silver__job_industries
-    description: "One row per job x industry from silver.job_industries, with the surrogate key posting_key."
-    data_tests:
-      - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns: ["posting_key", "industry"]
+  - name: stg_silver__job_industry_predictions
+    description: "One row per job posting from silver.job_industry_predictions, with the surrogate key posting_key: what the industry model answers for the posting's title and skills. No threshold is applied here; int_posting_industries decides what a job shows."
     columns:
       - name: posting_key
         description: "{{ doc('posting_key') }}"
-        data_tests: [not_null]
+        data_tests: [unique, not_null]
+      - name: industry
+        description: "The industry the model finds likeliest: one of the guide's 34, or Not classified."
+      - name: industry_probability
+        description: "The model's probability for that industry, 0 to 1."
+      - name: industry_group
+        description: "The group the model finds likeliest. Found separately from the industry, so below 50% the industry needn't belong to it."
+      - name: group_probability
+        description: "The model's probability for that group: the sum over the group's industries, 0 to 1."
+      - name: model_version
+        description: "The saved model that answered, as listed in silver.industry_models."
+  - name: stg_silver__industry_labels
+    description: "One row per hand-labelled job from silver.industry_labels. Leaves out the test set's other acceptable answers, the batch and the upload time."
+    columns:
+      - name: job_key
+        description: "{{ doc('job_key') }}"
+        data_tests: [unique, not_null]
+      - name: industry
+        description: "The industry chosen by hand, following docs/industry-labelling-guide.md."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_silver__ref_industry_list')
+                field: industry
+      - name: split
+        description: "train: the model was trained on this label. test: the label is only used to score the model."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["train", "test"]
+      - name: unsure
+        description: "True when the labeller marked the label as a close call."
+  - name: stg_silver__ref_industry_list
+    description: "One row per value a job's industry can take, from silver.ref_industry_list."
+    columns:
       - name: industry
         description: "{{ doc('industry') }}"
+        data_tests: [unique, not_null]
+      - name: industry_group
+        description: "{{ doc('industry_group') }}"
+        data_tests: [not_null]
+      - name: sort_order
+        description: "Position for sorting, as in dim_industry."
   - name: stg_silver__job_types
     description: "One row per job x job_type from silver.job_types, with the surrogate key posting_key."
     data_tests:

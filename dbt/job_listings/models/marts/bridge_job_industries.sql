@@ -1,4 +1,3 @@
-select distinct p.job_key, i.industry
-from {{ ref('stg_silver__job_industries') }} as i
-join {{ ref('int_job_postings') }} as p
-  on i.posting_key = p.posting_key
+-- Kept only until the report reads fct_job_postings.industry (Phase 5, task 5.12, step 6): one row per job.
+select job_key, industry
+from {{ ref('fct_job_postings') }}

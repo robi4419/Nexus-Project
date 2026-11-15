@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "073cacf10d9be147bbcc",
   "position": {
-    "x": 0,
-    "y": 0,
-    "z": 4000,
-    "height": 129.93630573248407,
-    "width": 111.59235668789809,
-    "tabOrder": 4000
+    "x": 11.970443349753694,
+    "y": 39.901477832512313,
+    "z": 2000,
+    "height": 94.433497536945808,
+    "width": 105.07389162561576,
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "actionButton",
@@ -19,6 +19,22 @@
               "expr": {
                 "Literal": {
                   "Value": "'back'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "shape": [
+        {
+          "properties": {
+            "roundEdge": {
+              "expr": {
+                "Literal": {
+                  "Value": "6L"
                 }
               }
             }
@@ -51,6 +67,26 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
                 }
               }
             }
