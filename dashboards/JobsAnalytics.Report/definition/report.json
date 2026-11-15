@@ -11,13 +11,13 @@
       "type": "SharedResources"
     },
     "customTheme": {
-      "name": "Frontier",
+      "name": "SkillScout2688601945443425.json",
       "reportVersionAtImport": {
         "visual": "2.14.0",
         "report": "3.4.0",
         "page": "2.3.1"
       },
-      "type": "SharedResources"
+      "type": "RegisteredResources"
     }
   },
   "objects": {
@@ -40,7 +40,7 @@
           "expanded": {
             "expr": {
               "Literal": {
-                "Value": "true"
+                "Value": "false"
               }
             }
           },
@@ -64,10 +64,16 @@
           "name": "Fluent2-CY26SU10",
           "path": "BaseThemes/Fluent2-CY26SU10.json",
           "type": "BaseTheme"
-        },
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
         {
-          "name": "Frontier",
-          "path": "BuiltInThemes/Frontier.json",
+          "name": "SkillScout2688601945443425.json",
+          "path": "SkillScout2688601945443425.json",
           "type": "CustomTheme"
         }
       ]

@@ -64,6 +64,21 @@ table 'Job postings'
 		summarizeBy: none
 		sourceColumn: industry
 
+	/// True when at least one skill was found in the job's text, that is, when it has a row in 'Job skills'. The report
+	/// counts only these jobs (Phase 5, decision 16): [Jobs] and the Salaries measures filter on it. The other jobs stay
+	/// in the model for [All jobs] and [Skill coverage].
+	column 'Has skills' = NOT ISEMPTY ( RELATEDTABLE ( 'Job skills' ) )
+		dataType: boolean
+		isHidden
+		lineageTag: 6b333b29-aeb4-47fa-9d23-9bf19d429e94
+		summarizeBy: none
+
+	/// 'Listed now' in words, for the slicer: "Listed now" or "No longer listed" instead of True and False.
+	column Listing = IF ( 'Job postings'[Listed now], "Listed now", "No longer listed" )
+		dataType: string
+		lineageTag: 61fa756b-9b09-494b-88a3-0a437f2750e1
+		summarizeBy: none
+
 	partition 'Job postings' = m
 		mode: import
 		source =

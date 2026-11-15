@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "07cc44d49644368a2470",
   "position": {
-    "x": 0,
-    "y": 128.90459363957598,
+    "x": 11.970443349753694,
+    "y": 134.33497536945814,
     "z": 3000,
-    "height": 912.50883392226149,
-    "width": 476.60777385159008,
+    "height": 903.103448275862,
+    "width": 458.86699507389159,
     "tabOrder": 3000
   },
   "visual": {
@@ -130,6 +130,13 @@
                     }
                   },
                   "Property": "Pairs chart title"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "20D"
                 }
               }
             }

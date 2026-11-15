@@ -3,9 +3,9 @@
   "name": "c1ff1f2f29837cc5ac32",
   "position": {
     "x": 372.99363057324842,
-    "y": 0,
-    "z": 0,
-    "height": 129.93630573248407,
+    "y": 40,
+    "z": 1000,
+    "height": 89.96,
     "width": 1308.5350318471337,
     "tabOrder": 0
   },
@@ -21,7 +21,9 @@
                   {
                     "value": "Which skills are rising?",
                     "textStyle": {
-                      "fontSize": "32pt"
+                      "fontFamily": "Segoe UI Semibold",
+                      "fontSize": "26pt",
+                      "color": "#1b2326"
                     }
                   }
                 ],
@@ -30,9 +32,9 @@
               {
                 "textRuns": [
                   {
-                    "value": "Share of each week's new jobs asking for a skill, week over week. A week appears on the next Tuesday evening.",
+                    "value": "Share of each week's new jobs asking for a skill. Every new job counts, also those with no skill found.",
                     "textStyle": {
-                      "fontSize": "18pt"
+                      "fontSize": "14pt"
                     }
                   }
                 ],
@@ -50,7 +52,7 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "6D"
                 }
               }
             }

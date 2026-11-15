@@ -1,3 +1,5 @@
 # Power BI Desktop's local files: the data cache (it holds the imported rows) and per-user settings
 **/.pbi/cache.abf
 **/.pbi/localSettings.json
+# A report saved as one file: it holds the imported rows too. The project folders are the source.
+*.pbix

@@ -1,21 +1,24 @@
-/// All measures, in display folders. Jobs and Salaries follow every job filter; Trend and Skill pairs read the two
-/// gold aggregate tables, which only Skill and the week filter. ("Measures" itself is a reserved table name.)
+/// All measures, in display folders. Jobs and Salaries follow every job filter and count only the jobs at least one skill
+/// was found in (Phase 5, decision 16); Trend and Skill pairs read the two gold aggregate tables, which only Skill and
+/// the week filter. ("Measures" itself is a reserved table name.)
 table _Measures
 	lineageTag: 26068e48-5b7b-4e4b-bbc7-d0bade6cd7cc
 
-	/// Jobs in the current filters; a company's postings of one role, on any board, count once.
-	measure Jobs = COUNTROWS ( 'Job postings' )
+	/// Jobs in the current filters that at least one skill was found in; a company's postings of one role, on any board,
+	/// count once. The report counts only these jobs (decision 16); [All jobs] counts the others too.
+	measure Jobs = CALCULATE ( COUNTROWS ( 'Job postings' ), 'Job postings'[Has skills] = TRUE () )
 		formatString: #,0
 		displayFolder: Jobs
 		lineageTag: 6872d96e-530c-425c-8ba3-0b4fc65241f5
 
-	/// Job postings asking for the selected skills; with no skill selected, jobs asking for at least one skill.
+	/// Jobs asking for the skills in the filters: one bar's skill on a chart, or the picked skills. With no skill in the
+	/// filters, it is every job with a skill, which equals [Jobs].
 	measure 'Jobs with skill' = DISTINCTCOUNT ( 'Job skills'[job_key] )
 		formatString: #,0
 		displayFolder: Jobs
 		lineageTag: 38028d27-e2cc-401b-88ba-7e8047e928ae
 
-	/// Jobs with skill as a share of all jobs in the same filters, ignoring the skill filter.
+	/// Jobs with skill as a share of the jobs in the same filters, ignoring the skill filter.
 	measure 'Share of jobs' = DIVIDE ( [Jobs with skill], CALCULATE ( [Jobs], REMOVEFILTERS ( Skill ) ) )
 		formatString: 0.0%
 		displayFolder: Jobs
@@ -42,11 +45,13 @@ table _Measures
 		displayFolder: Salaries
 		lineageTag: 407daa52-add3-477d-8c66-7bca08be2207
 
-	/// Median yearly salary in USD over the plausible salaries in the current filters (skill included).
+	/// Median yearly salary in USD over the plausible salaries in the current filters (skill included), of jobs with at
+	/// least one skill, like [Jobs].
 	measure 'Median salary' =
 			CALCULATE (
 			    MEDIAN ( 'Job postings'[Salary (USD)] ),
 			    'Job postings'[Plausible salary] = TRUE (),
+			    'Job postings'[Has skills] = TRUE (),
 			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
 			)
 		formatString: \$#,0
@@ -58,6 +63,7 @@ table _Measures
 			CALCULATE (
 			    PERCENTILE.INC ( 'Job postings'[Salary (USD)], 0.25 ),
 			    'Job postings'[Plausible salary] = TRUE (),
+			    'Job postings'[Has skills] = TRUE (),
 			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
 			)
 		formatString: \$#,0
@@ -69,6 +75,7 @@ table _Measures
 			CALCULATE (
 			    PERCENTILE.INC ( 'Job postings'[Salary (USD)], 0.75 ),
 			    'Job postings'[Plausible salary] = TRUE (),
+			    'Job postings'[Has skills] = TRUE (),
 			    CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH )
 			)
 		formatString: \$#,0
@@ -82,7 +89,7 @@ table _Measures
 		lineageTag: 13b7c886-9835-4160-b9df-a3559dd4c296
 
 	/// All jobs first listed in the week, whatever the skill filter; over several weeks, their sum. Every skill's row of
-	/// a week holds the same week_jobs, so each week takes it once.
+	/// a week holds the same week_jobs, so each week takes it once. It counts jobs with and without skills, unlike [Jobs].
 	measure 'Trend jobs' =
 			CALCULATE (
 			    SUMX ( VALUES ( 'Weekly skill trend'[Week] ), CALCULATE ( MAX ( 'Weekly skill trend'[week_jobs] ) ) ),
@@ -100,7 +107,8 @@ table _Measures
 		displayFolder: Trend
 		lineageTag: 2da8fc77-4574-4f64-8a93-32108ae38827
 
-	/// Week share in the week before.
+	/// Week share in the week before. Blank unless the filters leave one week and one skill, so a chart without weeks
+	/// uses [Share week before] instead.
 	measure 'Previous week share' = IF ( COUNTROWS ( 'Weekly skill trend' ) = 1, MAX ( 'Weekly skill trend'[prev_share] ) )
 		formatString: 0.0%
 		displayFolder: Trend
@@ -117,12 +125,12 @@ table _Measures
 		displayFolder: Trend
 		lineageTag: e94b5cc8-e562-4733-9af2-34ad9e254e66
 
-	/// Share change in the latest complete week, for ranking the biggest risers and fallers. On a chart without weeks,
-	/// [Previous week share] is then the week before it.
+	/// Share change in the last week shown ([Last week shown]: the latest complete week, or the end of the Week
+	/// slider's range), for ranking the biggest risers and fallers.
 	measure 'Share change latest week' =
-			VAR Latest = [Latest week]
+			VAR Shown = [Last week shown]
 			RETURN
-			    CALCULATE ( [Share change], 'Weekly skill trend'[Week] = Latest )
+			    CALCULATE ( [Share change], 'Weekly skill trend'[Week] = Shown )
 		formatString: +0.0" pp";-0.0" pp";0.0" pp"
 		displayFolder: Trend
 		lineageTag: 8e4feefa-1ef0-472e-8826-e42a0f8496a6
@@ -205,7 +213,6 @@ table _Measures
 
 	/// The bar chart's title: names the picked skill, or asks for one.
 	measure 'Pairs chart title' =
-			
 			VAR Picked = SELECTEDVALUE ( Skill[Skill] )
 			RETURN
 			    SWITCH (
@@ -300,62 +307,74 @@ table _Measures
 		displayFolder: Trend
 		lineageTag: 22096e38-5b75-426a-b021-aa643bc3676a
 
-	/// Week share in the latest complete week.
+	/// Week share in the last week shown.
 	measure 'Share latest week' =
-			VAR Latest = [Latest week]
+			VAR Shown = [Last week shown]
 			RETURN
-			    CALCULATE ( [Week share], 'Weekly skill trend'[Week] = Latest )
+			    CALCULATE ( [Week share], 'Weekly skill trend'[Week] = Shown )
 		formatString: 0.0%
 		displayFolder: Trend
 		lineageTag: 496aa401-45ef-4107-b41b-7b90f9dacd15
 
-	/// Jobs asking for the skill in the latest complete week.
+	/// Jobs asking for the skill in the last week shown.
 	measure 'Jobs latest week' =
-			VAR Latest = [Latest week]
+			VAR Shown = [Last week shown]
 			RETURN
-			    CALCULATE ( [Trend jobs with skill], 'Weekly skill trend'[Week] = Latest )
+			    CALCULATE ( [Trend jobs with skill], 'Weekly skill trend'[Week] = Shown )
 		formatString: #,0
 		displayFolder: Trend
 		lineageTag: 22e81b27-cb16-44a6-b957-a6ef3fa9c3bf
 
-	/// Jobs asking for the skill in the week before the latest complete week.
+	/// Jobs asking for the skill in the week before the last week shown. That week can lie outside the Week slider's
+	/// range, so the slider's filter is removed.
 	measure 'Jobs week before' =
-			VAR Latest = [Latest week]
+			VAR Shown = [Last week shown]
 			RETURN
-			    CALCULATE ( [Trend jobs with skill], 'Weekly skill trend'[Week] = Latest - 7 )
+			    CALCULATE (
+			        [Trend jobs with skill],
+			        'Weekly skill trend'[Week] = Shown - 7,
+			        REMOVEFILTERS ( 'Weekly skill trend'[Week number] )
+			    )
 		formatString: #,0
 		displayFolder: Trend
 		lineageTag: 805fc38d-3c30-4950-81cb-c49311ec9435
 
-	/// The movers charts' subtitle: the two weeks they compare.
+	/// The movers charts' subtitle: the two weeks they compare, or why there is nothing to compare.
 	measure 'Movers subtitle' =
-			VAR Latest = [Latest week]
+			VAR Shown = [Last week shown]
+			VAR FirstWeek = CALCULATE ( MIN ( 'Weekly skill trend'[Week] ), REMOVEFILTERS ( 'Weekly skill trend' ) )
 			RETURN
-			    "Week of " & FORMAT ( Latest, "d mmm" ) & " vs " & FORMAT ( Latest - 7, "d mmm" )
-			        & ", in percentage points of each week's new jobs, with fixed board weights"
+			    IF (
+			        Shown = FirstWeek,
+			        "The week of " & FORMAT ( Shown, "d mmm" ) & " is the trend's first, so there is no week before to compare it with",
+			        "Week of " & FORMAT ( Shown, "d mmm" ) & " vs " & FORMAT ( Shown - 7, "d mmm" )
+			            & ", in percentage points of each week's new jobs. Click a skill to see its line."
+			    )
 		displayFolder: Trend
 		lineageTag: b5269904-d3bb-4457-b392-0fdba39aed3e
 
 	/// The trend line's title, from the skills the chart shows: none (bars clicked in both mover charts, whose filters
-	/// intersect) gets a hint; one by name; "the latest week's top 10" when it shows exactly those (nothing picked, or
+	/// intersect) gets a hint; one by name; "the top 10 of the latest week" when it shows exactly those (nothing picked, or
 	/// picks that include them all); otherwise the picked skills. The chart's Top N is a filter on Skill too, so
-	/// ISFILTERED or a count alone can't tell no pick from 10 or more. Keep ChartTop equal to it.
+	/// ISFILTERED or a count alone can't tell no pick from 10 or more. Keep ChartTop equal to it. The week is the last
+	/// one shown, named when the Week slider has moved it off the latest.
 	measure 'Trend line title' =
-			
-			VAR ChartTop = 10 -- the line chart's Top N; keep the two equal
+			VAR ChartTop = 8 -- the line chart's Top N; keep the two equal
 			VAR Shown = VALUES ( Skill[Skill] ) -- the skills the chart shows: the picks, cut by its Top N
 			VAR ShownCount = COUNTROWS ( Shown )
 			VAR TopSkills = TOPN ( ChartTop, ALL ( Skill[Skill] ), [Share latest week] ) -- the top skills, ignoring the picks
 			VAR ShowsTopSkills =
 			    ( ShownCount = COUNTROWS ( TopSkills ) ) && ISEMPTY ( EXCEPT ( Shown, TopSkills ) )
+			VAR LastWeek = [Last week shown]
+			VAR WeekWords = IF ( LastWeek = [Latest week], "the latest week", "the week of " & FORMAT ( LastWeek, "d mmm" ) )
 			RETURN
 			    SWITCH (
 			        TRUE (),
 			        ISEMPTY ( Shown ), "No skill is in both selections: click bars in one chart, or pick skills in the dropdown",
 			        ShownCount = 1, "Weekly share of new jobs asking for " & SELECTEDVALUE ( Skill[Skill] ),
-			        ShowsTopSkills, "Weekly share of new jobs asking for the latest week's top " & ChartTop & " skills",
+			        ShowsTopSkills, "Weekly share of new jobs asking for the top " & ChartTop & " skills of " & WeekWords,
 			        ShownCount < ChartTop, "Weekly share of new jobs asking for the picked skills",
-			        "Weekly share of new jobs asking for the " & ChartTop & " picked skills most asked for in the latest week"
+			        "Weekly share of new jobs asking for the " & ChartTop & " picked skills most asked for in " & WeekWords
 			    )
 		displayFolder: Trend
 		lineageTag: bf784cfb-22c6-4c21-8d65-f402991bb54f
@@ -393,11 +412,19 @@ table _Measures
 		displayFolder: Trend
 		lineageTag: 13d68417-4640-4230-9b96-9eec06209c4b
 
-	/// The trend line's subtitle: what the share is, the board weights, and how to read the chance band.
+	/// The trend line's subtitle. With one skill shown, it explains the chance bars the chart then draws; otherwise it
+	/// names the board weights and says what picking one skill adds. The chart's Top N filters Skill here too, so the
+	/// count is of the skills shown, as in [Trend line title].
 	measure 'Trend subtitle' =
-			
-			"In percent of each week's new jobs, with each board's own share weighted: " & [Board weights]
-			    & ". Pick one skill to see, from the second week on, the range its share would land in by chance if nothing had changed since the week before. A point outside its bar is a real change."
+			VAR OneSkillShown = COUNTROWS ( VALUES ( Skill[Skill] ) ) = 1
+			RETURN
+			    IF (
+			        OneSkillShown,
+			        "Each bar is the range the share would land in by chance if nothing had changed since the week before: a point outside its bar is a real change. Boards weighted: "
+			            & [Board weights],
+			        "Each board's own share, weighted: " & [Board weights]
+			            & ". Pick one skill to see whether its moves are more than chance."
+			    )
 		displayFolder: Trend
 		lineageTag: 9b397c71-006a-4444-b92f-24d2be2c6b14
 
@@ -420,7 +447,7 @@ table _Measures
 		lineageTag: 64c34bb8-4255-4f72-add6-de709b98efa6
 
 	/// Jobs in the current filters, the skill filter included: with skills picked, the jobs asking for any of them; with
-	/// none, all jobs. [Jobs] alone ignores picked skills, which reach the jobs only through CROSSFILTER.
+	/// none, all jobs with a skill. [Jobs] alone ignores picked skills, which reach the jobs only through CROSSFILTER.
 	measure 'Jobs in selection' = CALCULATE ( [Jobs], CROSSFILTER ( 'Job skills'[job_key], 'Job postings'[job_key], BOTH ) )
 		formatString: #,0
 		displayFolder: Jobs
@@ -433,6 +460,128 @@ table _Measures
 		formatString: 0.0%
 		displayFolder: Jobs
 		lineageTag: f4d312cc-1478-4746-a8aa-ba6055d768a7
+
+	/// Every job in the current filters, with or without skills. Only for [Skill coverage]: the pages count [Jobs].
+	measure 'All jobs' = COUNTROWS ( 'Job postings' )
+		formatString: #,0
+		displayFolder: Jobs
+		lineageTag: f704d688-c77f-4102-82e3-13344ba82e34
+
+	/// [Jobs with skill] once a skill is picked in the dropdown or clicked on a chart, blank until then: for the card
+	/// beside Jobs, which would otherwise repeat the same number.
+	measure 'Jobs asking for picked skills' = IF ( ISFILTERED ( Skill[Skill] ), [Jobs with skill] )
+		formatString: #,0
+		displayFolder: Jobs
+		lineageTag: 24692b6e-44ec-4683-a181-bd01949fccd3
+
+	/// [Share of jobs] once a skill is picked or clicked, blank until then.
+	measure 'Picked skills share' = IF ( ISFILTERED ( Skill[Skill] ), [Share of jobs] )
+		formatString: 0.0%
+		displayFolder: Jobs
+		lineageTag: 267f76ee-ad54-4e0d-bdb9-d19dccda5360
+
+	/// How many of the jobs in the current filters a skill was found in, as text: "Skills found in 83% of 46,812 jobs".
+	/// It tells the viewer what [Jobs] leaves out.
+	measure 'Skill coverage' =
+			VAR AllJobs = [All jobs]
+			RETURN
+			    IF (
+			        AllJobs > 0,
+			        "Skills found in " & FORMAT ( DIVIDE ( [Jobs], AllJobs ), "0%" ) & " of " & FORMAT ( AllJobs, "#,0" ) & " jobs"
+			    )
+		displayFolder: Jobs
+		lineageTag: da468daa-673a-4e2a-8c1f-7cf32c66652b
+
+	/// The drill-through button's text on Skills overview, Rising skills and Salaries: names the one selected skill.
+	/// The button only shows when exactly one skill is selected, so the other wording is a fallback.
+	measure 'Asked with button text' =
+			VAR Picked = SELECTEDVALUE ( Skill[Skill] )
+			RETURN
+			    IF ( ISBLANK ( Picked ), "See what it's asked with →", "See what " & Picked & " is asked with →" )
+		displayFolder: Skill pairs
+		lineageTag: d86380a8-262f-4d10-ac33-cfd940a4104e
+
+	/// The last week the Week slider leaves: the latest complete week until the slider's range is narrowed. Rising and
+	/// Falling compare it with the week before, and the card beside the slider shows it. It ignores the skill, so it is
+	/// the same week for every bar and line.
+	measure 'Last week shown' = CALCULATE ( MAX ( 'Weekly skill trend'[Week] ), REMOVEFILTERS ( Skill ) )
+		formatString: d mmm yyyy
+		displayFolder: Trend
+		lineageTag: bf9c388f-7c42-4c76-af74-da45ec7f63c0
+
+	/// The first week the Week slider leaves, for the card beside the slider.
+	measure 'First week shown' = CALCULATE ( MIN ( 'Weekly skill trend'[Week] ), REMOVEFILTERS ( Skill ) )
+		formatString: d mmm yyyy
+		displayFolder: Trend
+		lineageTag: 813f5048-6445-4291-8747-e562fe307345
+
+	/// Week share in the week before the last week shown: that week's prev_share, so it needs no row of the week before
+	/// and works when the slider leaves a single week.
+	measure 'Share week before' =
+			VAR Shown = [Last week shown]
+			RETURN
+			    CALCULATE ( [Previous week share], 'Weekly skill trend'[Week] = Shown )
+		formatString: 0.0%
+		displayFolder: Trend
+		lineageTag: 7590491a-d4a4-4927-861e-4977bf07a6cb
+
+	/// The top-skills chart's title on Skills overview: names the industry or group clicked in "Jobs by industry", whose
+	/// jobs the shares are then of. Keep the 30 equal to the chart's Top N. It can't name a picked skill: the chart's
+	/// Top N filters Skill here too, so ISFILTERED ( Skill[Skill] ) is always true.
+	measure 'Top skills title' =
+			VAR OneIndustry = SELECTEDVALUE ( Industry[Industry] )
+			VAR OneGroup = SELECTEDVALUE ( Industry[Industry group] )
+			RETURN
+			    "Top 30 skills by share of "
+			        & SWITCH (
+			            TRUE (),
+			            NOT ISCROSSFILTERED ( Industry ), "jobs",
+			            NOT ISBLANK ( OneIndustry ), OneIndustry & " jobs",
+			            NOT ISBLANK ( OneGroup ), OneGroup & " jobs",
+			            "jobs in the picked industries"
+			        )
+		displayFolder: Jobs
+		lineageTag: 502d770c-deae-4968-b624-159489feeec0
+
+	/// The industry chart's title on Skills overview: names the skill picked in the dropdown or clicked on the top-skills
+	/// chart, whose jobs it then splits by industry.
+	measure 'Industry chart title' =
+			VAR Picked = SELECTEDVALUE ( Skill[Skill] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        NOT ISBLANK ( Picked ), "Industries of the jobs asking for " & Picked,
+			        ISFILTERED ( Skill[Skill] ), "Industries of the jobs asking for any of the picked skills",
+			        "Jobs by industry"
+			    )
+		displayFolder: Jobs
+		lineageTag: 3a0dfd0b-e608-417a-a78a-18a41165601e
+
+	/// The salary ladder's title on Salaries: names the picked skill, whose jobs the ladder then covers.
+	measure 'Ladder title' =
+			VAR Picked = SELECTEDVALUE ( Skill[Skill] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        NOT ISBLANK ( Picked ), "Salary ladder for " & Picked & " jobs",
+			        ISFILTERED ( Skill[Skill] ), "Salary ladder for jobs asking for any of the picked skills",
+			        "Salary ladder"
+			    )
+		displayFolder: Salaries
+		lineageTag: 4f40f6a6-d342-471f-a8b0-6021fa45dcd7
+
+	/// The region chart's title on Salaries: names the picked skill, whose jobs the chart then covers.
+	measure 'Region salary title' =
+			VAR Picked = SELECTEDVALUE ( Skill[Skill] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        NOT ISBLANK ( Picked ), Picked & " jobs open to candidates in each region",
+			        ISFILTERED ( Skill[Skill] ), "Jobs asking for any of the picked skills, open to candidates in each region",
+			        "Jobs open to candidates in each region"
+			    )
+		displayFolder: Salaries
+		lineageTag: 5537e9b4-ce0c-4047-9ae4-b1d82b3e6906
 
 	column Value
 		dataType: int64

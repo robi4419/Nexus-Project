@@ -266,6 +266,22 @@
       - **The model answers per posting,** with that posting's skills, while it was trained on jobs with the skills of all their postings. Most jobs have one posting (44,179 postings made 38,278 jobs on 2026-11-03); 5.12 measures the difference.
       - **Infrastructure & Security is the weakest group** (74% of 23 test jobs).
       - **957 of the 3,100 labels are marked unsure,** mostly one-off titles where two industries are defensible.
+16. **(2026-11-15) The report counts only jobs with at least one skill.**
+    - **Why:** a job where no skill was found says nothing about skills. It only lowered every share by the same factor, and Skills overview needed two cards, Jobs and Jobs with skill, to say so.
+    - **How many** (gold of 2026-11-14): a skill was found in 44,300 of 56,376 jobs (79%), and in 32,904 of the 38,980 listed now (84%).
+    - **The rule** is in the Power BI model; gold and dbt don't change.
+      - `'Job postings'[Has skills]`, a calculated column, is true when the job has a row in `Job skills`.
+      - `[Jobs]` counts only those jobs, and the three salary measures filter on the column. Every share and count built on `[Jobs]` follows.
+      - The other jobs stay in the model, so `[Skill coverage]` can say "Skills found in 84% of 38,980 jobs".
+    - **What follows it:** Skills overview (the cards, every share, Jobs by industry) and Salaries (the cards and every median).
+    - **Measured:** Python goes from 24.6% to 29.1% of the listed jobs. Their median salary stays $135,000.
+    - **What doesn't follow it:**
+      - **Skills asked together** already counted only jobs with skills (`agg_skill_co_occurrence`).
+      - **Rising skills** still divides by all of a week's new jobs. Himalayas' frozen counts (decision 4) hold every job, and can't be recounted for the expired ones. A skill's share there is about a sixth lower than on Skills overview, and the page's subtitle says what it counts.
+      - **Rebasing the trend** would need a new frozen count of Himalayas jobs with skills, backfilled while those jobs are still in silver, so before the mid-December expiries. Not planned.
+    - **Rejected:**
+      - **Leaving the jobs out in Power Query or in gold:** the coverage could no longer be shown.
+      - **Changing only the card:** a bar's jobs divided by the card would no longer equal its share.
 
 ## How it fits
 
@@ -598,6 +614,41 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
     - **`Industry group` is sorted by a `Group order` column added in the query** (the lowest sort order in the group). A DAX column computed from the group couldn't sort that same column.
     - **The Salaries scatter lost its Category tooltip,** edited in its JSON, because the column left the model. The category chart on Skills overview shows a missing field until it is rebuilt.
     - **To compare in Desktop** (gold on 2026-11-15): 56,376 jobs, 38,980 listed now. Of the listed ones: Software 30.1%, Business 12.9%, Data 12.8%, Infrastructure & Security 11.4%, Product & Projects 10.3%, Not classified 8.9%. Of the 9,600 or so listed Python jobs: Machine Learning & AI 16.2%, Software Engineering, general 13.3%, DevOps, Cloud & SRE 10.8%.
+- [x] **6b. Report touch-ups before publishing** (2026-11-15; decision 16 and Robert's list). Nothing changes in dbt or Databricks.
+  - **Decided:**
+    - **Jobs counted:** only jobs with at least one skill, on Skills overview and Salaries (decision 16).
+    - **Week picker:** a number slider on the week number, with a card showing the first and last week's start date. A date slider can't snap to weeks, and week buttons would let the line skip weeks.
+    - **Drill-through button:** invisible until exactly one skill is selected, then it names the skill.
+    - **Industry:** the slicer was first taken off Skills overview, where the chart filters. It is back on both pages, synced: Salaries needs it, and the two pages now share one filter panel.
+    - **Also:** page buttons in a strip at the top (the public embed only shows "1 of 4" arrows), a Reset filters button, titles that follow clicks, white panels on a light grey page, and shorter texts.
+  - **Written on 2026-11-15, in the files:**
+    - **Model:**
+      - `Has skills` on `Job postings`; `Week number` on `Weekly skill trend` (19 Oct 2026 is week 43), and `Week` shown as "19 Oct".
+      - 12 new measures: `All jobs`, `Jobs asking for picked skills`, `Picked skills share`, `Skill coverage`, `Last week shown`, `First week shown`, `Share week before`, `Top skills title`, `Industry chart title`, `Ladder title`, `Region salary title` and `Asked with button text`.
+      - The movers measures compare `Last week shown`, the end of the slider's range, with the week before it. The trend subtitle explains the chance bars only when one skill is shown.
+    - **Fixed on the way:** the Rising and Falling tooltips' `Previous week share` had been blank since 5.11, because it needs exactly one week in the filters and those charts have none. They use `Share week before` now.
+    - **Pages:**
+      - **Layout:** the header is 40px shorter and starts below a 40px strip for the page buttons, so the content didn't move. Charts and cards are inset 6px, which leaves 12px between panels.
+      - **Skills overview:** no Industry slicer, and the Source slicer fills its place. The second card shows `Jobs asking for picked skills`. Both chart titles are measures, and their subtitles say what a click does and how to drill down.
+      - **Salaries:** "Median salary" on every chart, and the ladder's and the region chart's titles name the picked skill.
+      - **Text sizes:** page title 26, page subtitle 14, chart titles 20, slicer headers 16.
+      - **Theme:** `dashboards/theme/SkillScout.json` replaces the built-in Frontier. The visuals' own background, border and shadow settings were removed, so the theme decides. `site/index.html` takes the page's colour.
+        - **White panels on a cool light grey page** (`#EEF2F3`), in Segoe UI. The first try kept Frontier's cream and Verdana; Robert found it unpolished, and the cream clashed with the teal bars.
+        - **Eight colours in an order checked by a palette validator,** led by teal (`#008B9A`): every pair of neighbours stays apart for colour-blind readers too. Frontier's first ten failed: its two browns were nearly the same colour, and five colours read as grey. The trend line shows ten skills, so two greys follow the eight.
+      - **The filter column:** Seniority, Source and Listed now are plain lists, because tiles shrank their text to fit. The Listed now slicer shows the new `Listing` column, "Listed now" or "No longer listed" instead of True and False, and still starts on Listed now. One text size for every filter.
+        - **One rounded panel with margins,** like the charts': a text box behind the slicers, which also carries the heading "Filters". *Maintain layer order* is on for it, so a click can't lift it above the slicers. The skill dropdown is its own small panel in the header.
+        - **Salaries' filters are copies of the overview's** (Robert, 2026-11-15). The first copy emptied Salaries' interactions; they were written back, so the picked skill again leaves Best paid skills and Pay vs demand alone.
+        - **Finished in Desktop by Robert:** the spacings, an Industry dropdown on both pages, Seniority as a dropdown, and the slicers grouped with their panel, so the panel moves and copies as one piece.
+    - **To compare in Desktop** (gold of 2026-11-14 18:08 UTC, `Query 1.dax`): Jobs 44,300 of 56,376; listed now 32,904 of 38,980; Python 27.2% of all jobs and 29.1% of the listed ones; 13,234 jobs with a salary, median $137,350, Python $145,500; Europe 18,807; Python's share in the week of 19 Oct 23.6%; last week 2 Nov, so week numbers 43 to 45; 44,822 skill pairs.
+  - **Done in Desktop by Robert on 2026-11-15,** and checked in the saved files:
+    - **The theme** is imported; the report holds its own copy in `StaticResources/RegisteredResources/`, which is updated together with `dashboards/theme/SkillScout.json`.
+    - **Rising skills:** the slicer is on `Week number` (Between, no saved range), with a card for `First week shown` and `Last week shown` beside it.
+    - **The three drill-through buttons** take their text from `Asked with button text`; the Disabled state has no text, fill or icon.
+    - **The top strip** on every page: a teal bar, "SkillScout" and a page navigator, as one group. *Show hidden pages* is off on the four visible pages, so Asked with isn't listed; on Asked with itself it stays on, so that page shows as the selected one.
+    - **Reset filters:** a button in the filter panel of Skills overview and Salaries and beside the week slider on Rising skills, each with its page's bookmark (Data only, all visuals). The bookmarks hold "Listed now" and no date or week number. Skills asked together has no button: it only has the skill dropdown.
+    - **Written into the files afterwards:** "Listed now" as the saved selection of both Jobs shown slicers (a test pick had been saved), the heatmap's filter on the bar chart of Asked with (lost when its visuals were pasted again), and Skills overview as the opening page.
+  - **Left as it is:** with no skill picked, the second card on Skills overview shows "--", the card's own sign for blank. `Picked skills share` and `Skill coverage` are in the model but on no card.
+  - **Tested by Robert in Desktop:** the Reset button on each page, and the report opens without the bookmark message.
 - [ ] **7. Docs, commit, PR and merge.** Then publish to the service and confirm the next scheduled refresh. In the working folder, `batch.py purge` removes entries whose job has left gold.
   - Once the new report is live: remove `bridge_job_industries` from dbt, drop `gold.bridge_job_industries`, and redraw the ER diagram (`scripts/export_marts_ddl.py`, then DrawDB).
 
@@ -642,6 +693,15 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
 - **A `%` format makes a difference of shares read as growth:** 0.02 shows as "+2.0%". Share changes are multiplied by 100 and formatted `+0.0" pp"`.
 - **A share pooled over several boards moves with the boards' mix.** A Himalayas job mentions about 7 skills and an Arbeitnow job about 3, so a week with fewer Himalayas jobs lowers nearly every skill. The weekly trend weights each board's own share (decision 14); any new chart that pools the boards across weeks has the same trap.
 - **Spark's `greatest()` and `least()` skip NULLs:** `greatest(NULL, 0)` is 0, not NULL. The first week's chance band came out as 0 until a `case` kept it NULL.
+- **Two pages, two populations.** Skills overview and Salaries count jobs with at least one skill; Rising skills counts every new job (decision 16). The same skill's share differs by about a sixth between them.
+- **A number slider saves its range like a date slicer.** Once the Week number slider has been moved, the report saves "43 to 45", and later weeks fall outside it. Clear it before saving.
+- **The week number doesn't restart in January.** It counts weeks from 29 Dec 2025, so it equals the ISO week in 2026 and goes on to 54 in 2027. A restart at 1 would put January before October on the slider.
+- **A visual's own setting beats the theme.** A background, border or title size set on one visual stays when the theme changes. The 5.12 touch-ups removed those, so a look is changed in `dashboards/theme/SkillScout.json` and copied over the report's own copy in `StaticResources/RegisteredResources/` (with Desktop closed), or imported again.
+- **Replacing a visual with a pasted copy drops its interactions.** The copy is a new visual, so "this slicer doesn't filter that chart" (Format → Edit interactions) is gone and the page's list is saved empty. Check `visualInteractions` in the page's `page.json` after pasting.
+- **A tile slicer shrinks its text to fit its tiles.** In the narrow filter column, 14pt items rendered at about half that. A plain list keeps the size it's given.
+- **A bookmark holds the state of the visuals that existed when it was made.** After adding or changing a visual, update the page's Reset bookmark, with every slicer cleared first.
+- **A bookmark made with "Selected visuals" applies to those visuals only.** In the file that is `"applyOnlyToTargetVisuals": true` under `options`; a Reset bookmark must not have it. `targetVisualNames` alone only lists what was selected when the bookmark was saved.
+- **Desktop can write a bookmark option that its own check rejects** (seen on 2026-11-15). The three new bookmarks got `"preserveNewVisualVisibility": true` under `options`, and the next opening reported "issues that could not be resolved". With Desktop closed, delete that line from each `bookmarks/*.bookmark.json`. Later saves didn't write it again; check after adding a bookmark.
 
 ## Repo layout additions
 
@@ -667,6 +727,7 @@ dashboards/
     JobsAnalytics.SemanticModel/definition/   ← TMDL: tables, relationships, measures
     JobsAnalytics.SemanticModel/DAXQueries/   ← the check against gold
     JobsAnalytics.Report/                     ← the pages
+    theme/SkillScout.json                     ← the report's theme; import it in Desktop after changing it
 site/
     index.html                            ← public page with the iframe and credits
 .github/workflows/pages.yml               ← deploys site/ to GitHub Pages

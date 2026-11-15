@@ -3,9 +3,9 @@
   "name": "341d08c7a2e3bd618104",
   "position": {
     "x": 372.87392325763506,
-    "y": 0,
+    "y": 40,
     "z": 0,
-    "height": 129.30305403288958,
+    "height": 89.52,
     "width": 1312.5763508222394,
     "tabOrder": 0
   },
@@ -21,7 +21,9 @@
                   {
                     "value": "Which skills do jobs ask for?",
                     "textStyle": {
-                      "fontSize": "32pt"
+                      "fontFamily": "Segoe UI Semibold",
+                      "fontSize": "26pt",
+                      "color": "#1b2326"
                     }
                   }
                 ],
@@ -30,9 +32,9 @@
               {
                 "textRuns": [
                   {
-                    "value": "Share of jobs mentioning each skill, from Jobicy, Arbeitnow and Himalayas, updated daily",
+                    "value": "Share of the jobs we found at least one skill in, from Jobicy, Arbeitnow and Himalayas. Updated daily.",
                     "textStyle": {
-                      "fontSize": "18pt"
+                      "fontSize": "14pt"
                     }
                   }
                 ],
@@ -50,7 +52,7 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "6D"
                 }
               }
             }

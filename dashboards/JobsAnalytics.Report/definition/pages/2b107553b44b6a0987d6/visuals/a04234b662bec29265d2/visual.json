@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "a04234b662bec29265d2",
   "position": {
-    "x": 372.87392325763506,
-    "y": 0,
-    "z": 0,
-    "height": 129.30305403288958,
+    "x": 377.87977140475596,
+    "y": 40.55388494408821,
+    "z": 1000,
+    "height": 89.52,
     "width": 1318.590446358653,
     "tabOrder": 0
   },
@@ -21,7 +21,9 @@
                   {
                     "value": "What do tech jobs pay?",
                     "textStyle": {
-                      "fontSize": "32pt"
+                      "fontFamily": "Segoe UI Semibold",
+                      "fontSize": "26pt",
+                      "color": "#1b2326"
                     }
                   }
                 ],
@@ -30,9 +32,9 @@
               {
                 "textRuns": [
                   {
-                    "value": "Median yearly salary in USD over jobs listing a plausible salary for skills with at least 30 jobs that list a salary. Salaries come from Himalayas and Jobicy, Arbeitnow lists none.",
+                    "value": "Median yearly salary in USD, where at least 30 jobs list a plausible one. Arbeitnow lists no salaries.",
                     "textStyle": {
-                      "fontSize": "18pt"
+                      "fontSize": "14pt"
                     }
                   }
                 ],
@@ -50,7 +52,7 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "6D"
                 }
               }
             }

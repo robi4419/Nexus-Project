@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "80a4f78376e4210ead76",
   "position": {
-    "x": 476.12277867528275,
-    "y": 128.72374798061389,
+    "x": 481.47783251231527,
+    "y": 134.33497536945814,
     "z": 4000,
-    "height": 915.02423263327955,
-    "width": 1443.8772213247173,
+    "height": 903.103448275862,
+    "width": 1425.8128078817733,
     "tabOrder": 4000
   },
   "visual": {
@@ -482,7 +482,7 @@
             "rowPadding": {
               "expr": {
                 "Literal": {
-                  "Value": "14D"
+                  "Value": "12D"
                 }
               }
             },
@@ -576,7 +576,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "80D"
+                  "Value": "86D"
                 }
               }
             }
@@ -627,6 +627,20 @@
                     }
                   },
                   "Property": "Heatmap title"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "20D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

@@ -1602,6 +1602,16 @@ cultureInfo en-US
 			            "State": "Generated",
 			            "Weight": 0.97
 			          }
+			        },
+			        {
+			          "Change in share": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
 			        }
 			      ]
 			    },
@@ -7723,12 +7733,6 @@ cultureInfo en-US
 			          "week": {
 			            "State": "Generated"
 			          }
-			        },
-			        {
-			          "date": {
-			            "State": "Generated",
-			            "Weight": 0.7
-			          }
 			        }
 			      ],
 			      "SemanticType": "Time"
@@ -8340,6 +8344,16 @@ cultureInfo en-US
 			          "share latest week": {
 			            "State": "Generated"
 			          }
+			        },
+			        {
+			          "Share that week": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
 			        }
 			      ]
 			    },
@@ -8356,6 +8370,16 @@ cultureInfo en-US
 			          "jobs latest week": {
 			            "State": "Generated"
 			          }
+			        },
+			        {
+			          "Jobs that week": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
 			        }
 			      ]
 			    },
@@ -8371,6 +8395,16 @@ cultureInfo en-US
 			        {
 			          "jobs week before": {
 			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Jobs the week before": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -11647,9 +11681,3359 @@ cultureInfo en-US
 			          }
 			        }
 			      ]
+			    },
+			    "entity__measure.share_week_before": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Share week before"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "share week before": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Share the week before": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.all_jobs": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "All jobs"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "all jobs": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "all occupation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "all profession": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "all works": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "all trade": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "all career": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "all employment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "all contract": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "all business": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "all appointment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.475
+			          }
+			        },
+			        {
+			          "all vacancy": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.475
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.jobs_asking_for_picked_skills": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Jobs asking for picked skills"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "jobs asking for picked skills": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.picked_skills_share": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Picked skills share"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "picked skills share": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "share": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "skills share": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "picked skill part": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.492
+			          }
+			        },
+			        {
+			          "picked skill portion": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.492
+			          }
+			        },
+			        {
+			          "picked skill segment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.492
+			          }
+			        },
+			        {
+			          "picked skill cut": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.492
+			          }
+			        },
+			        {
+			          "picked skill stake": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.492
+			          }
+			        },
+			        {
+			          "picked skill bit": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.492
+			          }
+			        },
+			        {
+			          "picked skill piece": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.492
+			          }
+			        },
+			        {
+			          "skill part": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "skill portion": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "skill segment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.skill_coverage": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Skill coverage"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "skill coverage": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "coverage": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "skill attention": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "skill treatment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "skill exposure": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "skill analysis": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "skill reportage": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "attention": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "treatment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "exposure": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "analysis": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "reportage": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.asked_with_button_text": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Asked with button text"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "asked with button text": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "asked with button manuscript": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "asked with button transcript": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "asked with button typescript": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "asked with button edition": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "asked with button version": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "asked with key text": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "asked with switch text": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "asked with knob text": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "asked with control text": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "asked with button writing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.last_week_shown": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Last week shown"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "last week shown": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "date": {
+			            "State": "Generated",
+			            "Weight": 0.7
+			          }
+			        },
+			        {
+			          "end week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "final week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "closing week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "concluding week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "finishing week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "former week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "latest week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "latter week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "past week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "remaining week shown": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.591
+			          }
+			        },
+			        {
+			          "To the week of": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ],
+			      "SemanticType": "Time"
+			    },
+			    "entity__measure.first_week_shown": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "First week shown"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "first week shown": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "date": {
+			            "State": "Generated",
+			            "Weight": 0.7
+			          }
+			        },
+			        {
+			          "From the week of": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ],
+			      "SemanticType": "Time"
+			    },
+			    "entity__measure.top_skills_title": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Top skills title"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "top skills title": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "title": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "skills title": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "top skill designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "skill designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.75
+			          }
+			        },
+			        {
+			          "top skill name": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "top skill award": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "top skill call": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "top skill heading": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "top skill label": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        },
+			        {
+			          "skill name": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        },
+			        {
+			          "skill award": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.industry_chart_title": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Industry chart title"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "industry chart title": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "title": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "chart title": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "industry chart designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "chart designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.75
+			          }
+			        },
+			        {
+			          "industry chart name": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "industry chart award": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "industry chart call": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "industry chart heading": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "industry chart label": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        },
+			        {
+			          "chart name": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        },
+			        {
+			          "chart award": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.ladder_title": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Ladder title"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "ladder title": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "title": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "ladder designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.75
+			          }
+			        },
+			        {
+			          "designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        },
+			        {
+			          "ladder name": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        },
+			        {
+			          "ladder award": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        },
+			        {
+			          "ladder call": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        },
+			        {
+			          "ladder heading": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        },
+			        {
+			          "ladder label": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        },
+			        {
+			          "award": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.714
+			          }
+			        },
+			        {
+			          "call": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.714
+			          }
+			        },
+			        {
+			          "heading": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.714
+			          }
+			        }
+			      ]
+			    },
+			    "entity__measure.region_salary_title": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Measures",
+			          "ConceptualProperty": "Region salary title"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "region salary title": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "title": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "salary title": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "region salary designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.762
+			          }
+			        },
+			        {
+			          "salary designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.75
+			          }
+			        },
+			        {
+			          "region salary name": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "region salary award": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "region salary call": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "region salary heading": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "region salary label": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.739
+			          }
+			        },
+			        {
+			          "designation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        },
+			        {
+			          "salary name": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        },
+			        {
+			          "salary award": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        }
+			      ]
+			    },
+			    "job_posting.has_skill": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Job postings",
+			          "ConceptualProperty": "Has skills"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "has skill": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "has ability": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has talent": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has cleverness": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has dexterity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has expertise": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has proficiency": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has skillfulness": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has handiness": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has knack": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "has aptitude": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        }
+			      ]
+			    },
+			    "job_posting.listing": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Job postings",
+			          "ConceptualProperty": "Listing"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "listing": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "citation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "entry": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "item": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "catalogue": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        },
+			        {
+			          "catalog": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        },
+			        {
+			          "inventory": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        },
+			        {
+			          "register": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        },
+			        {
+			          "record": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        },
+			        {
+			          "roll": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        },
+			        {
+			          "directory": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend.week_number": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Weekly skill trend",
+			          "ConceptualProperty": "Week number"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "week number": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "week no": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        }
+			      ]
 			    }
 			  },
 			  "Relationships": {
+			    "location_place_has_region": {
+			      "Binding": {
+			        "ConceptualEntity": "Location"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "location.place": {
+			          "Target": {
+			            "Entity": "location.place"
+			          }
+			        },
+			        "location.place.region": {
+			          "Target": {
+			            "Entity": "location.place.region"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "location.place"
+			            },
+			            "Object": {
+			              "Role": "location.place.region"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "places_have_regions"
+			        }
+			      ]
+			    },
+			    "date_calendar_has_day": {
+			      "Binding": {
+			        "ConceptualEntity": "Date"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "date.calendar": {
+			          "Target": {
+			            "Entity": "date.calendar"
+			          }
+			        },
+			        "date.calendar.day": {
+			          "Target": {
+			            "Entity": "date.calendar.day"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date.calendar"
+			            },
+			            "Object": {
+			              "Role": "date.calendar.day"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "calendars_have_days"
+			        }
+			      ]
+			    },
+			    "date_calendar_has_month": {
+			      "Binding": {
+			        "ConceptualEntity": "Date"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "date.calendar": {
+			          "Target": {
+			            "Entity": "date.calendar"
+			          }
+			        },
+			        "date.calendar.month": {
+			          "Target": {
+			            "Entity": "date.calendar.month"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date.calendar"
+			            },
+			            "Object": {
+			              "Role": "date.calendar.month"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "calendars_have_months"
+			        }
+			      ]
+			    },
+			    "date_calendar_has_quarter": {
+			      "Binding": {
+			        "ConceptualEntity": "Date"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "date.calendar": {
+			          "Target": {
+			            "Entity": "date.calendar"
+			          }
+			        },
+			        "date.calendar.quarter": {
+			          "Target": {
+			            "Entity": "date.calendar.quarter"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date.calendar"
+			            },
+			            "Object": {
+			              "Role": "date.calendar.quarter"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "calendars_have_quarters"
+			        }
+			      ]
+			    },
+			    "date_calendar_has_year": {
+			      "Binding": {
+			        "ConceptualEntity": "Date"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "date.calendar": {
+			          "Target": {
+			            "Entity": "date.calendar"
+			          }
+			        },
+			        "date.calendar.year": {
+			          "Target": {
+			            "Entity": "date.calendar.year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date.calendar"
+			            },
+			            "Object": {
+			              "Role": "date.calendar.year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "calendars_have_years"
+			        }
+			      ]
+			    },
+			    "job_source_has_job_posting": {
+			      "Binding": {
+			        "ConceptualEntity": "Job sources"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_source": {
+			          "Target": {
+			            "Entity": "job_source"
+			          }
+			        },
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        }
+			      }
+			    },
+			    "job_source_has_source": {
+			      "Binding": {
+			        "ConceptualEntity": "Job sources"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_source": {
+			          "Target": {
+			            "Entity": "job_source"
+			          }
+			        },
+			        "source": {
+			          "Target": {
+			            "Entity": "source"
+			          }
+			        }
+			      }
+			    },
+			    "weekly_skill_trend_has_date": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "date": {
+			          "Target": {
+			            "Entity": "date"
+			          },
+			          "Nouns": [
+			            {
+			              "week": {
+			                "State": "Generated"
+			              }
+			            }
+			          ]
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "date"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_dates"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date"
+			            },
+			            "Object": {
+			              "Role": "weekly_skill_trend"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dates_have_weekly_skill_trends"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_skill": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "skill"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_skills"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "weekly_skill_trend"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_weekly_skill_trends"
+			        }
+			      ]
+			    },
+			    "skill_pair_has_skill": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill pairs"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill_pair": {
+			          "Target": {
+			            "Entity": "skill_pair"
+			          }
+			        },
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill_pair"
+			            },
+			            "Object": {
+			              "Role": "skill"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skill_pair_have_skills"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "skill_pair"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_skill_pair"
+			        }
+			      ]
+			    },
+			    "job_type_has_job_posting": {
+			      "Binding": {
+			        "ConceptualEntity": "Job types"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_type": {
+			          "Target": {
+			            "Entity": "job_type"
+			          }
+			        },
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_type"
+			            },
+			            "Object": {
+			              "Role": "job_posting"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_types_have_job_posting"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "job_type"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_job_types"
+			        }
+			      ]
+			    },
+			    "job_location_has_job_posting": {
+			      "Binding": {
+			        "ConceptualEntity": "Job locations"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_location": {
+			          "Target": {
+			            "Entity": "job_location"
+			          }
+			        },
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        }
+			      }
+			    },
+			    "job_location_has_location": {
+			      "Binding": {
+			        "ConceptualEntity": "Job locations"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_location": {
+			          "Target": {
+			            "Entity": "job_location"
+			          }
+			        },
+			        "location": {
+			          "Target": {
+			            "Entity": "location"
+			          }
+			        }
+			      }
+			    },
+			    "job_skill_has_skill": {
+			      "Binding": {
+			        "ConceptualEntity": "Job skills"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_skill": {
+			          "Target": {
+			            "Entity": "job_skill"
+			          }
+			        },
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        }
+			      }
+			    },
+			    "job_skill_has_job_posting": {
+			      "Binding": {
+			        "ConceptualEntity": "Job skills"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_skill": {
+			          "Target": {
+			            "Entity": "job_skill"
+			          }
+			        },
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        }
+			      }
+			    },
+			    "job_posting_has_industry": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "industry": {
+			          "Target": {
+			            "Entity": "industry"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "industry"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_industries"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "industry"
+			            },
+			            "Object": {
+			              "Role": "job_posting"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "industries_have_job_posting"
+			        }
+			      ]
+			    },
+			    "job_posting_has_seniority": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "seniority": {
+			          "Target": {
+			            "Entity": "seniority"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "seniority"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_seniorities"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "seniority"
+			            },
+			            "Object": {
+			              "Role": "job_posting"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "seniorities_have_job_posting"
+			        }
+			      ]
+			    },
+			    "job_posting_has_date": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "date": {
+			          "Target": {
+			            "Entity": "date"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "date"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_dates"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date"
+			            },
+			            "Object": {
+			              "Role": "job_posting"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dates_have_job_posting"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_week_number": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "weekly_skill_trend.week_number": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend.week_number"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "weekly_skill_trend.week_number"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_week_numbers"
+			        }
+			      ]
+			    },
+			    "job_posting_has_listing": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "job_posting.listing": {
+			          "Target": {
+			            "Entity": "job_posting.listing"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "job_posting.listing"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_listing"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_region_salary_title": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.region_salary_title": {
+			          "Target": {
+			            "Entity": "entity__measure.region_salary_title"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.region_salary_title"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_region_salary_title"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_ladder_title": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.ladder_title": {
+			          "Target": {
+			            "Entity": "entity__measure.ladder_title"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.ladder_title"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_ladder_title"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_industry_chart_title": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.industry_chart_title": {
+			          "Target": {
+			            "Entity": "entity__measure.industry_chart_title"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.industry_chart_title"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_industry_chart_title"
+			        }
+			      ]
+			    },
+			    "industry_has_entity__measure_top_skills_title": {
+			      "Binding": {
+			        "ConceptualEntity": "Industry"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "industry": {
+			          "Target": {
+			            "Entity": "industry"
+			          }
+			        },
+			        "entity__measure.top_skills_title": {
+			          "Target": {
+			            "Entity": "entity__measure.top_skills_title"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "industry"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.top_skills_title"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "industries_have_top_skills_title"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_first_week_shown": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.first_week_shown": {
+			          "Target": {
+			            "Entity": "entity__measure.first_week_shown"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.first_week_shown"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_first_week_shown"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_last_week_shown": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.last_week_shown": {
+			          "Target": {
+			            "Entity": "entity__measure.last_week_shown"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.last_week_shown"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_last_week_shown"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_asked_with_button_text": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.asked_with_button_text": {
+			          "Target": {
+			            "Entity": "entity__measure.asked_with_button_text"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.asked_with_button_text"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_asked_with_button_text"
+			        },
+			        {
+			          "Verb": {
+			            "Verbs": [
+			              {
+			                "ask": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Object": {
+			              "Role": "skill"
+			            },
+			            "PrepositionalPhrases": [
+			              {
+			                "Prepositions": [
+			                  {
+			                    "with": {
+			                      "State": "Generated"
+			                    }
+			                  }
+			                ],
+			                "Object": {
+			                  "Role": "entity__measure.asked_with_button_text"
+			                }
+			              }
+			            ]
+			          },
+			          "State": "Generated",
+			          "Weight": 0.95,
+			          "ID": "skills_are_asked_with_asked_with_button_text"
+			        }
+			      ]
+			    },
+			    "job_posting_has_entity__measure_skill_coverage": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "entity__measure.skill_coverage": {
+			          "Target": {
+			            "Entity": "entity__measure.skill_coverage"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.skill_coverage"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_skill_coverage"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_picked_skills_share": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.picked_skills_share": {
+			          "Target": {
+			            "Entity": "entity__measure.picked_skills_share"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.picked_skills_share"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_picked_skills_share"
+			        }
+			      ]
+			    },
+			    "job_skill_has_entity__measure_picked_skills_share": {
+			      "Binding": {
+			        "ConceptualEntity": "Job skills"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_skill": {
+			          "Target": {
+			            "Entity": "job_skill"
+			          }
+			        },
+			        "entity__measure.picked_skills_share": {
+			          "Target": {
+			            "Entity": "entity__measure.picked_skills_share"
+			          }
+			        }
+			      }
+			    },
+			    "job_posting_has_entity__measure_picked_skills_share": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "entity__measure.picked_skills_share": {
+			          "Target": {
+			            "Entity": "entity__measure.picked_skills_share"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.picked_skills_share"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_picked_skills_share"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_jobs_asking_for_picked_skills": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.jobs_asking_for_picked_skills": {
+			          "Target": {
+			            "Entity": "entity__measure.jobs_asking_for_picked_skills"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.jobs_asking_for_picked_skills"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_jobs_asking_for_picked_skills"
+			        }
+			      ]
+			    },
+			    "job_skill_has_entity__measure_jobs_asking_for_picked_skills": {
+			      "Binding": {
+			        "ConceptualEntity": "Job skills"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_skill": {
+			          "Target": {
+			            "Entity": "job_skill"
+			          }
+			        },
+			        "entity__measure.jobs_asking_for_picked_skills": {
+			          "Target": {
+			            "Entity": "entity__measure.jobs_asking_for_picked_skills"
+			          }
+			        }
+			      }
+			    },
+			    "job_posting_has_entity__measure_all_jobs": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "entity__measure.all_jobs": {
+			          "Target": {
+			            "Entity": "entity__measure.all_jobs"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.all_jobs"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_all_jobs"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_share_week_before": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.share_week_before": {
+			          "Target": {
+			            "Entity": "entity__measure.share_week_before"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.share_week_before"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_share_week_before"
+			        }
+			      ]
+			    },
+			    "heatmap_column_has_skill": {
+			      "Binding": {
+			        "ConceptualEntity": "Heatmap columns"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "heatmap_column": {
+			          "Target": {
+			            "Entity": "heatmap_column"
+			          }
+			        },
+			        "heatmap_column.skill": {
+			          "Target": {
+			            "Entity": "heatmap_column.skill"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "heatmap_column"
+			            },
+			            "Object": {
+			              "Role": "heatmap_column.skill"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "heatmap_columns_have_skills"
+			        }
+			      ]
+			    },
+			    "heatmap_row_has_skill": {
+			      "Binding": {
+			        "ConceptualEntity": "Heatmap rows"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "heatmap_row": {
+			          "Target": {
+			            "Entity": "heatmap_row"
+			          }
+			        },
+			        "heatmap_row.skill": {
+			          "Target": {
+			            "Entity": "heatmap_row.skill"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "heatmap_row"
+			            },
+			            "Object": {
+			              "Role": "heatmap_row.skill"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "heatmap_rows_have_skills"
+			        }
+			      ]
+			    },
+			    "industry_has_industry_by_group": {
+			      "Binding": {
+			        "ConceptualEntity": "Industry"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "industry": {
+			          "Target": {
+			            "Entity": "industry"
+			          }
+			        },
+			        "industry.industry_by_group": {
+			          "Target": {
+			            "Entity": "industry.industry_by_group"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "industry"
+			            },
+			            "Object": {
+			              "Role": "industry.industry_by_group"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "industries_have_industry_by_group"
+			        }
+			      ]
+			    },
+			    "industry_has_industry_group": {
+			      "Binding": {
+			        "ConceptualEntity": "Industry"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "industry": {
+			          "Target": {
+			            "Entity": "industry"
+			          }
+			        },
+			        "industry.industry_group": {
+			          "Target": {
+			            "Entity": "industry.industry_group"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "industry"
+			            },
+			            "Object": {
+			              "Role": "industry.industry_group"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "industries_have_industry_groups"
+			        }
+			      ]
+			    },
+			    "job_posting_has_entity__measure_industry_share_of_jobs": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "entity__measure.industry_share_of_jobs": {
+			          "Target": {
+			            "Entity": "entity__measure.industry_share_of_jobs"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.industry_share_of_jobs"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_industry_share_of_jobs"
+			        }
+			      ]
+			    },
+			    "job_posting_has_entity__measure_jobs_in_selection": {
+			      "Binding": {
+			        "ConceptualEntity": "Job postings"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "job_posting": {
+			          "Target": {
+			            "Entity": "job_posting"
+			          }
+			        },
+			        "entity__measure.jobs_in_selection": {
+			          "Target": {
+			            "Entity": "entity__measure.jobs_in_selection"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "job_posting"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.jobs_in_selection"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "job_posting_have_jobs_in_selection"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_trend_axis_max": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.trend_axis_max": {
+			          "Target": {
+			            "Entity": "entity__measure.trend_axis_max"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.trend_axis_max"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_trend_axis_max"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_trend_axis_max": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.trend_axis_max": {
+			          "Target": {
+			            "Entity": "entity__measure.trend_axis_max"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.trend_axis_max"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_trend_axis_max"
+			        }
+			      ]
+			    },
+			    "trend_board_weight_has_entity__measure_trend_subtitle": {
+			      "Binding": {
+			        "ConceptualEntity": "Trend board weights"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "trend_board_weight": {
+			          "Target": {
+			            "Entity": "trend_board_weight"
+			          }
+			        },
+			        "entity__measure.trend_subtitle": {
+			          "Target": {
+			            "Entity": "entity__measure.trend_subtitle"
+			          }
+			        }
+			      }
+			    },
+			    "skill_has_entity__measure_trend_subtitle": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.trend_subtitle": {
+			          "Target": {
+			            "Entity": "entity__measure.trend_subtitle"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.trend_subtitle"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_trend_subtitle"
+			        }
+			      ]
+			    },
+			    "trend_board_weight_has_entity__measure_board_weights": {
+			      "Binding": {
+			        "ConceptualEntity": "Trend board weights"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "trend_board_weight": {
+			          "Target": {
+			            "Entity": "trend_board_weight"
+			          }
+			        },
+			        "entity__measure.board_weights": {
+			          "Target": {
+			            "Entity": "entity__measure.board_weights"
+			          }
+			        }
+			      }
+			    },
+			    "weekly_skill_trend_has_entity__measure_chance_range_high": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.chance_range_high": {
+			          "Target": {
+			            "Entity": "entity__measure.chance_range_high"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.chance_range_high"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_chance_range_high"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_chance_range_high": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.chance_range_high": {
+			          "Target": {
+			            "Entity": "entity__measure.chance_range_high"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.chance_range_high"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_chance_range_high"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_chance_range_low": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.chance_range_low": {
+			          "Target": {
+			            "Entity": "entity__measure.chance_range_low"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.chance_range_low"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_chance_range_low"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_chance_range_low": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.chance_range_low": {
+			          "Target": {
+			            "Entity": "entity__measure.chance_range_low"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.chance_range_low"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_chance_range_low"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_trend_line_title": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.trend_line_title": {
+			          "Target": {
+			            "Entity": "entity__measure.trend_line_title"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.trend_line_title"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_trend_line_title"
+			        }
+			      ]
+			    },
+			    "skill_has_entity__measure_trend_line_title": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.trend_line_title": {
+			          "Target": {
+			            "Entity": "entity__measure.trend_line_title"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.trend_line_title"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_have_trend_line_title"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_movers_subtitle": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.movers_subtitle": {
+			          "Target": {
+			            "Entity": "entity__measure.movers_subtitle"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.movers_subtitle"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_movers_subtitle"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_jobs_week_before": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.jobs_week_before": {
+			          "Target": {
+			            "Entity": "entity__measure.jobs_week_before"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.jobs_week_before"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_jobs_week_before"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_jobs_latest_week": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.jobs_latest_week": {
+			          "Target": {
+			            "Entity": "entity__measure.jobs_latest_week"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.jobs_latest_week"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_jobs_latest_week"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_share_latest_week": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.share_latest_week": {
+			          "Target": {
+			            "Entity": "entity__measure.share_latest_week"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.share_latest_week"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_share_latest_week"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_has_entity__measure_latest_week": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.latest_week": {
+			          "Target": {
+			            "Entity": "entity__measure.latest_week"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "weekly_skill_trend"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.latest_week"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "weekly_skill_trends_have_latest_week"
+			        }
+			      ]
+			    },
+			    "skill_pair_has_entity__measure_heatmap_tooltip_lift": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill pairs"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill_pair": {
+			          "Target": {
+			            "Entity": "skill_pair"
+			          }
+			        },
+			        "entity__measure.heatmap_tooltip_lift": {
+			          "Target": {
+			            "Entity": "entity__measure.heatmap_tooltip_lift"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "skill_pair"
+			            },
+			            "Object": {
+			              "Role": "entity__measure.heatmap_tooltip_lift"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skill_pair_have_heatmap_tooltip_lift"
+			        }
+			      ]
+			    },
 			    "skill_pair_has_entity__measure_heatmap_tooltip_column_share": {
 			      "Binding": {
 			        "ConceptualEntity": "Skill pairs"
@@ -13710,6 +17094,51 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
+			    "skill_in_entity__measure_region_salary_title": {
+			      "Binding": {
+			        "ConceptualEntity": "Skill"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "skill": {
+			          "Target": {
+			            "Entity": "skill"
+			          }
+			        },
+			        "entity__measure.region_salary_title": {
+			          "Target": {
+			            "Entity": "entity__measure.region_salary_title"
+			          }
+			        }
+			      },
+			      "SemanticSlots": {
+			        "Where": {
+			          "Role": "entity__measure.region_salary_title"
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Preposition": {
+			            "Subject": {
+			              "Role": "skill"
+			            },
+			            "Prepositions": [
+			              {
+			                "in": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Object": {
+			              "Role": "entity__measure.region_salary_title"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "skills_are_in_region_salary_title"
+			        }
+			      ]
+			    },
 			    "location_in_place_city": {
 			      "Binding": {
 			        "ConceptualEntity": "Location"
@@ -14070,6 +17499,90 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
+			    "weekly_skill_trend_is_showed_on_entity__measure_first_week_shown": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.first_week_shown": {
+			          "Target": {
+			            "Entity": "entity__measure.first_week_shown"
+			          }
+			        }
+			      },
+			      "SemanticSlots": {
+			        "When": {
+			          "Role": "entity__measure.first_week_shown"
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Verb": {
+			            "Verbs": [
+			              {
+			                "show": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Object": {
+			              "Role": "weekly_skill_trend"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.9,
+			          "ID": "weekly_skill_trends_are_showed_on_first_week_shown"
+			        }
+			      ]
+			    },
+			    "weekly_skill_trend_is_showed_on_entity__measure_last_week_shown": {
+			      "Binding": {
+			        "ConceptualEntity": "Weekly skill trend"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "weekly_skill_trend": {
+			          "Target": {
+			            "Entity": "weekly_skill_trend"
+			          }
+			        },
+			        "entity__measure.last_week_shown": {
+			          "Target": {
+			            "Entity": "entity__measure.last_week_shown"
+			          }
+			        }
+			      },
+			      "SemanticSlots": {
+			        "When": {
+			          "Role": "entity__measure.last_week_shown"
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Verb": {
+			            "Verbs": [
+			              {
+			                "show": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Object": {
+			              "Role": "weekly_skill_trend"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.9,
+			          "ID": "weekly_skill_trends_are_showed_on_last_week_shown"
+			        }
+			      ]
+			    },
 			    "industry_is_named_industry_by_group_industry": {
 			      "Binding": {
 			        "ConceptualEntity": "Industry"
@@ -14100,1304 +17613,6 @@ cultureInfo en-US
 			          "State": "Generated",
 			          "Weight": 0.99,
 			          "ID": "industries_are_names_IDs_of_industries"
-			        }
-			      ]
-			    },
-			    "skill_pair_has_entity__measure_heatmap_tooltip_lift": {
-			      "Binding": {
-			        "ConceptualEntity": "Skill pairs"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "skill_pair": {
-			          "Target": {
-			            "Entity": "skill_pair"
-			          }
-			        },
-			        "entity__measure.heatmap_tooltip_lift": {
-			          "Target": {
-			            "Entity": "entity__measure.heatmap_tooltip_lift"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "skill_pair"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.heatmap_tooltip_lift"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "skill_pair_have_heatmap_tooltip_lift"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_latest_week": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.latest_week": {
-			          "Target": {
-			            "Entity": "entity__measure.latest_week"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.latest_week"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_latest_week"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_share_latest_week": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.share_latest_week": {
-			          "Target": {
-			            "Entity": "entity__measure.share_latest_week"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.share_latest_week"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_share_latest_week"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_jobs_latest_week": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.jobs_latest_week": {
-			          "Target": {
-			            "Entity": "entity__measure.jobs_latest_week"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.jobs_latest_week"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_jobs_latest_week"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_jobs_week_before": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.jobs_week_before": {
-			          "Target": {
-			            "Entity": "entity__measure.jobs_week_before"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.jobs_week_before"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_jobs_week_before"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_movers_subtitle": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.movers_subtitle": {
-			          "Target": {
-			            "Entity": "entity__measure.movers_subtitle"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.movers_subtitle"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_movers_subtitle"
-			        }
-			      ]
-			    },
-			    "skill_has_entity__measure_trend_line_title": {
-			      "Binding": {
-			        "ConceptualEntity": "Skill"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "skill": {
-			          "Target": {
-			            "Entity": "skill"
-			          }
-			        },
-			        "entity__measure.trend_line_title": {
-			          "Target": {
-			            "Entity": "entity__measure.trend_line_title"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "skill"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.trend_line_title"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "skills_have_trend_line_title"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_trend_line_title": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.trend_line_title": {
-			          "Target": {
-			            "Entity": "entity__measure.trend_line_title"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.trend_line_title"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_trend_line_title"
-			        }
-			      ]
-			    },
-			    "skill_has_entity__measure_chance_range_low": {
-			      "Binding": {
-			        "ConceptualEntity": "Skill"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "skill": {
-			          "Target": {
-			            "Entity": "skill"
-			          }
-			        },
-			        "entity__measure.chance_range_low": {
-			          "Target": {
-			            "Entity": "entity__measure.chance_range_low"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "skill"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.chance_range_low"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "skills_have_chance_range_low"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_chance_range_low": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.chance_range_low": {
-			          "Target": {
-			            "Entity": "entity__measure.chance_range_low"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.chance_range_low"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_chance_range_low"
-			        }
-			      ]
-			    },
-			    "skill_has_entity__measure_chance_range_high": {
-			      "Binding": {
-			        "ConceptualEntity": "Skill"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "skill": {
-			          "Target": {
-			            "Entity": "skill"
-			          }
-			        },
-			        "entity__measure.chance_range_high": {
-			          "Target": {
-			            "Entity": "entity__measure.chance_range_high"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "skill"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.chance_range_high"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "skills_have_chance_range_high"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_chance_range_high": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.chance_range_high": {
-			          "Target": {
-			            "Entity": "entity__measure.chance_range_high"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.chance_range_high"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_chance_range_high"
-			        }
-			      ]
-			    },
-			    "trend_board_weight_has_entity__measure_board_weights": {
-			      "Binding": {
-			        "ConceptualEntity": "Trend board weights"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "trend_board_weight": {
-			          "Target": {
-			            "Entity": "trend_board_weight"
-			          }
-			        },
-			        "entity__measure.board_weights": {
-			          "Target": {
-			            "Entity": "entity__measure.board_weights"
-			          }
-			        }
-			      }
-			    },
-			    "trend_board_weight_has_entity__measure_trend_subtitle": {
-			      "Binding": {
-			        "ConceptualEntity": "Trend board weights"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "trend_board_weight": {
-			          "Target": {
-			            "Entity": "trend_board_weight"
-			          }
-			        },
-			        "entity__measure.trend_subtitle": {
-			          "Target": {
-			            "Entity": "entity__measure.trend_subtitle"
-			          }
-			        }
-			      }
-			    },
-			    "skill_has_entity__measure_trend_axis_max": {
-			      "Binding": {
-			        "ConceptualEntity": "Skill"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "skill": {
-			          "Target": {
-			            "Entity": "skill"
-			          }
-			        },
-			        "entity__measure.trend_axis_max": {
-			          "Target": {
-			            "Entity": "entity__measure.trend_axis_max"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "skill"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.trend_axis_max"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "skills_have_trend_axis_max"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_entity__measure_trend_axis_max": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "entity__measure.trend_axis_max": {
-			          "Target": {
-			            "Entity": "entity__measure.trend_axis_max"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.trend_axis_max"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_trend_axis_max"
-			        }
-			      ]
-			    },
-			    "job_posting_has_entity__measure_jobs_in_selection": {
-			      "Binding": {
-			        "ConceptualEntity": "Job postings"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        },
-			        "entity__measure.jobs_in_selection": {
-			          "Target": {
-			            "Entity": "entity__measure.jobs_in_selection"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "job_posting"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.jobs_in_selection"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "job_posting_have_jobs_in_selection"
-			        }
-			      ]
-			    },
-			    "job_posting_has_entity__measure_industry_share_of_jobs": {
-			      "Binding": {
-			        "ConceptualEntity": "Job postings"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        },
-			        "entity__measure.industry_share_of_jobs": {
-			          "Target": {
-			            "Entity": "entity__measure.industry_share_of_jobs"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "job_posting"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.industry_share_of_jobs"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "job_posting_have_industry_share_of_jobs"
-			        }
-			      ]
-			    },
-			    "industry_has_industry_group": {
-			      "Binding": {
-			        "ConceptualEntity": "Industry"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "industry": {
-			          "Target": {
-			            "Entity": "industry"
-			          }
-			        },
-			        "industry.industry_group": {
-			          "Target": {
-			            "Entity": "industry.industry_group"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "industry"
-			            },
-			            "Object": {
-			              "Role": "industry.industry_group"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "industries_have_industry_groups"
-			        }
-			      ]
-			    },
-			    "industry_has_industry_by_group": {
-			      "Binding": {
-			        "ConceptualEntity": "Industry"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "industry": {
-			          "Target": {
-			            "Entity": "industry"
-			          }
-			        },
-			        "industry.industry_by_group": {
-			          "Target": {
-			            "Entity": "industry.industry_by_group"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "industry"
-			            },
-			            "Object": {
-			              "Role": "industry.industry_by_group"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "industries_have_industry_by_group"
-			        }
-			      ]
-			    },
-			    "heatmap_row_has_skill": {
-			      "Binding": {
-			        "ConceptualEntity": "Heatmap rows"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "heatmap_row": {
-			          "Target": {
-			            "Entity": "heatmap_row"
-			          }
-			        },
-			        "heatmap_row.skill": {
-			          "Target": {
-			            "Entity": "heatmap_row.skill"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "heatmap_row"
-			            },
-			            "Object": {
-			              "Role": "heatmap_row.skill"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "heatmap_rows_have_skills"
-			        }
-			      ]
-			    },
-			    "heatmap_column_has_skill": {
-			      "Binding": {
-			        "ConceptualEntity": "Heatmap columns"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "heatmap_column": {
-			          "Target": {
-			            "Entity": "heatmap_column"
-			          }
-			        },
-			        "heatmap_column.skill": {
-			          "Target": {
-			            "Entity": "heatmap_column.skill"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "heatmap_column"
-			            },
-			            "Object": {
-			              "Role": "heatmap_column.skill"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "heatmap_columns_have_skills"
-			        }
-			      ]
-			    },
-			    "job_posting_has_date": {
-			      "Binding": {
-			        "ConceptualEntity": "Job postings"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        },
-			        "date": {
-			          "Target": {
-			            "Entity": "date"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "job_posting"
-			            },
-			            "Object": {
-			              "Role": "date"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "job_posting_have_dates"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date"
-			            },
-			            "Object": {
-			              "Role": "job_posting"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dates_have_job_posting"
-			        }
-			      ]
-			    },
-			    "job_posting_has_seniority": {
-			      "Binding": {
-			        "ConceptualEntity": "Job postings"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        },
-			        "seniority": {
-			          "Target": {
-			            "Entity": "seniority"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "job_posting"
-			            },
-			            "Object": {
-			              "Role": "seniority"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "job_posting_have_seniorities"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "seniority"
-			            },
-			            "Object": {
-			              "Role": "job_posting"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "seniorities_have_job_posting"
-			        }
-			      ]
-			    },
-			    "job_posting_has_industry": {
-			      "Binding": {
-			        "ConceptualEntity": "Job postings"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        },
-			        "industry": {
-			          "Target": {
-			            "Entity": "industry"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "job_posting"
-			            },
-			            "Object": {
-			              "Role": "industry"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "job_posting_have_industries"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "industry"
-			            },
-			            "Object": {
-			              "Role": "job_posting"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "industries_have_job_posting"
-			        }
-			      ]
-			    },
-			    "job_skill_has_job_posting": {
-			      "Binding": {
-			        "ConceptualEntity": "Job skills"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_skill": {
-			          "Target": {
-			            "Entity": "job_skill"
-			          }
-			        },
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        }
-			      }
-			    },
-			    "job_skill_has_skill": {
-			      "Binding": {
-			        "ConceptualEntity": "Job skills"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_skill": {
-			          "Target": {
-			            "Entity": "job_skill"
-			          }
-			        },
-			        "skill": {
-			          "Target": {
-			            "Entity": "skill"
-			          }
-			        }
-			      }
-			    },
-			    "job_location_has_location": {
-			      "Binding": {
-			        "ConceptualEntity": "Job locations"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_location": {
-			          "Target": {
-			            "Entity": "job_location"
-			          }
-			        },
-			        "location": {
-			          "Target": {
-			            "Entity": "location"
-			          }
-			        }
-			      }
-			    },
-			    "job_location_has_job_posting": {
-			      "Binding": {
-			        "ConceptualEntity": "Job locations"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_location": {
-			          "Target": {
-			            "Entity": "job_location"
-			          }
-			        },
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        }
-			      }
-			    },
-			    "job_type_has_job_posting": {
-			      "Binding": {
-			        "ConceptualEntity": "Job types"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_type": {
-			          "Target": {
-			            "Entity": "job_type"
-			          }
-			        },
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "job_type"
-			            },
-			            "Object": {
-			              "Role": "job_posting"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "job_types_have_job_posting"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "job_posting"
-			            },
-			            "Object": {
-			              "Role": "job_type"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "job_posting_have_job_types"
-			        }
-			      ]
-			    },
-			    "skill_pair_has_skill": {
-			      "Binding": {
-			        "ConceptualEntity": "Skill pairs"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "skill_pair": {
-			          "Target": {
-			            "Entity": "skill_pair"
-			          }
-			        },
-			        "skill": {
-			          "Target": {
-			            "Entity": "skill"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "skill_pair"
-			            },
-			            "Object": {
-			              "Role": "skill"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "skill_pair_have_skills"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "skill"
-			            },
-			            "Object": {
-			              "Role": "skill_pair"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "skills_have_skill_pair"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_skill": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "skill": {
-			          "Target": {
-			            "Entity": "skill"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "skill"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_skills"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "skill"
-			            },
-			            "Object": {
-			              "Role": "weekly_skill_trend"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "skills_have_weekly_skill_trends"
-			        }
-			      ]
-			    },
-			    "weekly_skill_trend_has_date": {
-			      "Binding": {
-			        "ConceptualEntity": "Weekly skill trend"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "weekly_skill_trend": {
-			          "Target": {
-			            "Entity": "weekly_skill_trend"
-			          }
-			        },
-			        "date": {
-			          "Target": {
-			            "Entity": "date"
-			          },
-			          "Nouns": [
-			            {
-			              "week": {
-			                "State": "Generated"
-			              }
-			            }
-			          ]
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "weekly_skill_trend"
-			            },
-			            "Object": {
-			              "Role": "date"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "weekly_skill_trends_have_dates"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date"
-			            },
-			            "Object": {
-			              "Role": "weekly_skill_trend"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dates_have_weekly_skill_trends"
-			        }
-			      ]
-			    },
-			    "job_source_has_source": {
-			      "Binding": {
-			        "ConceptualEntity": "Job sources"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_source": {
-			          "Target": {
-			            "Entity": "job_source"
-			          }
-			        },
-			        "source": {
-			          "Target": {
-			            "Entity": "source"
-			          }
-			        }
-			      }
-			    },
-			    "job_source_has_job_posting": {
-			      "Binding": {
-			        "ConceptualEntity": "Job sources"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "job_source": {
-			          "Target": {
-			            "Entity": "job_source"
-			          }
-			        },
-			        "job_posting": {
-			          "Target": {
-			            "Entity": "job_posting"
-			          }
-			        }
-			      }
-			    },
-			    "date_calendar_has_year": {
-			      "Binding": {
-			        "ConceptualEntity": "Date"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "date.calendar": {
-			          "Target": {
-			            "Entity": "date.calendar"
-			          }
-			        },
-			        "date.calendar.year": {
-			          "Target": {
-			            "Entity": "date.calendar.year"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date.calendar"
-			            },
-			            "Object": {
-			              "Role": "date.calendar.year"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "calendars_have_years"
-			        }
-			      ]
-			    },
-			    "date_calendar_has_quarter": {
-			      "Binding": {
-			        "ConceptualEntity": "Date"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "date.calendar": {
-			          "Target": {
-			            "Entity": "date.calendar"
-			          }
-			        },
-			        "date.calendar.quarter": {
-			          "Target": {
-			            "Entity": "date.calendar.quarter"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date.calendar"
-			            },
-			            "Object": {
-			              "Role": "date.calendar.quarter"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "calendars_have_quarters"
-			        }
-			      ]
-			    },
-			    "date_calendar_has_month": {
-			      "Binding": {
-			        "ConceptualEntity": "Date"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "date.calendar": {
-			          "Target": {
-			            "Entity": "date.calendar"
-			          }
-			        },
-			        "date.calendar.month": {
-			          "Target": {
-			            "Entity": "date.calendar.month"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date.calendar"
-			            },
-			            "Object": {
-			              "Role": "date.calendar.month"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "calendars_have_months"
-			        }
-			      ]
-			    },
-			    "date_calendar_has_day": {
-			      "Binding": {
-			        "ConceptualEntity": "Date"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "date.calendar": {
-			          "Target": {
-			            "Entity": "date.calendar"
-			          }
-			        },
-			        "date.calendar.day": {
-			          "Target": {
-			            "Entity": "date.calendar.day"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date.calendar"
-			            },
-			            "Object": {
-			              "Role": "date.calendar.day"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "calendars_have_days"
-			        }
-			      ]
-			    },
-			    "location_place_has_region": {
-			      "Binding": {
-			        "ConceptualEntity": "Location"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "location.place": {
-			          "Target": {
-			            "Entity": "location.place"
-			          }
-			        },
-			        "location.place.region": {
-			          "Target": {
-			            "Entity": "location.place.region"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "location.place"
-			            },
-			            "Object": {
-			              "Role": "location.place.region"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "places_have_regions"
 			        }
 			      ]
 			    },

@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "a2a5092c8c4e72592318",
   "position": {
-    "x": 1140.1425178147267,
-    "y": 231.06888361045131,
-    "z": 10000,
-    "height": 811.18072289156623,
-    "width": 768,
-    "tabOrder": 10000
+    "x": 1150.4926108374384,
+    "y": 236.74876847290639,
+    "z": 3000,
+    "height": 799.35960591133,
+    "width": 758,
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -141,15 +141,20 @@
           "properties": {
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'Jobs by industry'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Industry chart title"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "24D"
+                  "Value": "20D"
                 }
               }
             },
@@ -165,7 +170,29 @@
       ],
       "subTitle": [
         {
-          "properties": {}
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Click a group to filter the skills. For its industries, right-click the group and choose Drill down; the ↑ arrow at the chart''s top right goes back up.'"
+                }
+              }
+            },
+            "titleWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
         }
       ],
       "stylePreset": [
@@ -183,61 +210,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "c5bd10c6a0ba466300db",
-        "field": {
-          "HierarchyLevel": {
-            "Expression": {
-              "Hierarchy": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Industry"
-                  }
-                },
-                "Hierarchy": "Industry by group"
-              }
-            },
-            "Level": "Industry group"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "28066b0e27aedc523371",
-        "field": {
-          "HierarchyLevel": {
-            "Expression": {
-              "Hierarchy": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Industry"
-                  }
-                },
-                "Hierarchy": "Industry by group"
-              }
-            },
-            "Level": "Industry"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "264029733dabd83a5c09",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Industry share of jobs"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

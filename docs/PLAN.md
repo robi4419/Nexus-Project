@@ -116,6 +116,7 @@ Each phase gets a detailed plan in [`docs/phases/`](phases/) when work on it sta
 - [x] Along the way: skills come only from the description's lines about the job, a job counts once however often it's posted, and the weekly trend counts each job once per opening across the three boards (Phase 5, decisions 10 to 13).
 - [ ] The weekly trend combines the three boards with fixed weights, so a board posting more or fewer jobs in a week no longer moves every skill (Phase 5, decision 14, task 5.11).
 - [ ] Every job gets one industry from a model trained on 3,100 hand labels, instead of the boards' own categories; the report's skill-category chart becomes the industries of a skill's jobs (Phase 5, decision 15, task 5.12; rules in [`docs/industry-labelling-guide.md`](industry-labelling-guide.md)).
+- [x] The report counts only jobs with at least one skill, and gets page buttons, a reset button, a week slider that snaps to weeks, and titles that follow clicks (Phase 5, decision 16, task 5.12, step 6b).
 
 ### Phase 6: GitHub and CI (can start alongside Phase 1)
 - [x] Feature branches and PRs: one per phase (#1–#8).

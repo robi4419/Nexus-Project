@@ -1,6 +1,7 @@
 EVALUATE
 ROW (
     "Jobs", [Jobs],
+    "All jobs", [All jobs],
     "Jobs with skill", [Jobs with skill],
     "Python share", CALCULATE ( [Share of jobs], Skill[Skill] = "Python" ),
     "Jobs with salary", [Jobs with salary],
@@ -8,6 +9,10 @@ ROW (
     "Python median salary", CALCULATE ( [Median salary], Skill[Skill] = "Python" ),
     "Europe jobs", CALCULATE ( [Jobs], Location[Region] = "Europe" ),
     "Listed now", CALCULATE ( [Jobs], 'Job postings'[Listed now] = TRUE () ),
+    "Listed now, all jobs", CALCULATE ( [All jobs], 'Job postings'[Listed now] = TRUE () ),
     "Python week share", CALCULATE ( [Week share], Skill[Skill] = "Python", 'Weekly skill trend'[Week] = DATE ( 2026, 10, 19 ) ),
+    "Last week shown", [Last week shown],
+    "First week number", MIN ( 'Weekly skill trend'[Week number] ),
+    "Week 43 starts", CALCULATE ( MIN ( 'Weekly skill trend'[Week] ), 'Weekly skill trend'[Week number] = 43 ),
     "Skill pairs", COUNTROWS ( 'Skill pairs' )
 )
