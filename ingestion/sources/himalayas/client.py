@@ -13,7 +13,7 @@ SOURCE = "himalayas"
 FEED_URL = "https://himalayas.app/jobs/api"
 PAGE_SIZE = 20  # API maximum
 REQUEST_DELAY = 1.0  # seconds between requests: an API key allows 60 a minute
-MAX_PAGES = 2000  # safety cap; a normal day is about 330 pages, catching up the maximum 7 days about 1,200
+MAX_PAGES = 3000  # safety cap; a normal day is about 330 pages, catching up the maximum 7 days about 1,200
 
 
 class HimalayasAPIError(RuntimeError):

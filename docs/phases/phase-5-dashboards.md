@@ -659,7 +659,7 @@ Half of the labelled jobs start expiring in mid-December 2026, so steps 1 to 3 c
     - **`docs/er-diagram.sql` regenerated:** 14 tables. It also catches up with the fact's `industry` and `industry_source`, `dim_industry`'s group and sort order, the trend's chance range and `agg_trend_board_weights`.
     - **`gold.bridge_job_industries` dropped,** with Robert's go-ahead: 57,389 rows, one per job, the same as the fact. Gold keeps three bridges: locations, sources and types.
     - **The diagram redrawn in DrawDB** by Robert: 14 tables, with the fact linked straight to `dim_industry`.
-  - **Left:** `batch.py purge` in the labelling working folder, outside the repo.
+    - **`batch.py purge` written and run** in the labelling working folder, outside the repo: 6 of the 3,100 labels had left gold; the 200 test jobs were all still there. Its reader no longer asks for the dropped bridge.
 
 ## Concepts you'll meet
 - **Training and applying a model:** training (`fit`) reads labelled examples and works out weights; applying (`predict`) uses the weights on new jobs. Here training happens by hand, rarely, and applying happens every night.
